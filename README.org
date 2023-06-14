@@ -1,0 +1,15 @@
+#+TITLE: AWS data processing 
+#+AUTHOR: Signe Hillerup Larsen
+#+EMAIL: shl@geus.dk
+#+DATE: {{{time(%Y-%m-%d)}}}
+
+* From raw to Level 1 data of GlacioBasis Zackenberg 2008-2022 data
+
+The GlacioBasis Zackenberg monitoring programme is a part of the Greenland ecosystem monitoring programme (g-e-m.dk), and based near the research station at Zackenberg in NE Greeland. As part of the monitoring there are three automatic ablation and weather stations in a transect on the A. P. Olsen Ice Cap, here referred to as the APO transect.
+During the period from the start in 2008 utill 2022, the AWSs at the APO transect were operated individually, but in 2022 the process began to install AWSs that are standardised according the PROMICE/GCnet standards along the transect. The code published here document the data handling of the data from 2008-2022, from the raw data downloaded from the AWSs to quality controlled level 1 data available at the GEM database: https://data.g-e-m.dk/.
+
+The code in public in order to keep the data handling as open as possible, it does not mean that it is reproducible for any user.
+
+We use only open access software:
+- Python v. 3.8 with pandas, numpy, glob, xarray
+- pyNEAD tool: https://github.com/GEUS-Glaciology-and-Climate/pyNEAD
