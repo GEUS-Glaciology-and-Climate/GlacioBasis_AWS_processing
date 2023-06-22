@@ -5173,61 +5173,6 @@ Flags??
  # Out [153]: 
  :e
 
-****** Surface lowering
-
-#+BEGIN_SRC jupyter-python
-<<load_libs>>
-datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
-z_l = pd.read_csv(datapath+'preQC/zac_l_lowering.csv', parse_dates = True, index_col=0)
-
-
-z_l[:'2008-July-1'] = np.nan
-z_l['2008'] = z_l['2008']-z_l['2008-July-2'].mean()
-z_l['2009-10-1'] = np.nan
-z_l['2009'] = z_l['2009']-z_l['2009-June-26'].mean()
-z_l['2009-5-14':'2009-6-24']= np.nan
-
-z_l['2010-1-1':'2010-5-15'] = np.nan
-z_l['2010'] = z_l['2010']-z_l['2010-5-16'].mean()
-z_l['2010-8-2':'2010-12-31'] = np.nan
-
-z_l['2011-1-1':'2011-5-7'] = np.nan
-z_l['2011'] = z_l['2011']-z_l['2011-5-8'].mean()
-z_l['2012-1-1':'2012-4-18'] = np.nan
-z_l['2012'] = z_l['2012']-z_l['2012-4-19'].mean() 
-z_l['2013'] = z_l['2013']-z_l['2013-4-1':'2013-5-1'].mean()
-z_l['2014'] = z_l['2014']-z_l['2014-5-1':'2014-6-1'].mean()
-z_l['2015-1-1':'2015-6-2'] = np.nan
-z_l['2015'] = z_l['2015']-z_l['2015-6-3':'2015-6-15'].mean() 
-z_l['2015-12-1':'2015-12-31'] = np.nan
-z_l['2016-1-1':'2016-5-1'] = np.nan
-z_l['2016'] = z_l['2016']-z_l['2016-5-2':'2016-5-15'].mean()
-z_l['2017-1-1':'2017-5-1'] = np.nan
-z_l['2017'] = z_l['2017']-z_l['2017-5-2':'2017-5-15'].mean()
-z_l['2018-1-1':'2018-5-1'] = np.nan
-z_l['2018'] = z_l['2018']-z_l['2018-5-2':'2018-5-15'].mean() 
-z_l['2019'] = np.nan
-z_l['2020'] = z_l['2020']-z_l['2020-5-2':'2020-5-15'].mean()
-
-z_l['2021'] = z_l['2021']-z_l['2021-5-2':'2021-5-15'].mean()
-z_l['2021-9-1':'2022-5-1'] = np.nan
-
-month = z_l.index.month
-z_l[month<4] = np.nan
-z_l[month>9] = np.nan
-
-z_l_hour = z_l.resample('H').mean()
-z_l_day = z_l.resample('D').mean() 
-z_l_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_lowering.csv', index = True, float_format = '%g')
-z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_lowering.csv', index = True, float_format = '%g')
-#+END_SRC
-
-#+RESULTS:
-:results:
-# Out [13]: 
-:end:
-
-
 
 ****** Boom height
  #+BEGIN_SRC jupyter-python
@@ -5884,45 +5829,7 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_lowering.csv', index = Tru
 
  #+RESULTS:
 
-****** Surface lowering
 
-#+BEGIN_SRC jupyter-python
-<<load_libs>>
-datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
-z_u = pd.read_csv(datapath+'preQC/zac_u_lowering.csv', parse_dates = True, index_col=0)
-
-
-
-z_u['2017'] = z_u['2017']-z_u['2017-July-17':'2017-July-17'].mean()
-z_u[:'2017-July-18'] = np.nan
-z_u['2018'] = np.nan
-z_u['2020'] = z_u['2020']-z_u['2020-June-15':'2020-June-22'].mean()
-z_u['2020-January-1':'2020-June-15'] = np.nan
-z_u['2020-August-12':'2020-December-31'] = np.nan
-
-z_u['2021'] = z_u['2021']-z_u['2021-April-15':'2021-April-22'].mean()
-z_u['2021-January-1':'2021-July-27'] = np.nan
-z_u['2021-September-1':'2021-December-31'] = np.nan
-
-month = z_u.index.month
-z_u[month<4] = np.nan
-z_u[month>9] = np.nan
-
-z_u_hour = z_u.resample('H').mean()
-z_u_day = z_u.resample('D').mean() 
-z_u_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_lowering.csv', index = True, float_format = '%g')
-z_u_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_lowering.csv', index = True, float_format = '%g')
-#+END_SRC
-
-#+RESULTS:
-: /tmp/ipykernel_10803/1128106081.py:11: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
-:   z_u['2017'] = z_u['2017']-z_u['2017-July-17':'2017-July-17'].mean()
-: /tmp/ipykernel_10803/1128106081.py:13: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
-:   z_u['2018'] = np.nan
-: /tmp/ipykernel_10803/1128106081.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
-:   z_u['2020'] = z_u['2020']-z_u['2020-June-15':'2020-June-22'].mean()
-: /tmp/ipykernel_10803/1128106081.py:18: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
-:   z_u['2021'] = z_u['2021']-z_u['2021-April-15':'2021-April-22'].mean()
 
 
 
@@ -5957,12 +5864,11 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_lowering.csv', index = Tru
  #+RESULTS:
 
 
-*** Testing: Glaciological observations
+*** Glaciological observations
 
-**** Surface lowering (z_pt)
-
-
-Zac_l
+**** PTA
+***** raw-(ish)
+****** Zac_l
 #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5979,20 +5885,13 @@ Zac_l
  lowering[lowering<-5] = np.nan
  lowering[lowering>0.5] = np.nan
  lowering.plot()
- lowering.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_lowering.csv', index = True, float_format = '%g')
+ lowering.to_csv('data_v1.0/gem_database/2022/raw/zac_l_pta.csv', index = True, float_format = '%g')
  #+END_SRC
 
  #+RESULTS:
- :results:
- # Out [60]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
+ [[file:./.ob-jupyter/98762baf63a63923e11e7f438d7576e487025a1d.png]]
 
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ec7723be04b564ddac1a498c570caa8bbb988982.png]]
- :end:
-
-There is really none of the data that I trust from zac_u....
+****** Zac_u
 #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -6007,22 +5906,13 @@ There is really none of the data that I trust from zac_u....
  lowering[lowering<-5] = np.nan
  lowering[lowering>0.5] = np.nan
  lowering.plot()
- lowering.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_lowering.csv', index = True, float_format = '%g')
+ lowering.to_csv('data_v1.0/gem_database/2022/raw/zac_u_pta.csv', index = True, float_format = '%g')
  #+END_SRC
 
  #+RESULTS:
- :results:
- # Out [53]: 
- # text/plain
- : <AxesSubplot:xlabel='time'>
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d895742df8530e0ca16dffce316400fff45bea30.png]]
- :end:
+ [[file:./.ob-jupyter/23844c1a8f7ba10137ca050bd63da891430ca163.png]]
  
+****** Old/random?
  #+BEGIN_SRC jupyter-python
 
 
@@ -6045,17 +5935,19 @@ There is really none of the data that I trust from zac_u....
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out [35]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 432x288 with 2 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/2c0e2ee4edbfb9108ab2ed230310074a929945a8.png]]
-:end:
+:RESULTS:
+# [goto error]
+: [0;31m---------------------------------------------------------------------------[0m
+: [0;31mNameError[0m                                 Traceback (most recent call last)
+: Cell [0;32mIn[5], line 8[0m
+: [1;32m      6[0m z_pt [38;5;241m=[39m z_pt[year[38;5;241m+[39m[38;5;124m'[39m[38;5;124m-May-1[39m[38;5;124m'[39m:year[38;5;241m+[39m[38;5;124m'[39m[38;5;124m-September-1[39m[38;5;124m'[39m]
+: [1;32m      7[0m z_boom  [38;5;241m=[39m z_boom [year[38;5;241m+[39m[38;5;124m'[39m[38;5;124m-May-1[39m[38;5;124m'[39m:year[38;5;241m+[39m[38;5;124m'[39m[38;5;124m-September-1[39m[38;5;124m'[39m]
+: [0;32m----> 8[0m albedo [38;5;241m=[39m [43malbedo[49m[year[38;5;241m+[39m[38;5;124m'[39m[38;5;124m-May-1[39m[38;5;124m'[39m:year[38;5;241m+[39m[38;5;124m'[39m[38;5;124m-September-1[39m[38;5;124m'[39m]
+: [1;32m      9[0m albedo_day [38;5;241m=[39m albedo[38;5;241m.[39mresample([38;5;124m'[39m[38;5;124mD[39m[38;5;124m'[39m)[38;5;241m.[39mmean()
+: [1;32m     10[0m ax [38;5;241m=[39m z_pt[year][38;5;241m.[39mplot()
+: 
+: [0;31mNameError[0m: name 'albedo' is not defined
+:END:
 
 
 
@@ -6110,6 +6002,851 @@ meltrates
 
 
   #+END_SRC
+
+
+***** Removing bad data and prepare preQC data 
+****** zac_l
+  #+BEGIN_SRC jupyter-python
+  <<load_libs>>
+  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+  z_l = pd.read_csv(datapath+'raw/zac_l_pta.csv', parse_dates = True, index_col=0)
+
+
+  z_l.loc[:'2008-July-1'] = np.nan
+  z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-July-2'].mean()
+  z_l.loc['2009-10-1'] = np.nan
+  z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-June-26'].mean()
+  z_l.loc['2009-5-14':'2009-6-24']= np.nan
+
+  z_l.loc['2010-1-1':'2010-5-15'] = np.nan
+  z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-5-16'].mean()
+  z_l.loc['2010-8-2':'2010-12-31'] = np.nan
+
+  z_l.loc['2011-1-1':'2011-5-7'] = np.nan
+  z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-5-8'].mean()
+  z_l.loc['2012-1-1':'2012-4-18'] = np.nan
+  z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-4-19'].mean() 
+  z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-4-1':'2013-5-1'].mean()
+  z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-5-1':'2014-6-1'].mean()
+  z_l.loc['2015-1-1':'2015-6-2'] = np.nan
+  z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-6-3':'2015-6-15'].mean() 
+  z_l.loc['2015-12-1':'2015-12-31'] = np.nan
+  z_l.loc['2016-1-1':'2016-5-1'] = np.nan
+  z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-5-2':'2016-5-15'].mean()
+  z_l.loc['2017-1-1':'2017-5-1'] = np.nan
+  z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-5-2':'2017-5-15'].mean()
+  z_l.loc['2018-1-1':'2018-5-1'] = np.nan
+  z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-5-2':'2018-5-15'].mean() 
+  z_l.loc['2019'] = np.nan
+  z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-5-2':'2020-5-15'].mean()
+
+  z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-5-2':'2021-5-15'].mean()
+  z_l.loc['2021-9-1':'2022-5-1'] = np.nan
+
+  month = z_l.index.month
+  z_l[month<4] = np.nan
+  z_l[month>9] = np.nan
+
+  z_l_hour = z_l.resample('H').mean()
+  z_l_day = z_l.resample('D').mean() 
+  z_l_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_pta.csv', index = True, float_format = '%g')
+  z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_pta.csv', index = True, float_format = '%g')
+  #+END_SRC
+
+  #+RESULTS:
+
+
+******* 2008
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'preQC/zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2008'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2008'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2008,7,2),ymin,ymax)
+
+   lowering[:'2008-July-1'] = np.nan
+   lowering['2008'] = lowering-lowering['2008-July-2'].mean()
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [104]: 
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e83e63d284a0f4967bf4b8a95f2183cfbfe77467.png]]
+   :end:
+
+
+******* 2009
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2009'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2009'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2009,6,25),ymin,ymax)
+   ax.vlines(datetime.datetime(2009,5,14), ymin,ymax)
+   #z_l['2009'] = z_l['2009']+z_l['2009-June-26'].mean()
+   z_l['2009-5-14':'2009-6-24']= np.nan
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [12]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b25e32aaa99c20fa3b7362736f94187525d551e7.png]]
+   :end:
+
+
+******* 2010
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2010'].plot(ax = ax)
+   ax1 = ax.twinx()
+   #albedo['2010'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2010,5,15),ymin,ymax)
+   ax.vlines(datetime.datetime(2010,8,2),ymin,ymax)
+
+   #z_l['2010-1-1':'2010-5-15'] = np.nan
+   #z_l['2010'] = z_l['2010']-z_l['2010-5-16'].mean() 
+   #z_l['2010-8-2':'2010-12-31'] = np.nan
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [98]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/36e271e6526b10bd2e5c45b2cef6cc4d47ec006f.png]]
+   :end:
+
+
+******* 2011
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2011'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2011'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2011,5,7),ymin,ymax, color = 'red')
+
+
+   z_l['2011-1-1':'2010-5-7'] = np.nan
+   z_l['2011'] = z_l['2011']-z_l['2011-5-8'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [114]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c55b60b88003c43f616769be0e8d2b4fdc147b88.png]]
+   :end:
+
+
+
+
+******* 2012
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2012'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2012'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2012,4,18),ymin,ymax, color = 'red')
+
+
+   #z_l['2012-1-1':'2012-4-18'] = np.nan
+   #z_l['2012'] = z_l['2012']-z_l['2012-4-18'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [124]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/5ed75104e9c20bdb4648e6be427a358b9cab2eca.png]]
+   :end:
+
+******* 2013
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2013'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2013'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2013,4,18),ymin,ymax, color = 'red')
+
+
+   #z_l['2012-1-1':'2012-4-18'] = np.nan
+   z_l['2013'] = z_l['2013']-z_l['2013-4-1':'2013-5-1'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [131]: 
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0e90ee31623366285b06b2bf1bbcfef35ebca3b6.png]]
+   :end:
+
+
+******* 2014
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2014'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2014'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2014,4,18),ymin,ymax, color = 'red')
+
+
+   #z_l['2012-1-1':'2012-4-18'] = np.nan
+   z_l['2014'] = z_l['2014']-z_l['2014-5-1':'2014-6-1'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [134]: 
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/fea1b2eef56c24331f0e6d21f3df32679664ab6b.png]]
+   :end:
+
+
+******* 2015
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2015'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2015'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2015,6,2),ymin,ymax, color = 'red')
+
+
+   #z_l['2015-1-1':'2015-6-2'] = np.nan
+   z_l['2015'] = z_l['2015']-z_l['2015-6-3':'2015-6-15'].mean() 
+   #z_l['2015-12-1':'2015-12-31'] = np.nan
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [175]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1a4082d7464247d2731202eaf80dd6b9b6e445c8.png]]
+   :end:
+
+******* 2016
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2016'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2016'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2016,5,1),ymin,ymax, color = 'red')
+
+
+   z_l['2016-1-1':'2016-5-1'] = np.nan
+   z_l['2016'] = z_l['2016']-z_l['2016-5-2':'2016-5-15'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [146]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/292ab78ee12489e9c74c76bb840b02365fae52c5.png]]
+   :end:
+
+
+******* 2017
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2017'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2017'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2017,5,1),ymin,ymax, color = 'red')
+
+
+   z_l['2017-1-1':'2016-5-1'] = np.nan
+   z_l['2017'] = z_l['2017']-z_l['2017-5-2':'2017-5-15'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [152]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0261497536b15dfac40fa9634d771882212b968e.png]]
+   :end:
+
+
+******* 2018
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2018'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2018'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2018,5,1),ymin,ymax, color = 'red')
+
+
+   z_l['2018-1-1':'2018-5-1'] = np.nan
+   z_l['2018'] = z_l['2018']-z_l['2018-5-2':'2018-5-15'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [159]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7e2fbe2bd65d8ac3a4ee42033aa12c46f5c7cda1.png]]
+   :end:
+
+
+******* 2019
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2019'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2019'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2019,5,1),ymin,ymax, color = 'red')
+
+   z_l['2019'] = np.nan
+   #z_l['2018-1-1':'2018-5-1'] = np.nan
+   #z_l['2018'] = z_l['2018']-z_l['2018-5-2':'2018-5-15'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [162]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1d8a64d218214436b6b758b2dde74118f37cabde.png]]
+   :end:
+
+
+******* 2020
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2020'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2020'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2019,5,1),ymin,ymax, color = 'red')
+
+   #z_l['2020'] = np.nan
+   #z_l['2018-1-1':'2018-5-1'] = np.nan
+   z_l['2020'] = z_l['2020']-z_l['2020-5-2':'2020-5-15'].mean() 
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [165]: 
+
+
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/dde540a0359743eba4799efd5e0564b0071cfd33.png]]
+   :end:
+
+
+******* 2021
+
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
+   rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+   albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_l['2021'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2021'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2019,5,1),ymin,ymax, color = 'red')
+
+   #z_l['2020'] = np.nan
+   z_l['2021-9-1':'2021-12-31'] = np.nan
+   z_l['2021'] = z_l['2021']-z_l['2021-5-2':'2021-5-15'].mean()
+
+
+   #+END_SRC
+
+   #+RESULTS:
+   :results:
+   # Out [168]: 
+   # text/plain
+   : <Figure size 360x360 with 2 Axes>
+
+   # image/png
+   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e81e14238f8c7a1d69a8468ea480be04d909aaa1.png]]
+   :end:
+
+****** zac_u
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_u = pd.read_csv(datapath+'raw/zac_u_pta.csv', parse_dates = True, index_col=0)
+
+
+
+z_u.loc['2017'] = z_u.loc['2017']-z_u.loc['2017-July-17':'2017-July-17'].mean()
+z_u.loc[:'2017-July-18'] = np.nan
+z_u.loc['2018'] = np.nan
+z_u.loc['2020'] = z_u.loc['2020']-z_u.loc['2020-June-15':'2020-June-22'].mean()
+z_u.loc['2020-January-1':'2020-June-15'] = np.nan
+z_u.loc['2020-August-12':'2020-December-31'] = np.nan
+
+z_u.loc['2021'] = z_u.loc['2021']-z_u.loc['2021-April-15':'2021-April-22'].mean()
+z_u.loc['2021-January-1':'2021-July-27'] = np.nan
+z_u.loc['2021-September-1':'2021-December-31'] = np.nan
+
+month = z_u.index.month
+z_u[month<4] = np.nan
+z_u[month>9] = np.nan
+
+z_u_hour = z_u.resample('H').mean()
+z_u_day = z_u.resample('D').mean() 
+z_u_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_pta.csv', index = True, float_format = '%g')
+z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pta.csv', index = True, float_format = '%g')
+#+END_SRC
+
+#+RESULTS:
+
+******* 2017
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
+   rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+
+
+   albedo = (rad_u['usr_corr'].resample('D').sum()/rad_u['usr_corr'].resample('D').count())/(rad_u['dsr_corr'].resample('D').sum()/rad_u['dsr_corr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_u['2017'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2017'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2017,7,18),ymin,ymax)
+   ax.vlines(datetime.datetime(2017,8,31),ymin,ymax)
+
+   #+END_SRC
+
+   #+RESULTS:
+   :RESULTS:
+   : /tmp/ipykernel_9944/3634662671.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
+   :   z_u['2017'].plot(ax = ax)
+   : <matplotlib.collections.LineCollection at 0x7f626065a550>
+   [[file:./.ob-jupyter/8b12c71b89d6d0226bdde3144730105187b51b48.png]]
+   :END:
+
+******* 2020
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
+   rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+
+
+   albedo = (rad_u['usr_corr'].resample('D').sum()/rad_u['usr_corr'].resample('D').count())/(rad_u['dsr_corr'].resample('D').sum()/rad_u['dsr_corr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_u['2020'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2020'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2020,6,22),ymin,ymax)
+   ax.vlines(datetime.datetime(2020,8,12),ymin,ymax)
+
+   #+END_SRC
+
+   #+RESULTS:
+   :RESULTS:
+   : /tmp/ipykernel_9944/62226053.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
+   :   z_u['2020'].plot(ax = ax)
+   : <matplotlib.collections.LineCollection at 0x7f625f672f70>
+   [[file:./.ob-jupyter/c1e68d2286a0d89dc40d9827b4927e64d223f2bc.png]]
+   :END:
+
+
+******* 2021
+   #+BEGIN_SRC jupyter-python
+   <<load_libs>>
+   datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+   z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
+   rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+
+
+   albedo = (rad_u['usr_corr'].resample('D').sum()/rad_u['usr_corr'].resample('D').count())/(rad_u['dsr_corr'].resample('D').sum()/rad_u['dsr_corr'].resample('D').count())
+
+   fig,ax= plt.subplots(1,1,figsize= (5,5))
+   z_u['2021'].plot(ax = ax)
+   ax1 = ax.twinx()
+   albedo['2021'].plot(ax=ax1, color = 'orange')
+   ax1.set_ylim(0,1)
+
+   ymin,ymax = ax.get_ylim()
+   ax.vlines(datetime.datetime(2021,7,25),ymin,ymax)
+   ax.vlines(datetime.datetime(2021,8,29),ymin,ymax)
+
+   #+END_SRC
+
+   #+RESULTS:
+   :RESULTS:
+   : /tmp/ipykernel_9944/257407625.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
+   :   z_u['2021'].plot(ax = ax)
+   : <matplotlib.collections.LineCollection at 0x7f625db73070>
+   [[file:./.ob-jupyter/c8cc83ed66fbd0b1ffab29fbd96b8885d342f8bd.png]]
+   :END:
+
+
+
+
+
+
+
+
+
+
+
+
+
+**** SR50 on stakes
+***** preQC
+ #+BEGIN_SRC jupyter-python
+ <<load_libs>>
+ <<data_file_paths>>
+
+ with xr.open_dataset(zac_l_path) as ds:
+     df = ds[['z_stake']].to_dataframe()
+
+ count10min = df.resample('H').count()
+ z_hour = df.resample('H').median()
+ z_hour[count10min<6] = np.nan
+ count_hours = z_hour.resample('D').count()
+ count_hours.plot()
+ count10min.plot()
+ z_day = z_hour.resample('D').median()
+ z_day[count_hours<24 ] = np.nan
+
+ z_day.plot()
+ z_hour.plot()
+
+ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+ z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height.csv', index = True, float_format = '%g')
+    
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ [[file:./.ob-jupyter/6fc7a35ccb35ca925f247d1599554aa24adbfeaa.png]]
+ [[file:./.ob-jupyter/a53258f286b8c99517c0dae8fbbf8dac6437bd9d.png]]
+ [[file:./.ob-jupyter/037b3574dfa13a1709cd3f483b68996d51f2a141.png]]
+ [[file:./.ob-jupyter/48b0d60f32c3261e7bf38a2cbbe1ef948a849fb3.png]]
+ :END:
+
+
+ #+BEGIN_SRC jupyter-python
+ <<load_libs>>
+ <<data_file_paths>>
+
+ with xr.open_dataset(zac_u_path) as ds:
+     df = ds[['z_stake']].to_dataframe()
+
+ count10min = df.resample('H').count()
+ z_hour = df.resample('H').median()
+ z_hour[count10min<6] = np.nan
+ count_hours = z_hour.resample('D').count()
+ count_hours.plot()
+ count10min.plot()
+ z_day = z_hour.resample('D').median()
+ z_day[count_hours<24 ] = np.nan
+
+ z_day.plot()
+ z_hour.plot()
+
+ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+ z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height.csv', index = True, float_format = '%g')
+    
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ [[file:./.ob-jupyter/aa6acbabd6701a6bdca43e9a228fa929312771d0.png]]
+ [[file:./.ob-jupyter/97797eacba6a507894c449ff5610433e1a57a2b4.png]]
+ [[file:./.ob-jupyter/df66eafe87c2e39a015d44154e71c01ce3fed7ec.png]]
+ [[file:./.ob-jupyter/1069e89db8322d637a0168fa902d2769a7221cc3.png]]
+ :END:
+ 
+
+***** Prepare preQC data for comparison with ice ablation, setting to zero at ice melt start)
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_l = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height.csv', parse_dates = True, index_col=0)
+
+#z_l.loc[:'2008-July-1'] = np.nan
+z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-July-2'].mean()
+#z_l.loc['2009-10-1'] = np.nan
+z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-July-2'].mean()
+#z_l.loc['2009-5-14':'2009-6-24']= np.nan
+
+#z_l.loc['2010-1-1':'2010-5-15'] = np.nan
+z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-5-15'].mean()
+#z_l.loc['2010-8-2':'2010-12-31'] = np.nan
+
+#z_l.loc['2011-1-1':'2011-5-7'] = np.nan
+z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
+#z_l.loc['2012-1-1':'2012-4-18'] = np.nan
+z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-27'].mean() 
+z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-5'].mean()
+z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-8'].mean()
+#z_l.loc['2015-1-1':'2015-6-2'] = np.nan
+z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-3'].mean() 
+#z_l.loc['2015-12-1':'2015-12-31'] = np.nan
+#z_l.loc['2016-1-1':'2016-5-1'] = np.nan
+z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-23'].mean()
+#z_l.loc['2017-1-1':'2017-5-1'] = np.nan
+z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-27'].mean()
+#z_l.loc['2018-1-1':'2018-5-1'] = np.nan
+z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-30'].mean() 
+#z_l.loc['2019'] = np.nan
+z_l.loc['2019'] = z_l.loc['2019']-z_l.loc['2019-6-12'].mean()
+
+
+
+month = z_l.index.month
+z_l[month<4] = np.nan
+z_l[month>9] = np.nan
+
+z_l_hour = z_l.resample('H').mean()
+z_l_day = z_l.resample('D').mean() 
+z_l_hour.plot()
+z_l_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height_ice.csv', index = True, float_format = '%g')
+z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height_ice', index = True, float_format = '%g')
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/f1b353a7b03f973896fc9c4b3309822ab9fbcc3e.png]]
+
+
+**** Compare PTA and SR50 and create an ice ablation dataseries
+The QC process is iterative - I check PTA against SR50, but I also see if I am able to model the melt within realistic bounds. If not, there might be something wrong with the instrument - for example a wrong calibration coefficient. 
+
+
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index_col=0)
+sr50 = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
+#z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
+pta = -pta
+
+fig, ax = plt.subplots(6,1,figsize = (10,15))
+pta.loc['2008'].plot(ax = ax[0])
+sr50.loc['2008'].plot(ax = ax[0])
+pta.loc['2009'].plot(ax = ax[1])
+sr50.loc['2009'].plot(ax = ax[1])
+pta.loc['2010'].plot(ax = ax[2])
+sr50.loc['2010'].plot(ax = ax[2])
+pta.loc['2011'].plot(ax = ax[3])
+sr50.loc['2011'].plot(ax = ax[3])
+pta.loc['2012'].plot(ax = ax[4])
+sr50.loc['2012'].plot(ax = ax[4])
+pta.loc['2013'].plot(ax = ax[5])
+sr50.loc['2013'].plot(ax = ax[5])
+
+ablation = pta.copy()
+ablation.loc['2010'] = sr50.loc['2010']
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <AxesSubplot: xlabel='time'>
+[[file:./.ob-jupyter/9f2a5a488f3200b99903eca7bfa98924b52cd831.png]]
+:END:
 
 ** QC
 
@@ -6933,6 +7670,8 @@ rad_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, ind
 #+RESULTS:
 
 ***** SRin
+****** Gradients
+
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
 # meta data
@@ -6977,10 +7716,41 @@ fig.savefig('QCfigs/SRin_final.png')
 #+RESULTS:
 :RESULTS:
 : The total percentage of discarded data at: 
-: zac_l is 0.0
+: zac_l is 8.429268292682927
 : zac_u is 8.400696081733468
 : zac_a is 0.7916920414115837
-[[file:./.ob-jupyter/3205d2eb47b9706997d30e5f2c3654e2ea3fdbe2.png]]
+[[file:./.ob-jupyter/13814d16c643366bd27a57f9a83e3539806989a9.png]]
+:END:
+
+****** Checking for shifts in maximum 
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+# meta data
+
+zac_l_elev = 644
+zac_u_elev = 877
+zac_a_elev = 1477
+
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+variable = 'dsr_corr'
+ylabel = 'W m$^{-2}$'
+
+fig, ax = plt.subplots(2,1)
+zac_l[variable].resample('D').median().resample('Y').max().plot(ax = ax[0])
+zac_l['cloud_cov'].resample('Y').median().plot()
+#fig.savefig('QCfigs/SRin_final.png')
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <AxesSubplot: xlabel='time'>
+[[file:./.ob-jupyter/34f554a5c880847355d89ae376b58fa312ad680d.png]]
 :END:
 
 
@@ -8561,620 +9331,6 @@ ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 :end:
 
 
-*** Surface lowering
-
-#+BEGIN_SRC jupyter-python
-<<load_libs>>
-datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
-z_l = pd.read_csv(datapath+'zac_l_hour_lowering.csv', parse_dates = True, index_col=0)
-z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
-
-fig, ax = plt.subplots(1,1,figsize = (10,5))
-z_u.plot(ax = ax)
-z_l.plot(ax = ax)
-#+END_SRC
-
-#+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/34045f02a722f58a138c7eb8741e9f9c837fc8d5.png]]
-:END:
-
-
-**** zac_l
-***** 2008
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'preQC/zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2008'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2008'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2008,7,2),ymin,ymax)
-
- lowering[:'2008-July-1'] = np.nan
- lowering['2008'] = lowering-lowering['2008-July-2'].mean()
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [104]: 
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e83e63d284a0f4967bf4b8a95f2183cfbfe77467.png]]
- :end:
-
-
-***** 2009
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2009'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2009'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2009,6,25),ymin,ymax)
- ax.vlines(datetime.datetime(2009,5,14), ymin,ymax)
- #z_l['2009'] = z_l['2009']+z_l['2009-June-26'].mean()
- z_l['2009-5-14':'2009-6-24']= np.nan
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [12]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b25e32aaa99c20fa3b7362736f94187525d551e7.png]]
- :end:
-
-
-***** 2010
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2010'].plot(ax = ax)
- ax1 = ax.twinx()
- #albedo['2010'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2010,5,15),ymin,ymax)
- ax.vlines(datetime.datetime(2010,8,2),ymin,ymax)
-
- #z_l['2010-1-1':'2010-5-15'] = np.nan
- #z_l['2010'] = z_l['2010']-z_l['2010-5-16'].mean() 
- #z_l['2010-8-2':'2010-12-31'] = np.nan
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [98]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/36e271e6526b10bd2e5c45b2cef6cc4d47ec006f.png]]
- :end:
-
-
-***** 2011
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2011'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2011'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2011,5,7),ymin,ymax, color = 'red')
-
-
- z_l['2011-1-1':'2010-5-7'] = np.nan
- z_l['2011'] = z_l['2011']-z_l['2011-5-8'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [114]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c55b60b88003c43f616769be0e8d2b4fdc147b88.png]]
- :end:
-
-
-
-
-***** 2012
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2012'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2012'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2012,4,18),ymin,ymax, color = 'red')
-
-
- #z_l['2012-1-1':'2012-4-18'] = np.nan
- #z_l['2012'] = z_l['2012']-z_l['2012-4-18'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [124]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/5ed75104e9c20bdb4648e6be427a358b9cab2eca.png]]
- :end:
-
-***** 2013
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2013'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2013'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2013,4,18),ymin,ymax, color = 'red')
-
-
- #z_l['2012-1-1':'2012-4-18'] = np.nan
- z_l['2013'] = z_l['2013']-z_l['2013-4-1':'2013-5-1'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [131]: 
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0e90ee31623366285b06b2bf1bbcfef35ebca3b6.png]]
- :end:
-
-
-***** 2014
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2014'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2014'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2014,4,18),ymin,ymax, color = 'red')
-
-
- #z_l['2012-1-1':'2012-4-18'] = np.nan
- z_l['2014'] = z_l['2014']-z_l['2014-5-1':'2014-6-1'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [134]: 
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/fea1b2eef56c24331f0e6d21f3df32679664ab6b.png]]
- :end:
-
-
-***** 2015
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2015'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2015'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2015,6,2),ymin,ymax, color = 'red')
-
-
- #z_l['2015-1-1':'2015-6-2'] = np.nan
- z_l['2015'] = z_l['2015']-z_l['2015-6-3':'2015-6-15'].mean() 
- #z_l['2015-12-1':'2015-12-31'] = np.nan
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [175]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1a4082d7464247d2731202eaf80dd6b9b6e445c8.png]]
- :end:
-
-***** 2016
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2016'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2016'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2016,5,1),ymin,ymax, color = 'red')
-
-
- z_l['2016-1-1':'2016-5-1'] = np.nan
- z_l['2016'] = z_l['2016']-z_l['2016-5-2':'2016-5-15'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [146]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/292ab78ee12489e9c74c76bb840b02365fae52c5.png]]
- :end:
-
-
-***** 2017
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2017'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2017'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2017,5,1),ymin,ymax, color = 'red')
-
-
- z_l['2017-1-1':'2016-5-1'] = np.nan
- z_l['2017'] = z_l['2017']-z_l['2017-5-2':'2017-5-15'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [152]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0261497536b15dfac40fa9634d771882212b968e.png]]
- :end:
-
-
-***** 2018
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2018'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2018'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2018,5,1),ymin,ymax, color = 'red')
-
-
- z_l['2018-1-1':'2018-5-1'] = np.nan
- z_l['2018'] = z_l['2018']-z_l['2018-5-2':'2018-5-15'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [159]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7e2fbe2bd65d8ac3a4ee42033aa12c46f5c7cda1.png]]
- :end:
-
-
-***** 2019
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2019'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2019'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2019,5,1),ymin,ymax, color = 'red')
-
- z_l['2019'] = np.nan
- #z_l['2018-1-1':'2018-5-1'] = np.nan
- #z_l['2018'] = z_l['2018']-z_l['2018-5-2':'2018-5-15'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [162]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1d8a64d218214436b6b758b2dde74118f37cabde.png]]
- :end:
-
-
-***** 2020
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2020'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2020'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2019,5,1),ymin,ymax, color = 'red')
-
- #z_l['2020'] = np.nan
- #z_l['2018-1-1':'2018-5-1'] = np.nan
- z_l['2020'] = z_l['2020']-z_l['2020-5-2':'2020-5-15'].mean() 
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [165]: 
-
-
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/dde540a0359743eba4799efd5e0564b0071cfd33.png]]
- :end:
-
-
-***** 2021
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
- rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
- albedo = (rad_l['usr'].resample('D').sum()/rad_l['usr'].resample('D').count())/(rad_l['dsr'].resample('D').sum()/rad_l['dsr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_l['2021'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2021'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2019,5,1),ymin,ymax, color = 'red')
-
- #z_l['2020'] = np.nan
- z_l['2021-9-1':'2021-12-31'] = np.nan
- z_l['2021'] = z_l['2021']-z_l['2021-5-2':'2021-5-15'].mean()
-
-
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [168]: 
- # text/plain
- : <Figure size 360x360 with 2 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e81e14238f8c7a1d69a8468ea480be04d909aaa1.png]]
- :end:
-
-**** zac_u
-***** 2017
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
- rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
-
-
- albedo = (rad_u['usr_corr'].resample('D').sum()/rad_u['usr_corr'].resample('D').count())/(rad_u['dsr_corr'].resample('D').sum()/rad_u['dsr_corr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_u['2017'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2017'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2017,7,18),ymin,ymax)
- ax.vlines(datetime.datetime(2017,8,31),ymin,ymax)
-
- #+END_SRC
-
- #+RESULTS:
- :RESULTS:
- : /tmp/ipykernel_9944/3634662671.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
- :   z_u['2017'].plot(ax = ax)
- : <matplotlib.collections.LineCollection at 0x7f626065a550>
- [[file:./.ob-jupyter/8b12c71b89d6d0226bdde3144730105187b51b48.png]]
- :END:
-
-***** 2020
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
- rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
-
-
- albedo = (rad_u['usr_corr'].resample('D').sum()/rad_u['usr_corr'].resample('D').count())/(rad_u['dsr_corr'].resample('D').sum()/rad_u['dsr_corr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_u['2020'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2020'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2020,6,22),ymin,ymax)
- ax.vlines(datetime.datetime(2020,8,12),ymin,ymax)
-
- #+END_SRC
-
- #+RESULTS:
- :RESULTS:
- : /tmp/ipykernel_9944/62226053.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
- :   z_u['2020'].plot(ax = ax)
- : <matplotlib.collections.LineCollection at 0x7f625f672f70>
- [[file:./.ob-jupyter/c1e68d2286a0d89dc40d9827b4927e64d223f2bc.png]]
- :END:
-
-
-***** 2021
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
- rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
-
-
- albedo = (rad_u['usr_corr'].resample('D').sum()/rad_u['usr_corr'].resample('D').count())/(rad_u['dsr_corr'].resample('D').sum()/rad_u['dsr_corr'].resample('D').count())
-
- fig,ax= plt.subplots(1,1,figsize= (5,5))
- z_u['2021'].plot(ax = ax)
- ax1 = ax.twinx()
- albedo['2021'].plot(ax=ax1, color = 'orange')
- ax1.set_ylim(0,1)
-
- ymin,ymax = ax.get_ylim()
- ax.vlines(datetime.datetime(2021,7,25),ymin,ymax)
- ax.vlines(datetime.datetime(2021,8,29),ymin,ymax)
-
- #+END_SRC
-
- #+RESULTS:
- :RESULTS:
- : /tmp/ipykernel_9944/257407625.py:14: FutureWarning: Indexing a DataFrame with a datetimelike index using a single string to slice the rows, like `frame[string]`, is deprecated and will be removed in a future version. Use `frame.loc[string]` instead.
- :   z_u['2021'].plot(ax = ax)
- : <matplotlib.collections.LineCollection at 0x7f625db73070>
- [[file:./.ob-jupyter/c8cc83ed66fbd0b1ffab29fbd96b8885d342f8bd.png]]
- :END:
-
 
 *** Instrument height
 **** post QC check
@@ -9442,6 +9598,9 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b757155742396f8ff1a51feb4866c8b5f8a6c636.png]]
 :end:
 
+
+
+*** Ice ablation
 
 
 ** Utilities
@@ -9775,7 +9934,7 @@ ax[1].plot(transmitted_day['temperature'])
 
  #+END_SRC
 
-
+ 
 * Assemble variables in one netcdf and one csv per site
 
 #+BEGIN_SRC jupyter-python
