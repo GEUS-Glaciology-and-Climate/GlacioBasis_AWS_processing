@@ -7741,7 +7741,7 @@ variable = 'dsr_corr'
 ylabel = 'W m$^{-2}$'
 
 fig, ax = plt.subplots(2,1)
-zac_l[variable].resample('D').median().resample('Y').max().plot(ax = ax[0])
+zac_l[variable].resample('D').median().resample('Y').mean().plot(ax = ax[0])
 zac_l['cloud_cov'].resample('Y').median().plot()
 #fig.savefig('QCfigs/SRin_final.png')
 
@@ -7750,8 +7750,201 @@ zac_l['cloud_cov'].resample('Y').median().plot()
 #+RESULTS:
 :RESULTS:
 : <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/34f554a5c880847355d89ae376b58fa312ad680d.png]]
+[[file:./.ob-jupyter/8d1f0f022937bb842013db3fef639790d587bb21.png]]
 :END:
+****** Calculating potential incoming solar radiation for zac_l
+
+
+******* Create a G folder with the location of the GIMP dem (epsg 3413):
+#+BEGIN_SRC sh :results none 
+grass -e -c EPSG:3413 G
+#+END_SRC
+
+******* Load in the gimp tiles and patch together + calculate aspect and slope
+    #+BEGIN_SRC sh :results none 
+    grass --text ./G/PERMANENT 
+    # Wollaston region
+    # g.region s=74.0300000 n=74.8700000 e=-18.7100000 w=-22.2500000 res=0.01 -aps
+    #g.mapset PERMANENT
+    #v.in.ogr input=shp/Zackenberg_river_catchment.gpkg output=zackenberg
+    #g.region vector=zackenberg res=0.0001 -aps
+
+
+    r.in.gdal input=~/data/GIMP/tile_5_3_fit_30m_dem.tif output=dem53 -o --o
+    r.in.gdal input=~/data/GIMP/tile_5_4_fit_30m_dem.tif output=dem54 -o --o
+    g.region raster=dem53,dem54
+    r.patch input=dem53,dem54 output=demNE --o
+    g.remove -f type=raster pattern=dem* exclude=demNE
+    #g.region raster=demNE -p
+    #v.in.ogr input=shp/zackenberg_river_catchment.shp output=zackenberg --o
+    #r.in.gdal input=/home/shl/data/gem/geobasis/Zackenberg_LastDoyOfObservedSnow_2021_epsg3413.tif output=SED_2021 --o
+
+    v.in.ogr input=GRASS_files/aoi.shp output=aoi --o
+    #g.region raster=SED_2021
+    g.region vector=aoi -aps
+
+    #g.region raster=demNE -p
+
+    r.slope.aspect elevation=demNE aspect=aspect.dem slope=slope.dem --overwrite
+
+    #+END_SRC
+
+
+
+******* Calculating the sun parameters
+    #+BEGIN_SRC sh :results none
+    g.mapset -c SUN
+    g.region -dp
+
+    r.horizon elevation=demNE step=1 output=horangle
+
+    #g.remove -f type=raster pattern=horangle*
+    #g.remove -f type=raster pattern=glob*
+    #g.remove -f type=raster pattern=it*
+    #g.remove -f type=raster pattern=b05*
+    #g.remove -f type=raster pattern=glob05*
+
+
+    #+END_SRC
+
+
+
+    #+BEGIN_SRC sh
+    #grass --text ./G/SUN
+    for i in {1..100..1}
+    do
+    r.sun elevation=demNE linke_value=1.5 distance_step=1.5 horizon_basename=horangle horizon_step=1  aspect=aspect.dem slope=slope.dem albedo_value=0.2 day=$i glob_rad=glob$i insol_time=it$i nproc=4 --overwrite
+    done
+    #+END_SRC
+
+    #+RESULTS:
+
+******* Creating the strds and write out as netcdf
+
+******** Writing lists for the strds to order the days from 1 to 365
+    #+BEGIN_SRC sh
+    #grass --text ./G/SUN 
+    variable=glob
+    g.list raster pattern="${variable}?" sep=newline > ${variable}_list.txt
+
+    for i in {1..9..1}
+    do
+    g.list raster pattern="${variable}${i}?" sep=newline >> ${variable}_list.txt
+    done
+
+    for i in {10..36..1}
+    do
+    g.list raster pattern="${variable}${i}?" sep=newline >> ${variable}_list.txt
+    done
+    #+END_SRC
+
+    #+RESULTS:
+
+
+******** Creating the temporal datasets and write out netcdfs
+    #+BEGIN_SRC sh :results none
+    grass --text ./G/SUN 
+
+    #g.region -dp
+    # Setting the three dimensional region
+    #g.region s=74.0300000 n=74.8700000 e=-18.7100000 w=-22.2500000 t=366.0 b=1.0 res=0.01 tbres=1 res3=0.01 -p3
+
+    #g.region raster=demNE -ap
+    #g.region vector=aoi -ap
+
+    r.out.gdal in=demNE output=GRASS_files/aoi.tif --overwrite
+
+    t.create type=strds temporaltype=relative output=glob_radiation_daily title="Daily incoming radiation" description="Dataset with calculated daily incoming solar radiation" --overwrite
+ 
+    t.register -i type=raster input=glob_radiation_daily file=glob_list.txt start=1 increment=1 unit='days' --overwrite 
+
+    t.info input=glob_radiation_daily
+
+    g.region raster=demNE vector=aoi tbres=1 b=100 t=200 -ap3
+
+
+    t.rast.to.rast3 input=glob_radiation_daily output=glob_radiation_daily_r3 --overwrite
+
+
+    r3.info glob_radiation_daily_r3
+    #g.region raster_3d=glob_radiation_daily_r3 -p
+
+    r3.out.netcdf input=glob_radiation_daily_r3 output=GRASS_files/glob_radiation_daily.nc --overwrite
+
+
+    #t.create type=strds temporaltype=relative output=insolation_time_daily title="Daily direct beam radiation" description="Dataset with calculated insolation time" --overwrite 
+
+    #t.register -i type=raster input=insolation_time_daily file=it_list.txt start=1 increment=1 unit='days' --overwrite 
+    #t.rast.to.rast3 input=insolation_time_daily output=insolation_time_daily_r3
+    #g.region raster_3d=insolation_time_daily_r3
+    #r3.out.netcdf input=insolation_time_daily_r3 output=netcdfs/data/wollaston/insolation_time_daily.nc --overwrite
+
+
+
+    #+END_SRC
+
+    Sampling the strds
+    #+BEGIN_SRC sh 
+
+    v.in.ogr input=GRASS_files/zac_l_pos.shp output=zac_l_pos
+
+    t.rast.what points=zac_l_pos strds=glob_radiation_daily output=GRASS_files/glob_zac_l.csv null_value=NA separator=comma --overwrite
+
+    #+END_SRC
+
+
+
+
+
+
+****** Checking daily max values
+
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+# meta data
+
+zac_l_elev = 644
+zac_u_elev = 877
+zac_a_elev = 1477
+
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+glob_rad = pd.read_csv('GRASS_files/glob_zac_l.csv', header = None)
+glob_rad.columns = ['x', 'y', 'doy','doy+1','glob_rad']
+glob_rad.set_index('doy', inplace = True)
+glob_rad = pd.DataFrame(glob_rad['glob_rad'])
+
+
+variable = 'dsr_corr'
+ylabel = 'W m$^{-2}$'
+
+fig, ax = plt.subplots(1,1, figsize = (20,5))
+
+day_max = pd.DataFrame(zac_l[variable].resample('D').max())
+
+years = ['average']
+day_max.groupby([day_max.index.dayofyear]).max().plot(ax = ax)
+
+for year in [2009,2011]:
+    ax.plot(day_max.loc[str(year)].index.dayofyear,day_max.loc[str(year)])
+    glob_rad.plot(ax=ax)
+    years.append(str(year))
+    
+
+ax.legend(years)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f2766d25b20>
+[[file:./.ob-jupyter/8c2d42b1246f403f6cbe9e8cb313b018487da0db.png]]
+:END:
+
 
 
 ***** SRout
