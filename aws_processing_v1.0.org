@@ -1985,6 +1985,7 @@ station = 'zac_a'
 
 
 
+
 #+NAME: convert_to_physical_values
 #+BEGIN_SRC jupyter-python
 filelist = glob.glob(workingdir+'data_v1.0/L0M/'+station+'/'+station+'**.csv')
@@ -2498,7 +2499,7 @@ ds = ds.assign({'t_surf':Tsurf})
 <<corr_sr_diffuse_radiation>>
 <<corr_large_zenith_angles>>
 <<corr_srin_upper_sensor_not_in_sight>>
-<<removing_spikes>> #This is too agressive and is not used anymore
+#<<removing_spikes>> #This is too agressive and is not used anymore
 <<adding_columns>>
 
  #+END_SRC
@@ -4309,8 +4310,8 @@ Flags??
 
  #+RESULTS:
  :RESULTS:
- [[file:./.ob-jupyter/9a3bd793da1d3271784b99c92cbd77913a117b20.png]]
- [[file:./.ob-jupyter/cbe041208a9ef443b7ea5bfba2d95b96d07f4fd1.png]]
+ [[file:./.ob-jupyter/e8a809e98bd4daa9e31117982880be29d5de5fcc.png]]
+ [[file:./.ob-jupyter/0426a4ca6985b9191650f4664d50528968ace514.png]]
  :END:
 
 
@@ -5057,29 +5058,6 @@ Flags??
 
 
 
-****** Surface lowering
-
-#+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
-
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
-
- df['z_pt_corr'][:'2017-04-30'] = np.nan
- lowering = df['z_pt_corr'].copy()
- for year in np.arange(2017,2021+1):
-     lowering[str(year)] = df['z_pt_corr'][str(year)]-df['z_pt_corr'][str(year)+'-5-1':str(year)+'-5-15'].mean()
- lowering[lowering<-5] = np.nan
- lowering[lowering>0.5] = np.nan
- lowering.plot()
- lowering.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_lowering.csv', index = True, float_format = '%g')
- #+END_SRC
-
- #+RESULTS:
- [[file:./.ob-jupyter/23844c1a8f7ba10137ca050bd63da891430ca163.png]]
-
-
 
 
 
@@ -5138,77 +5116,6 @@ Flags??
  :end:
 
 
-
-****** albedo
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
-
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['albedo']].to_dataframe()
-
- count10min = df.resample('H').count()
- a_hour = df.resample('H').median()
- a_hour[count10min<6] = np.nan
- count_hours = a_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- a_day = a_hour.resample('D').median()
- a_day[count_hours<24 ] = np.nan
-
- a_day.plot()
- a_hour.plot()
-
- a_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_albedo.csv', index = True, float_format = '%g')
- a_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_albedo.csv', index = True, float_format = '%g')
-    
- #+END_SRC
-
- #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/799675bd69861da4293ecf9f98f1676b700e5b53.png]]
- [[file:./.ob-jupyter/4242ed6c92d3f213e2906e4739c89508af384085.png]]
- [[file:./.ob-jupyter/475c664af4df8610934983728072555694814f2d.png]]
- [[file:./.ob-jupyter/7b6c5e594b91b3ee6ed0b3dd9e2e1af685989ea3.png]]
- :END:
-
-
-
-
-****** cloudcover
-
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
-
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['cloud_cov']].to_dataframe()
-
- count10min = df.resample('H').count()
- clouds_hour = df.resample('H').median()
- clouds_hour[count10min<6] = np.nan
- count_hours = clouds_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- clouds_day = clouds_hour.resample('D').median()
- clouds_day[count_hours<24 ] = np.nan
-
- clouds_day.plot()
- clouds_hour.plot()
-
- clouds_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_cloud_cover.csv', index = True, float_format = '%g')
- clouds_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_cloud_cover.csv', index = True, float_format = '%g')
-    
- #+END_SRC
-
- #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/7967ca1a2822ea64122df5a848d6afd0b8264bf3.png]]
- [[file:./.ob-jupyter/a9899350c90f9112985310eb06183ecdfe13e7c8.png]]
- [[file:./.ob-jupyter/ac7d50e48c7923b4d21b5d3eb86e0cca6cb3f23b.png]]
- [[file:./.ob-jupyter/d06bcd1218f6423d5b25e6b111015c3b1eb9e06c.png]]
- :END:
 
 ****** SR50 on stakes
 
@@ -5466,6 +5373,7 @@ Flags??
 
 *** Glaciological observations
 
+
 **** PTA
 
 ***** raw to check when the pta was changed/redrilled
@@ -5486,6 +5394,25 @@ Flags??
  : <AxesSubplot: xlabel='time'>
  [[file:./.ob-jupyter/d020ca4c40f9f8c36dc17c1396dd88064ab01da2.png]]
  :END:
+
+****** Zac_u
+#+BEGIN_SRC jupyter-python
+ <<load_libs>>
+ <<data_file_paths>>
+
+ with xr.open_dataset(zac_u_path) as ds:
+     df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
+
+ df['z_pt_corr'].plot()
+
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ : <AxesSubplot: xlabel='time'>
+ [[file:./.ob-jupyter/fc8876ca90d6de9df0b9e520bd217a2f6e0d1138.png]]
+ :END:
+
 
 ***** raw-(ish)
 ****** Zac_l
@@ -5531,6 +5458,8 @@ Flags??
 
  #+RESULTS:
  [[file:./.ob-jupyter/26dd76089a29f5af22f1c94346eda6a348e36cea.png]]
+
+
  
 ****** Old/random?
  #+BEGIN_SRC jupyter-python
@@ -6186,8 +6115,10 @@ z_u = pd.read_csv(datapath+'raw/zac_u_pta.csv', parse_dates = True, index_col=0)
 
 
 z_u.loc['2017'] = z_u.loc['2017']-z_u.loc['2017-July-17':'2017-July-17'].mean()
+
 z_u.loc[:'2017-July-18'] = np.nan
 z_u.loc['2018'] = np.nan
+z_u.loc['2019'] = z_u.loc['2019']-z_u.loc['2019-June-28'].mean()
 z_u.loc['2020'] = z_u.loc['2020']-z_u.loc['2020-June-15':'2020-June-22'].mean()
 z_u.loc['2020-January-1':'2020-June-15'] = np.nan
 z_u.loc['2020-August-12':'2020-December-31'] = np.nan
@@ -6204,9 +6135,15 @@ z_u_hour = z_u.resample('H').mean()
 z_u_day = z_u.resample('D').mean() 
 z_u_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_pta.csv', index = True, float_format = '%g')
 z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pta.csv', index = True, float_format = '%g')
+
+z_u_hour.plot()
 #+END_SRC
 
 #+RESULTS:
+:RESULTS:
+: <AxesSubplot: xlabel='time'>
+[[file:./.ob-jupyter/8a328ad4d89692e07ed9db763c2d98bf42cdd0ba.png]]
+:END:
 
 ******* 2017
    #+BEGIN_SRC jupyter-python
@@ -6313,6 +6250,7 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pta.csv', index = Tr
 
 **** SR50 on stakes
 ***** preQC
+****** zac_l
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -6345,7 +6283,7 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pta.csv', index = Tr
  [[file:./.ob-jupyter/48b0d60f32c3261e7bf38a2cbbe1ef948a849fb3.png]]
  :END:
 
-
+****** zac_u
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -6380,39 +6318,27 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pta.csv', index = Tr
  
 
 ***** Prepare preQC data for comparison with ice ablation, setting to zero at ice melt start)
+
+****** zac_l
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
 datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height.csv', parse_dates = True, index_col=0)
 
-#z_l.loc[:'2008-July-1'] = np.nan
 z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-July-2'].mean()
-#z_l.loc['2009-10-1'] = np.nan
-z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-July-2'].mean()
-#z_l.loc['2009-5-14':'2009-6-24']= np.nan
-
-#z_l.loc['2010-1-1':'2010-5-15'] = np.nan
-z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-5-15'].mean()
-#z_l.loc['2010-8-2':'2010-12-31'] = np.nan
-
-#z_l.loc['2011-1-1':'2011-5-7'] = np.nan
+z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-July-5'].mean()
+z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-6-23'].mean()
 z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
-#z_l.loc['2012-1-1':'2012-4-18'] = np.nan
-z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-27'].mean() 
-z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-5'].mean()
-z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-8'].mean()
-#z_l.loc['2015-1-1':'2015-6-2'] = np.nan
-z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-3'].mean() 
-#z_l.loc['2015-12-1':'2015-12-31'] = np.nan
-#z_l.loc['2016-1-1':'2016-5-1'] = np.nan
-z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-23'].mean()
-#z_l.loc['2017-1-1':'2017-5-1'] = np.nan
-z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-27'].mean()
-#z_l.loc['2018-1-1':'2018-5-1'] = np.nan
-z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-30'].mean() 
-#z_l.loc['2019'] = np.nan
-z_l.loc['2019'] = z_l.loc['2019']-z_l.loc['2019-6-12'].mean()
-
+z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-30'].mean()
+z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-4'].mean()
+z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-9'].mean()
+z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-1'].mean() 
+z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-26'].mean()
+z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-28'].mean()
+z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean() 
+z_l.loc['2019'] = z_l.loc['2019']-z_l.loc['2019-6-13'].mean()
+z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-6-20'].mean()
+z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-6-17'].mean()
 
 
 month = z_l.index.month
@@ -6427,14 +6353,56 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height_ic
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/f1b353a7b03f973896fc9c4b3309822ab9fbcc3e.png]]
+[[file:./.ob-jupyter/fe7bba6783edfbe90d79bf5d97a77c7dd337efac.png]]
+
+****** zac_u
+
+
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_u = pd.read_csv(datapath+'preQC/zac_u_hour_SR50_stake_height.csv', parse_dates = True, index_col=0)
+
+z_u.loc['2008'] = z_u.loc['2008']-z_u.loc['2008-July-2'].mean()
+z_u.loc['2009'] = z_u.loc['2009']-z_u.loc['2009-July-5'].mean()
+z_u.loc['2010'] = z_u.loc['2010']-z_u.loc['2010-July-5'].mean()
+z_u.loc['2011'] = z_u.loc['2011']-z_u.loc['2011-June-20'].mean()
+z_u.loc['2012'] = z_u.loc['2012']-z_u.loc['2012-July-11'].mean()
+
+z_u.loc['2013'] = z_u.loc['2013']-z_u.loc['2013-June-4'].mean()
+z_u.loc['2014'] = z_u.loc['2014']-z_u.loc['2014-July-20'].mean()
+z_u.loc['2015'] = z_u.loc['2015']-z_u.loc['2015-July-4'].mean()
+z_u.loc['2016'] = z_u.loc['2016']-z_u.loc['2016-July-1'].mean()
+z_u.loc['2017'] = z_u.loc['2017']-z_u.loc['2017-July-18'].mean()
+
+z_u.loc['2018'] = z_u.loc['2018']-z_u.loc['2018-July-31'].mean()
+z_u.loc['2019'] = z_u.loc['2019']-z_u.loc['2019-June-27'].mean()
+z_u.loc['2020'] = z_u.loc['2020']-z_u.loc['2020-June-22'].mean()
+z_u.loc['2021'] = z_u.loc['2021']-z_u.loc['2021-June-17'].mean()
+  
+
+
+month = z_u.index.month
+z_u[month<4] = np.nan
+z_u[month>9] = np.nan
+
+z_u_hour = z_u.resample('H').mean()
+z_u_day = z_u.resample('D').mean() 
+z_u_hour.plot()
+z_u_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height_ice.csv', index = True, float_format = '%g')
+z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height_ice', index = True, float_format = '%g')
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/cecad3f35a38c9422bba7b6461cd385d8e514443.png]]
 
 
 **** Compare PTA and SR50 and create an ice ablation dataseries
 The QC process is iterative - I check PTA against SR50, but I also see if I am able to model the melt within realistic bounds. If not, there might be something wrong with the instrument - for example a wrong calibration coefficient. 
 
 
-
+***** zac_l
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
 datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -6471,7 +6439,8 @@ sr50.loc['2013'].plot(ax = ax[5])
 
 
 ablation = pta.copy()
-#ablation.loc['2010'] = sr50.loc['2010']
+ablation.rename(columns = {'z_pt_corr':'ice_ablation'}, inplace = True)
+ablation.loc['2010'] = sr50.loc['2010']
 #ablation.loc['2015'] = sr50.loc['2015']
 #ablation.loc['2016'] = sr50.loc['2016']
 
@@ -6485,9 +6454,184 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_ice_ablation.cs
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/d8699cc032ee43100cd679b5e880d2b63200ff0a.png]]
-[[file:./.ob-jupyter/b6d87734907dd8ef5a353f55759f39d13f0c4264.png]]
+[[file:./.ob-jupyter/0902619b17e568f99326903a82c5c01f59777649.png]]
+[[file:./.ob-jupyter/f57f3c5c4ffc69c21487538c11c2ecd1f1e3ec83.png]]
 :END:
+
+
+
+
+***** zac_u
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+pta = pd.read_csv(datapath+'preQC/zac_u_hour_pta.csv', parse_dates = True, index_col=0)
+sr50 = pd.read_csv(datapath+'preQC/zac_u_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
+#z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
+pta = -pta
+
+fig, ax = plt.subplots(6,1,figsize = (10,15))
+#pta.loc['2008'].plot(ax = ax[0])
+#sr50.loc['2008'].plot(ax = ax[0])
+#pta.loc['2009'].plot(ax = ax[1])
+#sr50.loc['2009'].plot(ax = ax[1])
+#pta.loc['2010'].plot(ax = ax[2])
+#sr50.loc['2010'].plot(ax = ax[2])
+#pta.loc['2011'].plot(ax = ax[3])
+#sr50.loc['2011'].plot(ax = ax[3])
+#pta.loc['2012'].plot(ax = ax[4])
+#sr50.loc['2012'].plot(ax = ax[4])
+#pta.loc['2013'].plot(ax = ax[5])
+#sr50.loc['2013'].plot(ax = ax[5])
+
+#pta.loc['2014'].plot(ax = ax[0])
+#sr50.loc['2014'].plot(ax = ax[0])
+#pta.loc['2015'].plot(ax = ax[1])
+#sr50.loc['2015'].plot(ax = ax[1])
+#pta.loc['2016'].plot(ax = ax[2])
+#sr50.loc['2016'].plot(ax = ax[2])
+#pta.loc['2017'].plot(ax = ax[3])
+#sr50.loc['2017'].plot(ax = ax[3])
+#pta.loc['2018'].plot(ax = ax[4])
+#sr50.loc['2018'].plot(ax = ax[4])
+#pta.loc['2019'].plot(ax = ax[5])
+#sr50.loc['2019'].plot(ax = ax[5])
+pta.loc['2020'].plot(ax = ax[0])
+sr50.loc['2020'].plot(ax = ax[0])
+pta.loc['2021'].plot(ax = ax[1])
+sr50.loc['2021'].plot(ax = ax[1])
+pta.loc['2022'].plot(ax = ax[2])
+sr50.loc['2022'].plot(ax = ax[2])
+
+ablation = pta.copy()
+ablation.rename(columns = {'z_pt_corr':'ice_ablation'}, inplace = True)
+
+ablation.loc['2011'] = sr50.loc['2011']
+ablation.loc['2014'] = sr50.loc['2014']
+ablation.loc['2016'] = sr50.loc['2016']
+
+ablation_hour = ablation.resample('H').mean()
+ablation_day = ablation.resample('D').mean() 
+ablation_hour.plot()
+ablation_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_ice_ablation.csv', index = True, float_format = '%g')
+ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_ice_ablation.csv', index = True, float_format = '%g')
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/ac6cc6bf9b95171b5b01d0e61bc76486a8ce042a.png]]
+[[file:./.ob-jupyter/0c419218a07ee1a7bf9ca55c335e146a2fd4ea79.png]]
+:END:
+
+**** Final filtering of ice ablation
+****** zac_l
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index_col=0)
+sr50 = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
+z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
+pta = -pta
+year = 2010
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+pta.loc[str(year)].plot(ax = ax)
+sr50.loc[str(year)].plot(ax = ax)
+z_l.loc[str(year)].plot(ax=ax)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <AxesSubplot: xlabel='time'>
+[[file:./.ob-jupyter/e55666b50a9a7cfe88805aaaaf428cf41338f82b.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
+
+z_l.loc['2009-Jan-1':'2009-June-19'] = np.nan
+z_l.loc['2009-Aug-25':'2009-Dec-31'] = np.nan
+z_l.loc['2010-Jan-1':'2010-June-22'] = np.nan
+z_l.loc['2010-July-28':'2010-Dec-31'] = np.nan
+
+
+
+month = z_l.index.month
+z_l[month<4] = np.nan
+z_l[month>9] = np.nan
+
+z_l_hour = z_l.resample('H').mean()
+z_l_day = z_l.resample('D').mean() 
+z_l_hour.plot()
+z_l_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_ice_ablation.csv', index = True, float_format = '%g')
+z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_ice_ablation.csv', index = True, float_format = '%g')
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/e7c6eb4e2bbec56831fd6f82ba76b003893c0bb0.png]]
+
+
+
+****** zac_u
+
+
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_u = pd.read_csv(datapath+'preQC/zac_u_hour_ice_ablation.csv', parse_dates = True, index_col=0)
+
+year = 2022
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+pta.loc[str(year)].plot(ax = ax)
+sr50.loc[str(year)].plot(ax = ax)
+z_u.loc[str(year)].plot(ax=ax)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <AxesSubplot: xlabel='time'>
+[[file:./.ob-jupyter/cc8672cb3528a86399e03628bd3b06c0215db081.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_u = pd.read_csv(datapath+'preQC/zac_u_hour_ice_ablation.csv', parse_dates = True, index_col=0)
+
+z_u.loc['2011-Jan-1':'2011-June-19'] = np.nan
+z_u.loc['2011-Aug-20':'2011-Dec-31'] = np.nan
+z_u.loc['2014'] = np.nan
+z_u.loc['2015'] = np.nan
+z_u.loc['2016-Jan-1':'2016-June-29'] = np.nan
+z_u.loc['2016-Aug-25':'2016-Dec-31'] = np.nan
+z_u.loc['2017'] = np.nan
+z_u.loc['2019-Jan-1':'2019-June-27'] = np.nan
+z_u.loc['2016-Aug-26':'2016-Dec-31'] = np.nan
+z_u.loc['2020'] = np.nan
+z_u.loc['2021'] = np.nan
+
+
+
+month = z_u.index.month
+z_u[month<4] = np.nan
+z_u[month>9] = np.nan
+
+z_u_hour = z_u.resample('H').mean()
+z_u_day = z_u.resample('D').mean() 
+z_u_hour.plot()
+z_u_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_ice_ablation.csv', index = True, float_format = '%g')
+z_u_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_ice_ablation.csv', index = True, float_format = '%g')
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/325431f6e2b4dc83aa82a79ffca2094173b462d8.png]]
+
 
 ** QC
 
@@ -7601,12 +7745,38 @@ day_max = pd.DataFrame(zac_l[variable].resample('D').max())
 years = []
 #day_max.groupby([day_max.index.dayofyear]).max().plot(ax = ax)
 
+from scipy.signal import savgol_filter
+from scipy.ndimage.filters import maximum_filter1d
+
+
+y_max = maximum_filter1d(dsr_corr_sum['dsr_corr'], size=7)
+top = savgol_filter(y_max, 101, 3)  # window size 51, polynomial order 3
+dsr_corr_sum['max'] = top
+years = []
+fig, ax = plt.subplots(1,1, figsize = (12,3))
+for year in np.arange(2008,2020):
+    glob_rad.plot(ax=ax, linewidth = 3, label = 'Potential incoming radiation')
+    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)]['max'], label = 'dsr_corr max- '+str(year))
+    years.append(year)
+
+ax.legend(years)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f4d7b648f40>
+[[file:./.ob-jupyter/09ef5d6d57a4da2605daa8a8839c9c9286e2e0fd.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+
 for year in np.arange(2008,2021):
     #ax.plot(day_max.loc[str(year)].index.dayofyear,day_max.loc[str(year)])
     fig, ax = plt.subplots(1,1, figsize = (12,3))
     #ax1 = ax.twinx()
     glob_rad.plot(ax=ax, linewidth = 3, label = 'Potential incoming radiation')
-    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)], label = 'dsr_corr - '+str(year))
+    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)]['dsr_corr'], label = 'dsr_corr - '+str(year))
+    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)]['max'], label = 'dsr_corr max- '+str(year))
     ax.plot(dsr_sum.loc[str(year)].index.dayofyear,dsr_sum.loc[str(year)], label = 'dsr - '+str(year))
     #ax1.plot(alb_raw.loc[str(year)].index.dayofyear,alb_raw.loc[str(year)], label = 'albedo')
     #ax.plot(mast_dsr_sum.loc[str(year)].index.dayofyear,mast_dsr_sum.loc[str(year)], label = 'mast dsr - '+str(year))
@@ -7622,20 +7792,47 @@ for year in np.arange(2008,2021):
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/e7e2576aae19f151f015df0a931597f126e50df6.png]]
-[[file:./.ob-jupyter/a0eca31f4861acb7f15b6f66e630e7fc72d9986c.png]]
-[[file:./.ob-jupyter/93c164daa238f7ece0dfcd095f35c0d1a6639b08.png]]
-[[file:./.ob-jupyter/5a31116ad8df259d9517178273446e615a001444.png]]
-[[file:./.ob-jupyter/22778290252c0713442fe7574993e5aaf9252da6.png]]
-[[file:./.ob-jupyter/3b7db43585cb128963306d0c501929df58bdf563.png]]
-[[file:./.ob-jupyter/f6134766c24889b9b2c556df8271b21f0c26949c.png]]
-[[file:./.ob-jupyter/2502f032cda6f1e2843a27f353e4ca020e37a00f.png]]
-[[file:./.ob-jupyter/316ea71be6a6ecd79e5dfd0d71750f2a2280794c.png]]
-[[file:./.ob-jupyter/469e22921155f0d34e7065ccd88e5cc5f3c3fae5.png]]
-[[file:./.ob-jupyter/fb4f3f6cc9f554be99f8f21c7b416a37c4083bfe.png]]
-[[file:./.ob-jupyter/7259a9ccf3a6f054250e4753b5c2c5b007ae7208.png]]
-[[file:./.ob-jupyter/3a58543c7ef23b0fe53c46aa7b57bdda6f7ffe63.png]]
+[[file:./.ob-jupyter/33c81a5517a65998cbcdc98a481b0984b216e42c.png]]
+[[file:./.ob-jupyter/908155c2dee66a8e8fcdf8268ffec5a6841b3383.png]]
+[[file:./.ob-jupyter/87f02ce0dd064be264e39eed83e8c12ec61b1f2f.png]]
+[[file:./.ob-jupyter/bcc55a7a19aacad2c3a47c0535114fa5279bb8e3.png]]
+[[file:./.ob-jupyter/7e65cfebb35143f77f83fe0876fa25f681c0c514.png]]
+[[file:./.ob-jupyter/1aa4768e3e02a144ba0890c5ea0e1a26dbf2246b.png]]
+[[file:./.ob-jupyter/f86d6c7d7e87f34c4de3536baa890c6274fc8fed.png]]
+[[file:./.ob-jupyter/b2bce016d89b11aaf989513ec594de009d27b474.png]]
+[[file:./.ob-jupyter/6362beb2d60d4dd0465c3e1d2d9bcd685ba3a8a9.png]]
+[[file:./.ob-jupyter/c1b46cc3de317347388e60ed0f1193302c64fc32.png]]
+[[file:./.ob-jupyter/14a4768a90be8b465777df7fb3b737d439db26e2.png]]
+[[file:./.ob-jupyter/34883e7b74b6cb7c7ae9d146a7ba5cf5b24397d3.png]]
+[[file:./.ob-jupyter/503e2b9bdf5233e823371808332a87773d9c0a1a.png]]
+[[file:./.ob-jupyter/6180950e182ea01c6158ed90e1a35a17afd5e669.png]]
 :END:
+
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
+
+# This is your time-series data, replace it with your actual data
+y = np.random.normal(size=500)
+y = np.cumsum(y)
+x = np.linspace(0, 4*np.pi, 500)
+y = np.sin(x) + y / 10
+
+# This applies the Savitzky-Golay filter
+# The first argument is your data
+# The second argument, window_length, is the number of points to use for the polynomial fit (must be odd)
+# The third argument is the polynomial order, in this case 3.
+yhat = savgol_filter(y, 51, 3)  # window size 51, polynomial order 3
+
+plt.plot(y)
+plt.plot(yhat, color='red')
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/aecda041b449bbc2b26efcc7d48851c533bf98f1.png]]
 
 
 ****** Comparing potential global radiation to observations at climate mast to compare
@@ -9645,7 +9842,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 
-*** Ice ablation
 
 
 ** Utilities
@@ -9998,11 +10194,11 @@ rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
 #surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
-ablation = pd.read_csv(workingfolder+'preQC/' + site + '_hour_ice_ablation.csv', index_col = 0)
+ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
 
 merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
-merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H', 'z_pt_corr':'Ablation' }, inplace = True)
+merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H', 'ice_ablation':'Ablation' }, inplace = True)
 merged.plot(subplots = True, figsize = (12,12))
 
 cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H','Ablation']
@@ -10017,33 +10213,33 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
 #+RESULTS:
 :RESULTS:
 #+begin_example
-                         T_air       RH    P_air      SR_in    SR_out  \
-  time                                                                  
-  2008-03-29 16:00:00 -16.4576  44.9127  929.918   63.40130   55.8106   
-  2008-03-29 17:00:00 -15.3733  39.7983  929.886   51.02750   45.8625   
-  2008-03-29 18:00:00 -15.9197  40.2219  929.918   36.03590   33.2352   
-  2008-03-29 19:00:00 -15.2297  38.3744  930.267   19.91690       NaN   
-  2008-03-29 20:00:00 -14.9098  37.6170  930.800    5.35267       NaN   
-  ...                      ...      ...      ...        ...       ...   
-  2022-04-19 07:00:00 -15.2152  71.5954  937.630   99.67730   79.7940   
-  2022-04-19 08:00:00 -13.3936  66.2411  937.437  176.67000  136.1550   
-  2022-04-19 09:00:00 -12.7611  59.6480  937.428  480.32200       NaN   
-  2022-04-19 10:00:00 -13.5455  61.2137  937.338  385.29600  260.1020   
-  2022-04-19 11:00:00 -11.5440  63.5458  936.829  342.67400  263.9390   
+                         T_air       RH    P_air      SR_in     SR_out  \
+  time                                                                   
+  2008-03-29 16:00:00 -16.4576  44.9127  929.918   63.40130   55.81060   
+  2008-03-29 17:00:00 -15.3733  39.7983  929.886   51.02750   45.86250   
+  2008-03-29 18:00:00 -15.9197  40.2219  929.918   36.03590   33.23520   
+  2008-03-29 19:00:00 -15.2297  38.3744  930.267   19.91690   19.10780   
+  2008-03-29 20:00:00 -14.9098  37.6170  930.800    5.35267    3.04978   
+  ...                      ...      ...      ...        ...        ...   
+  2022-04-19 07:00:00 -15.2152  71.5954  937.630   99.67730   79.79400   
+  2022-04-19 08:00:00 -13.3936  66.2411  937.437  176.67000  136.15500   
+  2022-04-19 09:00:00 -12.7611  59.6480  937.428  480.32200  287.30900   
+  2022-04-19 10:00:00 -13.5455  61.2137  937.338  385.29600  260.10200   
+  2022-04-19 11:00:00 -11.5440  63.5458  936.829  342.67400  263.93900   
 
                        SR_in_corr  SR_out_corr    LR_in   LR_out    albedo  \
   time                                                                       
   2008-03-29 16:00:00     51.6721          NaN  163.724  223.870       NaN   
   2008-03-29 17:00:00     32.9248          NaN  166.493  223.170       NaN   
   2008-03-29 18:00:00     12.3203          NaN  165.922  219.147       NaN   
-  2008-03-29 19:00:00         NaN          NaN  167.366  217.078       NaN   
-  2008-03-29 20:00:00         NaN          NaN  168.569  221.049       NaN   
+  2008-03-29 19:00:00     19.9169      19.1078  167.366  217.078       NaN   
+  2008-03-29 20:00:00      2.9253          NaN  168.569  221.049       NaN   
   ...                         ...          ...      ...      ...       ...   
-  2022-04-19 07:00:00     99.7908       79.794  250.738  250.335       NaN   
-  2022-04-19 08:00:00    175.9790      136.155  254.152  256.830       NaN   
-  2022-04-19 09:00:00         NaN          NaN  245.243  259.306  0.619616   
-  2022-04-19 10:00:00    357.5950      260.102  236.072  255.021  0.724935   
-  2022-04-19 11:00:00    329.7010      263.939  256.040  269.540  0.801010   
+  2022-04-19 07:00:00     99.7908      79.7940  250.738  250.335       NaN   
+  2022-04-19 08:00:00    175.9790     136.1550  254.152  256.830       NaN   
+  2022-04-19 09:00:00    462.9640     287.3090  245.243  259.306  0.619616   
+  2022-04-19 10:00:00    357.5950     260.1020  236.072  255.021  0.724935   
+  2022-04-19 11:00:00    329.7010     263.9390  256.040  269.540  0.801010   
 
                        cloudcover   T_surf        WS        H  Ablation  
   time                                                                   
@@ -10061,7 +10257,7 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
 
   [123212 rows x 15 columns]
 #+end_example
-[[file:./.ob-jupyter/ce5c751f789e86f85b4fade5cefbeef9ac0b0f38.png]]
+[[file:./.ob-jupyter/65f005fbf0d96042b27c6d3f3ac2bd4cdac94387.png]]
 :END:
 
 
@@ -10080,14 +10276,15 @@ p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
-surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
+#surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
+ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(surf, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
-merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H', 'z_pt_corr':'Z_pt' }, inplace = True)
+merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H', 'ice_ablation':'Ablation' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H', 'Z_pt']
+cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H']
 <<drop_head_and_tail_nans_fast>>
 merged_slim = drop_nan_rows(merged)
 
@@ -10126,19 +10323,19 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
   2022-04-19 13:00:00      432.590  237.073  280.150  0.803078    0.625535   
   2022-04-19 14:00:00      357.564  231.321  280.398  0.798091    0.505859   
 
-                         T_surf       WS        H  Z_pt  
-  time                                                   
-  2008-03-29 18:00:00       NaN  3.06183      NaN   NaN  
-  2008-03-29 19:00:00       NaN  1.73083      NaN   NaN  
-  2008-03-29 20:00:00       NaN  2.68367      NaN   NaN  
-  2008-03-29 21:00:00       NaN  3.08867      NaN   NaN  
-  2008-03-29 22:00:00       NaN  4.31950      NaN   NaN  
-  ...                       ...      ...      ...   ...  
-  2022-04-19 10:00:00 -11.65090      NaN  2.17570   NaN  
-  2022-04-19 11:00:00 -11.33500      NaN  2.17573   NaN  
-  2022-04-19 12:00:00  -9.48939      NaN  2.17417   NaN  
-  2022-04-19 13:00:00  -7.75355      NaN  2.17322   NaN  
-  2022-04-19 14:00:00  -7.63614      NaN  2.17596   NaN  
+                         T_surf       WS        H  Ablation  
+  time                                                       
+  2008-03-29 18:00:00       NaN  3.06183      NaN       NaN  
+  2008-03-29 19:00:00       NaN  1.73083      NaN       NaN  
+  2008-03-29 20:00:00       NaN  2.68367      NaN       NaN  
+  2008-03-29 21:00:00       NaN  3.08867      NaN       NaN  
+  2008-03-29 22:00:00       NaN  4.31950      NaN       NaN  
+  ...                       ...      ...      ...       ...  
+  2022-04-19 10:00:00 -11.65090      NaN  2.17570       NaN  
+  2022-04-19 11:00:00 -11.33500      NaN  2.17573       NaN  
+  2022-04-19 12:00:00  -9.48939      NaN  2.17417       NaN  
+  2022-04-19 13:00:00  -7.75355      NaN  2.17322       NaN  
+  2022-04-19 14:00:00  -7.63614      NaN  2.17596       NaN  
 
   [123213 rows x 15 columns]
 #+end_example
