@@ -7568,8 +7568,8 @@ grass -e -c EPSG:3413 G
     #v.in.ogr input=shp/zackenberg_river_catchment.shp output=zackenberg --o
     #r.in.gdal input=/home/shl/data/gem/geobasis/Zackenberg_LastDoyOfObservedSnow_2021_epsg3413.tif output=SED_2021 --o
 
-    #v.in.ogr input=GRASS_files/aoi.shp output=aoi --o
-    v.in.ogr input=GRASS_files/mast_aoi.shp output=aoi --o
+    v.in.ogr input=GRASS_files/aoi.shp output=aoi --o
+    #v.in.ogr input=GRASS_files/mast_aoi.shp output=aoi --o
     #g.region raster=SED_2021
     g.region vector=aoi -aps
 
@@ -7600,10 +7600,11 @@ grass -e -c EPSG:3413 G
 
 
     #+BEGIN_SRC sh
-    #grass --text ./G/SUN
+    grass --text ./G/SUN
+    g.region -dp
     for i in {1..365..1}
     do
-    r.sun elevation=demNE linke_value=1.5 distance_step=1.5 horizon_basename=horangle horizon_step=1  aspect=aspect.dem slope=slope.dem albedo_value=0.2 day=$i glob_rad=glob$i insol_time=it$i nproc=4 --overwrite
+    r.sun elevation=demNE linke_value=1.0 distance_step=1.5 horizon_basename=horangle horizon_step=1  aspect=aspect.dem slope=slope.dem albedo_value=0.2 day=$i glob_rad=glob$i insol_time=it$i nproc=4 --overwrite
     done
     #+END_SRC
 
@@ -7680,6 +7681,7 @@ grass -e -c EPSG:3413 G
     v.in.ogr input=GRASS_files/mast_pos.shp output=mast_pos
 
     t.rast.what points=mast_pos strds=glob_radiation_daily output=GRASS_files/glob_mast.csv null_value=NA separator=comma --overwrite
+    t.rast.what points=zac_l_pos strds=glob_radiation_daily output=GRASS_files/glob_zac_l.csv null_value=NA separator=comma --overwrite
 
     #+END_SRC
 
@@ -7752,21 +7754,66 @@ from scipy.ndimage.filters import maximum_filter1d
 y_max = maximum_filter1d(dsr_corr_sum['dsr_corr'], size=7)
 top = savgol_filter(y_max, 101, 3)  # window size 51, polynomial order 3
 dsr_corr_sum['max'] = top
-years = []
-fig, ax = plt.subplots(1,1, figsize = (12,3))
-for year in np.arange(2008,2020):
-    glob_rad.plot(ax=ax, linewidth = 3, label = 'Potential incoming radiation')
-    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)]['max'], label = 'dsr_corr max- '+str(year))
-    years.append(year)
+#+END_SRC
 
-ax.legend(years)
+#+BEGIN_SRC jupyter-python
+SRin = pd.DataFrame(dsr_corr_sum['max'])
+mask = (SRin.index.year != 2015) & (SRin.index.year != 2020) & (SRin.index.year != 2021) & (SRin.index.year != 2022)
+SRin = SRin[mask]
+
+
+SRin_stats = pd.DataFrame(SRin.groupby(SRin.index.dayofyear).max())
+SRin_stats['min'] = SRin.groupby(SRin.index.dayofyear).min()
+SRin_stats['mean'] = SRin.groupby(SRin.index.dayofyear).mean()
+SRin_stats['std'] = SRin.groupby(SRin.index.dayofyear).std()
+
+fig, ax = plt.subplots(1,1, figsize = (12,5))
+
+years = [2008,2009,2010,2011,2012,2013,2014,2016,2017,2018,2019]
+legend = []
+
+
+
+ax.fill_between(SRin_stats.index, SRin_stats['mean']-2*SRin_stats['std'], SRin_stats['mean']+2*SRin_stats['std'], alpha = 0.5, color = 'tab:blue')
+legend.append('2 x std')
+
+glob_rad.plot(ax=ax, linewidth = 3, color = 'black', linestyle = '--')
+legend.append('glob')
+
+for year in years:
+    
+    
+    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)]['max'], label = 'dsr_corr max- '+str(year))
+    legend.append(str(year))
+SRin_stats['mean'].plot(ax = ax, linewidth = 3, color = 'black')
+legend.append('mean')
+ax.legend(legend)
+ax.set_ylabel('Wh/day')
+fig.savefig('QCfigs/SRin_stats.png', dpi = 300)
+  #+END_SRC
+
+  #+RESULTS:
+  [[file:./.ob-jupyter/1deace5ed9ed00c349386024267e5eaf772be845.png]]
+
+  #+BEGIN_SRC jupyter-python
+#years = []
+fig, ax = plt.subplots(1,1, figsize = (12,3))
+
+years = [2008,2009,2010,2011,2012,2013,2014,2016,2017,2018,2019]
+legend = []
+legend.append('glob')
+glob_rad.plot(ax=ax, linewidth = 3, label = 'Potential incoming radiation')
+for year in years:
+    
+    ax.plot(dsr_corr_sum.loc[str(year)].index.dayofyear,dsr_corr_sum.loc[str(year)]['max'], label = 'dsr_corr max- '+str(year))
+    legend.append(str(year))
+
+ax.legend(legend)
+
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f4d7b648f40>
-[[file:./.ob-jupyter/09ef5d6d57a4da2605daa8a8839c9c9286e2e0fd.png]]
-:END:
+[[file:./.ob-jupyter/5662a75ac6701360dc0a926160379af0d3006b1d.png]]
 
 #+BEGIN_SRC jupyter-python
 
@@ -7792,20 +7839,19 @@ for year in np.arange(2008,2021):
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/33c81a5517a65998cbcdc98a481b0984b216e42c.png]]
-[[file:./.ob-jupyter/908155c2dee66a8e8fcdf8268ffec5a6841b3383.png]]
-[[file:./.ob-jupyter/87f02ce0dd064be264e39eed83e8c12ec61b1f2f.png]]
-[[file:./.ob-jupyter/bcc55a7a19aacad2c3a47c0535114fa5279bb8e3.png]]
-[[file:./.ob-jupyter/7e65cfebb35143f77f83fe0876fa25f681c0c514.png]]
-[[file:./.ob-jupyter/1aa4768e3e02a144ba0890c5ea0e1a26dbf2246b.png]]
-[[file:./.ob-jupyter/f86d6c7d7e87f34c4de3536baa890c6274fc8fed.png]]
-[[file:./.ob-jupyter/b2bce016d89b11aaf989513ec594de009d27b474.png]]
-[[file:./.ob-jupyter/6362beb2d60d4dd0465c3e1d2d9bcd685ba3a8a9.png]]
-[[file:./.ob-jupyter/c1b46cc3de317347388e60ed0f1193302c64fc32.png]]
-[[file:./.ob-jupyter/14a4768a90be8b465777df7fb3b737d439db26e2.png]]
-[[file:./.ob-jupyter/34883e7b74b6cb7c7ae9d146a7ba5cf5b24397d3.png]]
-[[file:./.ob-jupyter/503e2b9bdf5233e823371808332a87773d9c0a1a.png]]
-[[file:./.ob-jupyter/6180950e182ea01c6158ed90e1a35a17afd5e669.png]]
+[[file:./.ob-jupyter/d9e527af1243a8db3a5808029046b1b2d602db9e.png]]
+[[file:./.ob-jupyter/1bafd650487ff7589190bd6c6f30c681eb76bcee.png]]
+[[file:./.ob-jupyter/3fcb43957a9f7247765802943d8da2fed0b449a7.png]]
+[[file:./.ob-jupyter/57e8adccb668bdae4fe65f099e7fcae432f95da7.png]]
+[[file:./.ob-jupyter/8a74fef2c4f05b51c73b923f2a28bdc3c0adb090.png]]
+[[file:./.ob-jupyter/4e8da959f5085036d9468557aa6786c643e836c9.png]]
+[[file:./.ob-jupyter/5bc88ac1ee7b0b73bdc9f5b2048bb1a10020927f.png]]
+[[file:./.ob-jupyter/ffe633b961345ba421cb832348708494948aefba.png]]
+[[file:./.ob-jupyter/a729ff184f5b0f9ec2dea38196717e68d516ade7.png]]
+[[file:./.ob-jupyter/307d3bb1b004cf220bab92755a5fb7bb13d3c8f8.png]]
+[[file:./.ob-jupyter/94524784f7680c6eec0fcf24c1dab1b577c105da.png]]
+[[file:./.ob-jupyter/6a45aa586e2c66578e5623b08e803ff6e7bea897.png]]
+[[file:./.ob-jupyter/3fde2a7f5c28c561fad41b86de07ef7efa821341.png]]
 :END:
 
 
