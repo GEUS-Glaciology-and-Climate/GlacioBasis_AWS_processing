@@ -5561,36 +5561,62 @@ meltrates
   z_l = pd.read_csv(datapath+'raw/zac_l_pta.csv', parse_dates = True, index_col=0)
 
 
-  z_l.loc[:'2008-July-1'] = np.nan
-  z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-July-2'].mean()
-  z_l.loc['2009-10-1'] = np.nan
-  z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-June-26'].mean()
-  z_l.loc['2009-5-14':'2009-6-24']= np.nan
+  z_l.loc[:'2008-7-1'] = np.nan
+  z_l.loc['2008-8-23':'2008-12-31'] = np.nan
+  z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-7-2'].mean()
 
-  z_l.loc['2010-1-1':'2010-5-15'] = np.nan
-  z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-5-16'].mean()
+  z_l.loc['2009-1-1':'2009-7-4'] = np.nan
+  z_l.loc['2009-8-16':'2009-12-31'] = np.nan
+  z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-7-5'].mean()
+
+  z_l.loc['2010-1-1':'2010-6-22'] = np.nan
   z_l.loc['2010-8-2':'2010-12-31'] = np.nan
+  z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-6-23'].mean()
 
-  z_l.loc['2011-1-1':'2011-5-7'] = np.nan
-  z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-5-8'].mean()
-  z_l.loc['2012-1-1':'2012-4-18'] = np.nan
-  z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-4-19'].mean() 
-  z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-4-1':'2013-5-1'].mean()
-  z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-5-1':'2014-6-1'].mean()
-  z_l.loc['2015-1-1':'2015-6-2'] = np.nan
-  z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-6-3':'2015-6-15'].mean() 
-  z_l.loc['2015-12-1':'2015-12-31'] = np.nan
-  z_l.loc['2016-1-1':'2016-5-1'] = np.nan
-  z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-5-2':'2016-5-15'].mean()
-  z_l.loc['2017-1-1':'2017-5-1'] = np.nan
-  z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-5-2':'2017-5-15'].mean()
-  z_l.loc['2018-1-1':'2018-5-1'] = np.nan
-  z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-5-2':'2018-5-15'].mean() 
+  z_l.loc['2011-1-1':'2011-6-19'] = np.nan
+  z_l.loc['2011-8-24':'2011-12-31'] = np.nan
+  z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
+
+  z_l.loc['2012-1-1':'2012-6-29'] = np.nan
+  z_l.loc['2012-8-24':'2012-12-31'] = np.nan
+  z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-30'].mean()
+
+  z_l.loc['2013-1-1':'2013-6-3'] = np.nan
+  z_l.loc['2013-8-29':'2013-12-31'] = np.nan
+  z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-4'].mean()
+
+  z_l.loc['2014-1-1':'2014-7-8'] = np.nan
+  z_l.loc['2014-8-23':'2014-12-31'] = np.nan
+  z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-8'].mean()
+
+  z_l.loc['2015-1-1':'2015-7-3'] = np.nan
+  z_l.loc['2015-8-21':'2015-12-31'] = np.nan
+  z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-4'].mean()
+  
+  z_l.loc['2016-1-1':'2016-6-25'] = np.nan
+  z_l.loc['2016-8-29':'2016-12-31'] = np.nan
+  z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-26'].mean()
+
+  z_l.loc['2017-1-1':'2017-6-27'] = np.nan
+  z_l.loc['2017-8-31':'2017-12-31'] = np.nan
+  z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-28'].mean()
+
+  z_l.loc['2018-1-1':'2018-7-30'] = np.nan
+  z_l.loc['2018-8-24':'2018-12-31'] = np.nan
+  z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean()
+
   z_l.loc['2019'] = np.nan
-  z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-5-2':'2020-5-15'].mean()
 
-  z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-5-2':'2021-5-15'].mean()
-  z_l.loc['2021-9-1':'2022-5-1'] = np.nan
+  z_l.loc['2020-1-1':'2020-6-19'] = np.nan
+  z_l.loc['2020-8-28':'2020-12-31'] = np.nan
+  z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-6-20'].mean()
+
+  z_l.loc['2021-1-1':'2021-6-16'] = np.nan
+  z_l.loc['2021-8-17':'2021-12-31'] = np.nan
+  z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-6-17'].mean()
+
+
+
 
   month = z_l.index.month
   z_l[month<4] = np.nan
@@ -6325,20 +6351,76 @@ z_u_hour.plot()
 datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height.csv', parse_dates = True, index_col=0)
 
-z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-July-2'].mean()
-z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-July-5'].mean()
+#z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-July-2'].mean()
+#z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-July-5'].mean()
+#z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-6-23'].mean()
+#z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
+#z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-30'].mean()
+#z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-4'].mean()
+#z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-9'].mean()
+#z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-1'].mean() 
+#z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-26'].mean()
+#z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-28'].mean()
+#z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean() 
+#z_l.loc['2019'] = z_l.loc['2019']-z_l.loc['2019-6-13'].mean()
+#z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-6-20'].mean()
+#z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-6-17'].mean()
+
+
+z_l.loc[:'2008-7-1'] = np.nan
+z_l.loc['2008-8-23':'2008-12-31'] = np.nan
+z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-7-2'].mean()
+
+z_l.loc['2009-1-1':'2009-7-4'] = np.nan
+z_l.loc['2009-8-16':'2009-12-31'] = np.nan
+z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-7-5'].mean()
+
+z_l.loc['2010-1-1':'2010-6-22'] = np.nan
+z_l.loc['2010-8-2':'2010-12-31'] = np.nan
 z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-6-23'].mean()
+
+z_l.loc['2011-1-1':'2011-6-19'] = np.nan
+z_l.loc['2011-8-24':'2011-12-31'] = np.nan
 z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
+
+z_l.loc['2012-1-1':'2012-6-29'] = np.nan
+z_l.loc['2012-8-24':'2012-12-31'] = np.nan
 z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-30'].mean()
+
+z_l.loc['2013-1-1':'2013-6-3'] = np.nan
+z_l.loc['2013-8-29':'2013-12-31'] = np.nan
 z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-4'].mean()
-z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-9'].mean()
-z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-1'].mean() 
+
+z_l.loc['2014-1-1':'2014-7-8'] = np.nan
+z_l.loc['2014-8-23':'2014-12-31'] = np.nan
+z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-8'].mean()
+
+z_l.loc['2015-1-1':'2015-7-3'] = np.nan
+z_l.loc['2015-8-21':'2015-12-31'] = np.nan
+z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-4'].mean()
+  
+z_l.loc['2016-1-1':'2016-6-25'] = np.nan
+z_l.loc['2016-8-29':'2016-12-31'] = np.nan
 z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-26'].mean()
+
+z_l.loc['2017-1-1':'2017-6-27'] = np.nan
+z_l.loc['2017-8-31':'2017-12-31'] = np.nan
 z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-28'].mean()
-z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean() 
-z_l.loc['2019'] = z_l.loc['2019']-z_l.loc['2019-6-13'].mean()
+
+z_l.loc['2018-1-1':'2018-7-30'] = np.nan
+z_l.loc['2018-8-24':'2018-12-31'] = np.nan
+z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean()
+
+z_l.loc['2019'] = np.nan
+
+z_l.loc['2020-1-1':'2020-6-19'] = np.nan
+z_l.loc['2020-8-28':'2020-12-31'] = np.nan
 z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-6-20'].mean()
+
+z_l.loc['2021-1-1':'2021-6-16'] = np.nan
+z_l.loc['2021-8-17':'2021-12-31'] = np.nan
 z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-6-17'].mean()
+
 
 
 month = z_l.index.month
@@ -6353,7 +6435,7 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height_ic
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/fe7bba6783edfbe90d79bf5d97a77c7dd337efac.png]]
+[[file:./.ob-jupyter/7d701100f666432536385f545e1fe0294c3fcb72.png]]
 
 ****** zac_u
 
@@ -6411,36 +6493,45 @@ sr50 = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height_ice.csv', parse_
 #z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
 pta = -pta
 
+
+
+
 fig, ax = plt.subplots(6,1,figsize = (10,15))
-pta.loc['2008'].plot(ax = ax[0])
-sr50.loc['2008'].plot(ax = ax[0])
-pta.loc['2009'].plot(ax = ax[1])
-sr50.loc['2009'].plot(ax = ax[1])
-pta.loc['2010'].plot(ax = ax[2])
-sr50.loc['2010'].plot(ax = ax[2])
-pta.loc['2011'].plot(ax = ax[3])
-sr50.loc['2011'].plot(ax = ax[3])
-pta.loc['2012'].plot(ax = ax[4])
-sr50.loc['2012'].plot(ax = ax[4])
-pta.loc['2013'].plot(ax = ax[5])
-sr50.loc['2013'].plot(ax = ax[5])
-#pta.loc['2014'].plot(ax = ax[0])
-#sr50.loc['2014'].plot(ax = ax[0])
-#pta.loc['2015'].plot(ax = ax[1])
-#sr50.loc['2015'].plot(ax = ax[1])
-#pta.loc['2016'].plot(ax = ax[2])
-#sr50.loc['2016'].plot(ax = ax[2])
-#pta.loc['2017'].plot(ax = ax[3])
-#sr50.loc['2017'].plot(ax = ax[3])
-#pta.loc['2018'].plot(ax = ax[4])
-#sr50.loc['2018'].plot(ax = ax[4])
-#pta.loc['2019'].plot(ax = ax[5])
-#sr50.loc['2019'].plot(ax = ax[5])
+#pta.loc['2008'].plot(ax = ax[0])
+#sr50.loc['2008'].plot(ax = ax[0])
+#pta.loc['2009'].plot(ax = ax[1])
+#sr50.loc['2009'].plot(ax = ax[1])
+#pta.loc['2010'].plot(ax = ax[2])
+#sr50.loc['2010'].plot(ax = ax[2])
+#pta.loc['2011'].plot(ax = ax[3])
+#sr50.loc['2011'].plot(ax = ax[3])
+#pta.loc['2012'].plot(ax = ax[4])
+#sr50.loc['2012'].plot(ax = ax[4])
+#pta.loc['2013'].plot(ax = ax[5])
+#sr50.loc['2013'].plot(ax = ax[5])
+pta.loc['2014'].plot(ax = ax[0])
+sr50.loc['2014'].plot(ax = ax[0])
+pta.loc['2015'].plot(ax = ax[1])
+sr50.loc['2015'].plot(ax = ax[1])
+pta.loc['2016'].plot(ax = ax[2])
+sr50.loc['2016'].plot(ax = ax[2])
+pta.loc['2017'].plot(ax = ax[3])
+sr50.loc['2017'].plot(ax = ax[3])
+pta.loc['2018'].plot(ax = ax[4])
+sr50.loc['2018'].plot(ax = ax[4])
+pta.loc['2019'].plot(ax = ax[5])
+sr50.loc['2019'].plot(ax = ax[5])
+
+#pta.loc['2020'].plot(ax = ax[0])
+#sr50.loc['2020'].plot(ax = ax[0])
+#pta.loc['2021'].plot(ax = ax[1])
+#sr50.loc['2021'].plot(ax = ax[1])
+
 
 
 ablation = pta.copy()
 ablation.rename(columns = {'z_pt_corr':'ice_ablation'}, inplace = True)
-ablation.loc['2010'] = sr50.loc['2010']
+#ablation.loc['2010'] = sr50.loc['2010']
 #ablation.loc['2015'] = sr50.loc['2015']
 #ablation.loc['2016'] = sr50.loc['2016']
 
@@ -6454,8 +6545,8 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_ice_ablation.cs
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/0902619b17e568f99326903a82c5c01f59777649.png]]
-[[file:./.ob-jupyter/f57f3c5c4ffc69c21487538c11c2ecd1f1e3ec83.png]]
+[[file:./.ob-jupyter/837bd9fea41b840a73368756c092f4976eb82679.png]]
+[[file:./.ob-jupyter/4930f5737868763a32cce98ff05fba02f77771e3.png]]
 :END:
 
 
@@ -6534,7 +6625,53 @@ pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index
 sr50 = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
 pta = -pta
-year = 2010
+
+fig, ax = plt.subplots(3,2,figsize = (8,10))
+pta.loc['1-June-2008':'1-Sep-2008'].plot(ax = ax[0,0])
+sr50.loc['1-June-2008':'1-Sep-2008'].plot(ax = ax[0,0])
+ax[0,0].set_ylim(0,2.7)
+
+pta.loc['1-June-2009':'1-Sep-2009'].plot(ax = ax[0,1])
+sr50.loc['1-June-2009':'1-Sep-2009'].plot(ax = ax[0,1])
+ax[0,1].set_ylim(0,2.7)
+
+pta.loc['1-June-2010':'1-Sep-2010'].plot(ax = ax[1,0])
+sr50.loc['1-June-2010':'1-Sep-2010'].plot(ax = ax[1,0])
+ax[0,1].set_ylim(0,2.7)
+
+pta.loc['1-June-2012':'1-Sep-2012'].plot(ax = ax[1,1])
+sr50.loc['1-June-2012':'1-Sep-2012'].plot(ax = ax[1,1])
+ax[0,1].set_ylim(0,2.7)
+
+pta.loc['1-June-2015':'1-Sep-2015'].plot(ax = ax[2,0])
+sr50.loc['1-June-2015':'1-Sep-2015'].plot(ax = ax[2,0])
+#ax[0].set_xlim(datetime.datetime(2015,6,1),datetime.datetime(2015,9,1))
+ax[1,0].set_ylim(0,2.7)
+ax[1,1].set_ylim(0,2.7)
+
+pta.loc['1-June-2016':'1-Sep-2016'].plot(ax = ax[2,1])
+sr50.loc['1-June-2016':'1-Sep-2016'].plot(ax = ax[2,1])
+#ax[1].set_xlim(datetime.datetime(2016,6,1),datetime.datetime(2016,9,1))
+ax[1,1].set_ylim(0,2.7)
+ax[0,0].set_ylabel('m ice')
+ax[1,0].set_ylabel('m ice')
+
+fig.savefig('QCfigs/PTA_vs_SR50.png', dpi = 300)
+
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/145b9f0ec47b65ba47196d70a4a13f6c0646c443.png]]
+
+#+BEGIN_SRC jupyter-python
+
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index_col=0)
+sr50 = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
+z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
+pta = -pta
+year = 2009
 fig, ax = plt.subplots(1,1,figsize = (10,5))
 pta.loc[str(year)].plot(ax = ax)
 sr50.loc[str(year)].plot(ax = ax)
@@ -6544,7 +6681,7 @@ z_l.loc[str(year)].plot(ax=ax)
 #+RESULTS:
 :RESULTS:
 : <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/e55666b50a9a7cfe88805aaaaf428cf41338f82b.png]]
+[[file:./.ob-jupyter/0812aa62f77aa4c9c892415b2b6d7b4602c7c7e0.png]]
 :END:
 
 #+BEGIN_SRC jupyter-python
@@ -6553,10 +6690,19 @@ z_l.loc[str(year)].plot(ax=ax)
 datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
 
-z_l.loc['2009-Jan-1':'2009-June-19'] = np.nan
+
+z_l.loc['2008-Jan-1':'2008-July-2'] = np.nan
+z_l.loc['2008-Aug-28':'2008-Dec-31'] = np.nan
+
+
+z_l.loc['2009-Jan-1':'2009-July-15'] = np.nan
 z_l.loc['2009-Aug-25':'2009-Dec-31'] = np.nan
-z_l.loc['2010-Jan-1':'2010-June-22'] = np.nan
-z_l.loc['2010-July-28':'2010-Dec-31'] = np.nan
+
+
+
+
+#z_l.loc['2010-Jan-1':'2010-June-22'] = np.nan
+#z_l.loc['2010-July-28':'2010-Dec-31'] = np.nan
 
 
 
@@ -6572,7 +6718,7 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_ice_ablation.csv', index =
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/e7c6eb4e2bbec56831fd6f82ba76b003893c0bb0.png]]
+[[file:./.ob-jupyter/39f37394a07050eb2dc03a73e668244bfe45a33a.png]]
 
 
 
