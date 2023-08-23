@@ -32,6 +32,31 @@ Reading in raw files and writing them out as L0 files with nice headers and spec
 
 #+END_SRC
 
+#+RESULTS:
+#+begin_example
+  Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
+         'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
+         'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
+         't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
+         'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
+         'fan_dc'],
+        dtype='object')
+  Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
+         'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
+         'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
+         't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
+         'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
+         'fan_dc'],
+        dtype='object')
+  Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
+         'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
+         'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
+         't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
+         'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
+         'fan_dc'],
+        dtype='object')
+#+end_example
+
 *** Libraries
 #+NAME: load_libraries
 #+BEGIN_SRC jupyter-python
@@ -650,6 +675,10 @@ new_index = pd.date_range(start = df.index[0], end =df.index[-1], freq = '10min'
 df = df.reindex(new_index, fill_value = np.nan)
 endtime = df.index[-1] # time to be transferred to next file to cut it where this ends in case there is ssame copies of the data
 
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
+
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -683,6 +712,9 @@ df = df.reindex(new_index, fill_value = np.nan)
 df = df[endtime:] # removing all values before last file ends
 endtime = df.index[-1] # time to be transferred to next file to cut it where this ends in case there is ssame copies of the data
 
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -719,7 +751,12 @@ df = df.reindex(new_index, fill_value = np.nan)
 df = df[endtime:] # removing all values before last file ends
 endtime = df.index[-1] # time to be transferred to next file to cut it where this ends in case there is ssame copies of the data
 
+# the unit of mmHg is converted to hPa
 df['p'] = df['p']*mmHg2hPa
+
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -757,6 +794,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -795,6 +835,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -832,6 +875,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -871,6 +917,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -907,6 +956,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -944,6 +996,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -980,6 +1035,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1019,6 +1077,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1059,6 +1120,9 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1126,7 +1190,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
 
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1164,7 +1230,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1202,7 +1270,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1240,7 +1310,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
@@ -1273,7 +1345,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1311,7 +1385,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1348,7 +1424,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1384,7 +1462,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1421,7 +1501,9 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 print(df.keys())
 df.to_csv(outfilename,sep=',', index=True)
 
@@ -1468,7 +1550,9 @@ if len(new_index) < len(df.index):
     df = df.reindex(new_index, fill_value = np.nan)
 df = df[endtime:] # removing all values before last file ends
 endtime = df.index[-1] # time to be transferred to next file to cut it where this ends in case there is ssame copies of the data
-
+# in the zac_l logger program use the unit mV and in zac_u and zac_a the unit is V/100, but the later workflow assumes mV
+df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10 
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
 
@@ -1977,13 +2061,11 @@ station = 'zac_l'
 station = 'zac_u'
 <<convert_to_physical_values>>
 
+
 station = 'zac_a'
 <<convert_to_physical_values>>
 
 #+END_SRC
-
-
-
 
 
 #+NAME: convert_to_physical_values
@@ -2238,9 +2320,9 @@ if 'dsr' in ds:
     ds['usr'] = (ds['usr']*10) / ds.attrs['usr_eng_coef'] * 100
     ds['dlr'] = ((ds['dlr']*1000) / ds.attrs['dlr_eng_coef']) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4 
     ds['ulr'] = ((ds['ulr']*1000) / ds.attrs['ulr_eng_coef']) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4
-
-    ds['tilt_x'] = ds['tilt_x'] / 100
-    ds['tilt_y'] = ds['tilt_y'] / 100
+    
+    ds['tilt_x'] = ds['tilt_x'].astype(float) / 100
+    ds['tilt_y'] = ds['tilt_y'].astype(float) / 100
 
 # Adjust sonic ranger readings for sensitivity to air temperature
 if 'z_boom' in ds:
@@ -2499,7 +2581,7 @@ ds = ds.assign({'t_surf':Tsurf})
 <<corr_sr_diffuse_radiation>>
 <<corr_large_zenith_angles>>
 <<corr_srin_upper_sensor_not_in_sight>>
-#<<removing_spikes>> #This is too agressive and is not used anymore
+<<removing_spikes>> 
 <<adding_columns>>
 
  #+END_SRC
@@ -2657,6 +2739,8 @@ SRtoa = 1372*np.cos(ZenithAngle_rad) # SRin at the top of the atmosphere
 SRtoa[sundown] = 0
 
 
+
+
  #+END_SRC
 
  #+RESULTS: zenith_and_hour_angle
@@ -2669,20 +2753,15 @@ SRtoa[sundown] = 0
 #import matplotlib.pyplot as plt
 #sel = (dates.index > pd.to_datetime('2009-05-01', format = '%Y-%m-%d')) & (dates.index < pd.to_datetime('2009-05-04', format = '%Y-%m-%d'))
 plt.plot(ZenithAngle_rad)
+
  #+END_SRC
 
  #+RESULTS:
- :results:
- # Out [54]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f16052eea60>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/1f4e35464b8de951ddc3ab5bf7fd1a1999e258c1.png]]
- :end:
+ :RESULTS:
+ : (51397,)
+ : (51397,)
+ [[file:./.ob-jupyter/e1b3ff0c7f3f9db16b7ee26e11fdaab46c6c37a9.png]]
+ :END:
 
 
 
@@ -2788,15 +2867,12 @@ OKalbedos = (AngleDif_deg < 70) & (ZenithAngle_deg < 70) & (albedo < 1) & (albed
 notOKalbedos = (AngleDif_deg >= 70) | (ZenithAngle_deg >= 70) | (albedo >= 1) | (albedo <= 0)
 
 albedo[notOKalbedos] = np.nan
-#albedo = albedo.ffill('time')
-#albedo = interp1(datenumber,albedo,datenumber,'pchip') ;% interpolate over gaps - gives problems for discontinuous data sets, but is not the end of the world
+albedo = albedo.ffill('time')
+#albedo = interp1(datenumber,albedo,datenumber,'pchip') # interpolate over gaps - gives problems for discontinuous data sets, but is not the end of the world
 
  #+END_SRC
 
  #+RESULTS: ok_albedos
- :results:
- # Out [60]: 
- :end:
 
 #+BEGIN_SRC jupyter-python
 print(OKalbedos)
@@ -2953,6 +3029,7 @@ TOA_crit_nopass = SRin_cor > 0.9*SRtoa+10
 SRin_cor[TOA_crit_nopass] = np.nan
 SRout_cor[TOA_crit_nopass] = np.nan
 
+
 SRin_cor_final = SRin_cor.copy()
 
  #+END_SRC
@@ -2985,23 +3062,59 @@ plt.plot(SRin_cor)
 # Assign columns to ds file
 
 ds = ds.assign({'albedo':albedo, 'dsr_corr':SRin_cor, 'usr_corr':SRout_cor, 'cloud_cov':CloudCov})
+ds['I'] = ('time', SRtoa)
+ds['solar_zenith_angle'] = ('time', ZenithAngle_deg )
+
+
+
 #ds_test = ds.assign({'albedo':albedo,'srin_tilt_cor':srin_tilt_cor,'srin_cor_dome':srin_cor_dome, 'SRin_cor_alb':SRin_cor_alb ,'SRin_cor_final':SRin_cor_final,'SRin_cor_mark':SRin_cor_mark , 'dsr_corr':SRin_cor, 'usr_corr':SRout_cor, 'cloud_cov':CloudCov}) # debugging
 #ds['dsr_corr']=SRin_cor
 ds['dsr_corr'].attrs['long_name'] = ds['dsr'].long_name + " corrected"   
 #ds['usr_corr']=SRout_cor.copy()
 ds['usr_corr'].attrs['long_name'] = ds['usr'].long_name + " corrected"   
+
 #ds['cloud_cover']=CloudCov.copy()
  #+END_SRC
 
  #+RESULTS: adding_columns
- :results:
- # Out [163]: 
- :end:
-
-
-
-**** Filter bad data
-
+ #+begin_example
+   <xarray.Dataset>
+   Dimensions:             (time: 51397, solar_zenith_angle: 51397, I: 51397,
+			    Inew: 51397)
+   Coordinates:
+     ,* time                (time) datetime64[ns] 2018-04-21T14:00:00 ... 2019-04...
+     ,* solar_zenith_angle  (solar_zenith_angle) float64 65.0 65.36 ... 65.69 65.67
+     ,* I                   (I) float64 575.3 567.3 558.8 ... 559.2 560.2 560.6
+     ,* Inew                (Inew) float64 575.3 567.3 558.8 ... 559.2 560.2 560.6
+   Data variables: (12/48)
+       rec                 (time) float64 31.0 32.0 33.0 ... 5.139e+04 5.139e+04
+       p                   (time) float64 840.6 841.0 840.5 ... 843.2 843.5 843.5
+       t_1                 (time) float64 -6.473 -7.911 -8.084 ... -1.182 -1.074
+       t_2                 (time) float64 -6.394 -7.808 -8.084 ... -0.9944 -0.9998
+       rh                  (time) float64 37.28 43.3 45.01 ... 56.74 57.52 57.49
+       wspd                (time) float64 0.0 2.974 2.396 ... 5.427 5.403 5.885
+       ...                  ...
+       rh_corr             (time) float64 39.68 46.73 48.66 ... 57.49 58.14 58.05
+       t_surf              (time) float64 -2.871 -2.712 -2.126 ... -5.391 -5.735
+       albedo              (time) float64 0.4947 0.4882 0.4847 ... 0.7878 0.7824
+       dsr_corr            (time) float64 656.2 658.3 653.0 ... 553.7 628.1 569.8
+       usr_corr            (time) float64 324.6 321.4 316.5 ... 425.6 494.8 445.8
+       cloud_cov           (time) float64 0.0 0.0 0.0 nan ... 0.3615 0.3472 0.317
+   Attributes: (12/16)
+       station_id:       zac_a
+       field_delimiter:  ,
+       nodata:           -9999
+       srid:             EPSG:4326
+       geometry:         POINT(-21.65, 74.65)
+       timezone:         0
+       ...               ...
+       ulr_eng_coef:     8.26
+       pt_z_coef:        0
+       pt_z_p_coef:      0
+       pt_z_factor:      0
+       pt_antifreeze:    50
+       boom_azimuth:     50
+ #+end_example
 
 
 **** Write out L1 files
@@ -3454,7 +3567,7 @@ import datetime
 :end:
 
 
-** From 2022 and on
+** Loading raw data and filtering data based on QC below
 
  Key variables to deliver:
  Temperature
@@ -3670,7 +3783,7 @@ Flags??
  #    ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
  #    ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
  #    ds['usr'] = ds['usr'].where(ds['usr'] != -9999.)
-     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov', 't_surf']].to_dataframe()
+     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov', 't_surf', 'I']].to_dataframe()
      ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
      ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
      ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
@@ -3693,7 +3806,7 @@ Flags??
  #+END_SRC
 
  #+RESULTS:
- [[file:./.ob-jupyter/bb7b0ecbd133b7c01c1423136d88890ef5120331.png]]
+ [[file:./.ob-jupyter/ef1baa475d538465c78626fb14cbe960780ca109.png]]
 
 ******* Looking into the possibilities of merging with transmitted data
  First load in libraries and data
@@ -4283,7 +4396,7 @@ Flags??
  fig, ax = plt.subplots(1,1,figsize = (10,5))
  with xr.open_dataset(zac_l_path) as ds:
      #print(ds)
-     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']].to_dataframe()
+     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
 
      ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
      ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
@@ -4310,8 +4423,8 @@ Flags??
 
  #+RESULTS:
  :RESULTS:
- [[file:./.ob-jupyter/e8a809e98bd4daa9e31117982880be29d5de5fcc.png]]
- [[file:./.ob-jupyter/0426a4ca6985b9191650f4664d50528968ace514.png]]
+ [[file:./.ob-jupyter/354e991217f29a39ad9fc5081f84c37dc3698407.png]]
+ [[file:./.ob-jupyter/5c6198c599a01e9c2f2efdbdf8bb5d36de793d73.png]]
  :END:
 
 
@@ -4866,7 +4979,7 @@ Flags??
  with xr.open_dataset(zac_u_path) as ds:
      #ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
      #ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
-     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']].to_dataframe()
+     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
 
      ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
      ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
@@ -5254,8 +5367,8 @@ Flags??
 
  #+RESULTS:
  :RESULTS:
- [[file:./.ob-jupyter/b9ff31e439234fc06e999e6e30d63e6c9ba173b3.png]]
- [[file:./.ob-jupyter/ea815afbe5cf3b958ebdfe31de7b46d1383e40c4.png]]
+ [[file:./.ob-jupyter/a342dda871bda37a29fb679f890bf0f2ac70c46d.png]]
+ [[file:./.ob-jupyter/04052c76e81c82699aeea8a42813b3da9e6b6610.png]]
  :END:
 
 ****** Relative humidity
@@ -6782,17 +6895,164 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_ice_ablation.csv', index =
 ** QC
 
 
+*** Overview
+
+Plotting all preQC values against all postQC values
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Sample data
+time = np.linspace(0, 10, 100)
+temperature = np.sin(time) * 20
+solar_radiation = np.abs(np.sin(time)) * 800
+# ... continue for your other variables ...
+
+# List of data and corresponding labels
+data_list = [temperature, solar_radiation]  # Continue for other variables...
+labels = ["Temperature", "Solar Radiation"]  # Continue for other variable names...
+
+fig, axes = plt.subplots(len(data_list), 1, sharex=True, figsize=(10, 8))
+
+for ax, data, label in zip(axes, data_list, labels):
+    ax.plot(time, data, label=label)
+    ax.set_ylabel(label)
+    ax.legend()
+
+axes[-1].set_xlabel("Time")
+
+plt.tight_layout()
+plt.show()
+
+
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/1c8af2ebf73506ae6a94ecfb4848a1c32d387de3.png]]
+
+#+BEGIN_SRC jupyter-python
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+workingfolder = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+#zac_l
+site = 'zac_l'
+temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0)
+rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
+p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
+rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
+ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
+height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
+#surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
+ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
+
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
+
+merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air','dsr_corr':'SR_in', 'usr_corr':'SR_out', 'dlr':'LR_in', 'ulr':'LR_out', 'wspd':'WS', 'z_boom':'H', 'ice_ablation':'Ablation_ice' }, inplace = True)
+#merged.plot(subplots = True, figsize = (12,12))
+
+cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H','Ablation_ice']
+<<drop_head_and_tail_nans_fast>>
+data = drop_nan_rows(merged)
+dates = data.index
+#fig, axes = plt.subplots(len(data[cols]), 1, sharex=True, figsize=(10, 8))
+
+#for ax, data, label in zip(axes, data[cols], cols):
+#    ax.plot(dates, data, label=label)
+#    ax.set_ylabel(label)
+#    ax.legend()
+
+fig = data[cols].plot(subplots = True, figsize = (10,8))
+
+
+# Set x-ticks to the beginning of each year
+#years = [datetime.date(year, 1, 1) for year in range(2008, 2023)]
+#axes[-1].set_xticks(years)
+#axes[-1].set_xlabel("Year")
+#fig.autofmt_xdate()  # Better formatting for dates
+
+plt.tight_layout()
+
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+#+begin_example
+  [0;31m---------------------------------------------------------------------------[0m
+  [0;31mAttributeError[0m                            Traceback (most recent call last)
+  Cell [0;32mIn[2], line 64[0m
+  [1;32m     57[0m fig [38;5;241m=[39m data[cols][38;5;241m.[39mplot(subplots [38;5;241m=[39m [38;5;28;01mTrue[39;00m, figsize [38;5;241m=[39m ([38;5;241m10[39m,[38;5;241m8[39m))
+  [1;32m     60[0m [38;5;66;03m# Set x-ticks to the beginning of each year[39;00m
+  [1;32m     61[0m [38;5;66;03m#years = [datetime.date(year, 1, 1) for year in range(2008, 2023)][39;00m
+  [1;32m     62[0m [38;5;66;03m#axes[-1].set_xticks(years)[39;00m
+  [1;32m     63[0m [38;5;66;03m#axes[-1].set_xlabel("Year")[39;00m
+  [0;32m---> 64[0m [43mfig[49m[38;5;241;43m.[39;49m[43mautofmt_xdate[49m()  [38;5;66;03m# Better formatting for dates[39;00m
+  [1;32m     66[0m plt[38;5;241m.[39mtight_layout()
+
+  [0;31mAttributeError[0m: 'numpy.ndarray' object has no attribute 'autofmt_xdate'
+#+end_example
+[[file:./.ob-jupyter/abc2a94d1a2546004a078bed1ea90033a95f066f.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+
+
+
+
+labels = ["T_air", "RH", "P_air", "SR_in", "SR_out", "LR_in", "LR_out", "WS", "H", "Ablation_ice"]
+offsets = range(0, 8*10, 10)  # These values determine the distance between each plot on the y-axis
+
+# Plotting
+for var_data, label, offset in zip(data, labels, offsets):
+    plt.plot(time, var_data + offset, label=label)
+
+plt.yticks(offsets, labels)  # Re-label y-axis ticks with variable names
+plt.xlabel("Time")
+plt.ylabel("Variables")
+plt.title("Multiple Climate Variables Over Time")
+plt.legend(loc="upper left", bbox_to_anchor=(1, 1))  # Legend outside of the main plot area
+plt.tight_layout()
+plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/49c3eb82a1aa85831107e17eafb7b74b32bf7ac1.png]]
+
+
+
+
 *** temperature
 **** Utilities
 #+NAME: plot_gradients_full_period
 #+BEGIN_SRC jupyter-python
-fig,ax = plt.subplots(4,1,figsize = (10,10), sharex=True)
-zac_l[variable].plot(ax = ax[0], label = 'zac_l', color = 'tab:blue')
-zac_u[variable].plot(ax = ax[0], label = 'zac_u', color = 'tab:orange')
-zac_a[variable].plot(ax = ax[0], label = 'zac_a', color = 'tab:pink')
-ax[0].legend()
-ax[0].set_title('Final dataset')
-ax[0].set_ylabel(ylabel)
+fig,ax = plt.subplots(5,1,figsize = (10,10), sharex=True)
+panel1 = ax[0]
+panel2 = ax[1]
+panel3 = ax[2]
+panel4 = ax[3]
+panel5 = ax[4]
+
+
+zac_l_pre[variable].plot(ax = panel1, label = 'zac_l, pre QC', color = 'tab:blue')
+zac_u_pre[variable].plot(ax = panel1, label = 'zac_u, pre QC', color = 'tab:orange')
+zac_a_pre[variable].plot(ax = panel1, label = 'zac_a, pre QC', color = 'tab:pink')
+panel1.legend(ncol = 3)
+panel1.set_title('Pre QC')
+panel1.set_ylabel(ylabel)
+
+zac_l[variable].plot(ax = panel2, label = 'zac_l, post QC', color = 'tab:blue')
+zac_u[variable].plot(ax = panel2, label = 'zac_u, post QC', color = 'tab:orange')
+zac_a[variable].plot(ax = panel2, label = 'zac_a, post QC', color = 'tab:pink')
+
+panel2.legend(ncol = 3)
+panel2.set_title('Post QC')
+panel2.set_ylabel(ylabel)
 
 d_l_u = (zac_l-zac_u)/(zac_l_elev-zac_u_elev)*100
 d_u_a = (zac_u-zac_a)/(zac_u_elev-zac_a_elev)*100
@@ -6802,27 +7062,27 @@ d_l_u_pre = (zac_l_pre-zac_u_pre)/(zac_l_elev-zac_u_elev)*100
 d_u_a_pre = (zac_u_pre-zac_a_pre)/(zac_u_elev-zac_a_elev)*100
 d_l_a_pre = (zac_l_pre-zac_a_pre)/(zac_l_elev-zac_a_elev)*100
 
-d_l_u_pre[variable].plot(ax=ax[1], label = 'Flagged in QC', color = 'tab:red')
-d_u_a_pre[variable].plot(ax=ax[2], label = 'Flagged in QC', color = 'tab:red')
-d_l_a_pre[variable].plot(ax=ax[3], label = 'Flagged in QC', color = 'tab:red')
+d_l_u_pre[variable].plot(ax = panel3, label = 'Flagged in QC', color = 'tab:red')
+d_u_a_pre[variable].plot(ax=panel4, label = 'Flagged in QC', color = 'tab:red')
+d_l_a_pre[variable].plot(ax=panel5, label = 'Flagged in QC', color = 'tab:red')
 
-d_l_u[variable].plot(ax=ax[1], label = 'zac_l minus zac_u', color = 'tab:green')
-d_u_a[variable].plot(ax=ax[2], label = 'zac_u minus zac_a', color = 'tab:green')
-d_l_a[variable].plot(ax=ax[3], label = 'zac_l minus zac_a', color = 'tab:green')
-ax[1].set_title('Gradients')
-ax[1].legend()
-ax[1].set_ylabel(ylabel + '/100m')
-ax[2].legend()
-ax[2].set_ylabel(ylabel + '/100m')
-ax[3].legend()
-ax[3].set_ylabel(ylabel + '/100m')
+d_l_u[variable].plot(ax=panel3, label = 'zac_l minus zac_u', color = 'tab:green')
+d_u_a[variable].plot(ax=panel4, label = 'zac_u minus zac_a', color = 'tab:green')
+d_l_a[variable].plot(ax=panel5, label = 'zac_l minus zac_a', color = 'tab:green')
+panel3.set_title('Gradients')
+panel3.legend(ncol = 2)
+panel3.set_ylabel(ylabel + '/100m')
+panel4.legend(ncol = 2)
+panel4.set_ylabel(ylabel + '/100m')
+panel5.legend(ncol = 2)
+panel5.set_ylabel(ylabel + '/100m')
 
 #+END_SRC
 
 #+RESULTS: plot_gradients_full_period
 :RESULTS:
-: <matplotlib.legend.Legend at 0x7f941cd4c4f0>
-[[file:./.ob-jupyter/92d3bd31c508f968fb45ea29c8d42f687ecc4315.png]]
+: Text(0, 0.5, '$^\\circ$C/100m')
+[[file:./.ob-jupyter/e3237475f6860eec18ccf5663947efecab69b81f.png]]
 :END:
 
 #+NAME: plot_the_timeperiod
@@ -6984,7 +7244,7 @@ fig.savefig('QCfigs/Temperature_final.png')
 : zac_l is 0.0
 : zac_u is 8.88088248376479
 : zac_a is 3.625990251766395
-[[file:./.ob-jupyter/87af0dcf87b11ffd8bfffd067302685d2e345b93.png]]
+[[file:./.ob-jupyter/40cce51bd2a88937d90fd91b01319aaccd119a2e.png]]
 :END:
 
 
@@ -7498,6 +7758,34 @@ ax[3].legend()
 
 
 
+
+*** Tilt
+#+BEGIN_SRC jupyter-python
+ <<load_libs>>
+ <<data_file_paths>>
+
+ with xr.open_dataset(zac_l_path) as ds:
+     df = ds[['tilt_x','tilt_y']].to_dataframe()
+ df.plot()
+
+ with xr.open_dataset(zac_u_path) as ds:
+     df = ds[['tilt_x','tilt_y']].to_dataframe()
+ df.plot()
+
+ with xr.open_dataset(zac_a_path) as ds:
+     df = ds[['tilt_x','tilt_y']].to_dataframe()
+ df.plot()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <AxesSubplot: xlabel='time'>
+[[file:./.ob-jupyter/f0017d918fce6562f3a8e83fdab8ed53229c830c.png]]
+[[file:./.ob-jupyter/2a8bec073b2d7bce24a528973fa0a33465458cfd.png]]
+[[file:./.ob-jupyter/0737b77243b13137b9993b5514e257ef3a28d59d.png]]
+:END:
+
+
 *** Radiation
 **** Utilities
 #+NAME: read_in_hourly_preQC_radiation
@@ -7599,8 +7887,15 @@ ax[3].set_xlim(startdate,enddate)
   rad_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
 
 
+
 <<plot_rad_gradients_full_period>>
 #+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f1479b48880>
+[[file:./.ob-jupyter/0a0c648be9a6b8d4d9726ed21cdfb68a1e030f26.png]]
+:END:
 
 
 
@@ -7843,6 +8138,7 @@ grass -e -c EPSG:3413 G
 
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
+from matplotlib import rcParams
 # meta data
 
 zac_l_elev = 644
@@ -7854,23 +8150,98 @@ datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_databa
 zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
 zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
 zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
-mast_swin = pd.read_csv('/home/shl/data/gem/climatebasis/climate_mast/View_ClimateBasis_Zackenberg_Data_Radiation_Short_wave_incoming_radiation_@_200_cm__5min_average_W_m2270920221347180965.csv', sep = '\t', index_col = 0, parse_dates = {'date':['Date','Time']}, na_values = -9999)
 
 
-glob_rad = pd.read_csv('GRASS_files/glob_zac_l.csv', header = None)
-glob_rad.columns = ['x', 'y', 'doy','doy+1','glob_rad']
-glob_rad.set_index('doy', inplace = True)
-glob_rad = pd.DataFrame(glob_rad['glob_rad'])
+zac_l['I'] = zac_l['I'].where(zac_l['I']>=0,0)
+
+rcParams.update({'font.size': 8})
+
+for year in range(2008,2022+1):
+    fig, ax = plt.subplots(1,1, figsize = (3,2))
+    zac_l[['I','dsr_corr', 'dsr']].resample('D').mean().loc[str(year)].plot(ax = ax)
+    ax.set_ylim(0,600)
+    fig.tight_layout()
+    fig.savefig('QCfigs/zac_l_SRin_vs_I_'+str(year)+'.png')
+
+zac_u['I'] = zac_u['I'].where(zac_u['I']>=0,0)
+
+for year in range(2012,2022+1):
+    fig, ax = plt.subplots(1,1, figsize = (3,2))
+    zac_u[['I','dsr_corr', 'dsr']].resample('D').mean().loc[str(year)].plot(ax = ax)
+    ax.set_ylim(0,600)
+    fig.tight_layout()
+    fig.savefig('QCfigs/zac_u_SRin_vs_I_'+str(year)+'.png')
+
+zac_a['I'] = zac_a['I'].where(zac_a['I']>=0,0)
+
+for year in range(2009,2019+1):
+    fig, ax = plt.subplots(1,1, figsize = (3,2))
+    zac_a[['I','dsr_corr', 'dsr']].resample('D').mean().loc[str(year)].plot(ax = ax)
+    ax.set_ylim(0,600)
+    fig.tight_layout()
+    fig.savefig('QCfigs/zac_a_SRin_vs_I_'+str(year)+'.png')
+
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: /tmp/ipykernel_16684/797288650.py:34: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`). Consider using `matplotlib.pyplot.close()`.
+:   fig, ax = plt.subplots(1,1, figsize = (3,2))
+[[file:./.ob-jupyter/35d7372ba3193d343a4676fbb3f6b7760effa50d.png]]
+[[file:./.ob-jupyter/40a038433145efea1d21d21bca92f950292bb9e0.png]]
+[[file:./.ob-jupyter/f80a6343b245110ef001efbe41f1038c14c2406d.png]]
+[[file:./.ob-jupyter/803a7f6168369a69359082197d0f5d88c5cc5a47.png]]
+[[file:./.ob-jupyter/f0d15a473289b5012283661591fd03ac4301ef68.png]]
+[[file:./.ob-jupyter/c55c0ef6538a3033fd54609e1085909855af0f2b.png]]
+[[file:./.ob-jupyter/be9189c8ee4d88777b90f2c7f1705992ab5fe53f.png]]
+[[file:./.ob-jupyter/208617947c897b310dfd8649b84a10ad38d05d45.png]]
+[[file:./.ob-jupyter/bb80976e1fab3c51e2f65af4d18542760c9368a5.png]]
+[[file:./.ob-jupyter/72376912a08360d7c94f953cc4431a733db2cb4d.png]]
+[[file:./.ob-jupyter/a569774b96cc58f4a3841b8fc51b5c5de79acc1e.png]]
+[[file:./.ob-jupyter/18f48a92d063fb2f35e34c0c2fac248d3826cdfa.png]]
+[[file:./.ob-jupyter/03e7a7893869b5faa2e3574c4b6ba60628be6132.png]]
+[[file:./.ob-jupyter/3517a2317d0412b86a4489c5ec50760ec1a7faea.png]]
+[[file:./.ob-jupyter/62b6b04386931ad5f77de97486152bef4b2856ac.png]]
+[[file:./.ob-jupyter/ac53cb36998a93fe87eda01b90d684497451ab18.png]]
+[[file:./.ob-jupyter/da596b71fa2640757f58425cb4d727721fd40966.png]]
+[[file:./.ob-jupyter/9dfbe1306bcdf116f8295db72b63e231a0b023af.png]]
+[[file:./.ob-jupyter/018b51816912ef93d75faae9df5c47366d59971e.png]]
+[[file:./.ob-jupyter/554468cb39d31f0a5ed1a5fde7a943dc97527929.png]]
+[[file:./.ob-jupyter/8a052d93aa44e7b576550f798bcc44a54fb80f25.png]]
+[[file:./.ob-jupyter/25f92a67e8f6a7d0167af41e82b8828ed5678795.png]]
+[[file:./.ob-jupyter/26ec74b607185c78947c91ed6f3952159eeb1df0.png]]
+[[file:./.ob-jupyter/cad9b2fb0bcc9b6bf0c81c01a5f4e1281d9f9ed0.png]]
+[[file:./.ob-jupyter/d02f265798f3ea69a7f26f414698c0b905da553f.png]]
+[[file:./.ob-jupyter/f68cd19bc45591f4044ffff0e609f2e0f204ee15.png]]
+[[file:./.ob-jupyter/9ca85c1e26d7480561a34501ce6e3cd569e06a70.png]]
+[[file:./.ob-jupyter/f4c3c5a57f0ddfe33f2ecf1055432528bc90eb70.png]]
+[[file:./.ob-jupyter/e72c1a4eacff4e9b50bc7aaaad3cb9662d129b33.png]]
+[[file:./.ob-jupyter/22ff8af625d985d49cc946ba4e05f1fad3d4c9c3.png]]
+[[file:./.ob-jupyter/d98c6d2453ef5342af865dfc955be8be90e1e4a2.png]]
+[[file:./.ob-jupyter/7a541448c2c2ed3249010ccf6e277736f5b0770f.png]]
+[[file:./.ob-jupyter/5032c3016fb2ce41cf589dc5c0a2750e7b2d6625.png]]
+[[file:./.ob-jupyter/3ebc4dddecc100c21da93523e42910d290feac88.png]]
+[[file:./.ob-jupyter/84f2dc0426230c61653a3c57b3dfb684b2396395.png]]
+[[file:./.ob-jupyter/d48db47bbe1898acdc4bc37b20cc2dd56a0051dc.png]]
+[[file:./.ob-jupyter/93b03cc9ef0ba820137861701745adaec4d1dab4.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+#mast_swin = pd.read_csv('/home/shl/data/gem/climatebasis/climate_mast/View_ClimateBasis_Zackenberg_Data_Radiation_Short_wave_incoming_radiation_@_200_cm__5min_average_W_m2270920221347180965.csv', sep = '\t', index_col = 0, parse_dates = {'date':['Date','Time']}, na_values = -9999)
+
+
+#glob_rad = pd.read_csv('GRASS_files/glob_zac_l.csv', header = None)
+#glob_rad.columns = ['x', 'y', 'doy','doy+1','glob_rad']
+#glob_rad.set_index('doy', inplace = True)
+#glob_rad = pd.DataFrame(glob_rad['glob_rad'])
 
 
 variable = 'dsr_corr'
 ylabel = 'W m$^{-2}$'
 
-
-
 dsr_corr_sum = pd.DataFrame(zac_l['dsr_corr'].interpolate().resample('D').sum())
 #usr_corr_sum = pd.DataFrame(zac_l['usr_corr'].interpolate().resample('D').sum())
-
 
 # calculate the difference in days between each date
 df = pd.DataFrame(zac_l['dsr_corr']).dropna()
@@ -7879,8 +8250,6 @@ df['diff'] = df.index.to_series().diff()
 # only interpolate where the difference to the previous date is <= 1 day
 df.loc[df['diff'] <= pd.Timedelta(days=1), 'dsr_corr'] = df.loc[df['diff'] <= pd.Timedelta(days=1), 'dsr_corr'].interpolate()
 usr_corr_sum = df['dsr_corr'].resample('D').sum()
-
-
 
 dsr_sum = pd.DataFrame(zac_l['dsr'].resample('D').sum())
 usr_sum = pd.DataFrame(zac_l['usr'].resample('D').sum())
@@ -7895,7 +8264,6 @@ years = []
 
 from scipy.signal import savgol_filter
 from scipy.ndimage.filters import maximum_filter1d
-
 
 y_max = maximum_filter1d(dsr_corr_sum['dsr_corr'], size=7)
 top = savgol_filter(y_max, 101, 3)  # window size 51, polynomial order 3
@@ -8323,6 +8691,143 @@ ax[0].legend()
 [[file:./.ob-jupyter/90072033330df50d82d64e61383a70327d7d9310.png]]
 :END:
 
+
+
+***** Albedo
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+
+import matplotlib.colors as mcolors
+# meta data
+
+zac_l_elev = 644
+zac_u_elev = 877
+zac_a_elev = 1477
+
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+
+zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+deep_purple = pd.read_csv('shunan_feng_albedo/zac_l_alb.csv')
+deep_purple.index = pd.to_datetime(deep_purple['system:time_start'], format='%b %d, %Y')
+deep_purple.drop(['system:time_start'], axis = 1, inplace = True)
+deep_purple.index.name = 'Date'
+deep_purple.rename(columns={'visnirAlbedo':'Albedo'}, inplace = True)
+
+albedo = pd.DataFrame(zac_l['albedo'].dropna().resample('D').mean())
+albedo.index.name = 'Date'
+
+albedo_m2 = pd.DataFrame(zac_l['usr'].resample('D').sum()/zac_l['dsr'].resample('D').sum())
+albedo_m2 = albedo_m2.where(albedo_m2> 0, np.nan)
+albedo_m2 = albedo_m2.where(albedo_m2< 1, np.nan)
+albedo_m2.index.name = 'Date'
+albedo_m2.rename(columns = {0:'albedo'}, inplace = True)
+print(albedo_m2)
+#fig,ax = plt.subplots(1,1, figsize = (10,5))
+#albedo.loc['2008'].plot(ax = ax)
+#albedo_m2.loc['2008'].plot(ax = ax)
+
+df = pd.merge(albedo_m2, deep_purple['Albedo'], on='Date', how='outer')
+
+#print(df)
+df = df.dropna()
+
+df['Year'] = df.index.year
+cmap = plt.cm.tab20
+norm = mcolors.Normalize(vmin=df['Year'].min(), vmax=df['Year'].max())
+
+fig, ax = plt.subplots(1,1, figsize = (6,6))
+
+# Scatterplot of 'Value1' vs 'Value2' with colors by 'Year'
+ax.scatter(df['albedo'], df['Albedo'], color=cmap(norm(df['Year'].values)))
+
+# Create a colorbar
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+fig.colorbar(sm)
+
+ax.set_ylabel('Satellite derived albedo')
+ax.set_xlabel('In-situ albedo')
+ax.set_ylim(0.1,0.8)
+ax.set_xlim(0.1,0.8)
+fig.savefig('QCfigs/albedo_vs_deep_purple_albedo.png', dpi = 300)
+
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+begin_example
+                albedo
+  Date                
+  2008-03-29  0.909881
+  2008-03-30  0.762652
+  2008-03-31  0.756264
+  2008-04-01  0.754656
+  2008-04-02  0.749840
+  ...              ...
+  2022-04-15  0.836922
+  2022-04-16  0.954787
+  2022-04-17  0.714025
+  2022-04-18  0.768955
+  2022-04-19  0.703801
+
+  [5135 rows x 1 columns]
+  /tmp/ipykernel_22962/2918246167.py:55: MatplotlibDeprecationWarning: Unable to determine Axes to steal space for Colorbar. Using gca(), but will raise in the future. Either provide the *cax* argument to use as the Axes for the Colorbar, provide the *ax* argument to steal space from it, or add *mappable* to an Axes.
+    fig.colorbar(sm)
+#+end_example
+[[file:./.ob-jupyter/b08a81985bbb4fde623091ec2a6e3f5e2291f4eb.png]]
+:END:
+
+#+BEGIN_SRC jupyter-python
+
+for year in range(2008,2022):
+    fig,ax = plt.subplots(1,1, figsize = (10,5))
+    ax.plot(albedo.loc[str(year)].index.dayofyear,albedo.loc[str(year)])
+    ax.scatter(deep_purple.loc[str(year)].index.dayofyear,deep_purple.loc[str(year)], color = 'purple')
+    ax.set_xlim(120,255) 
+    fig.savefig('QCfigs/zac_l_albedo_deep_purple_'+str(year)+'.png', dpi = 300)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[file:./.ob-jupyter/9e6456b2b4fddef26e45347964aaad78b6318482.png]]
+[[file:./.ob-jupyter/1cfc03223670e2a16047fa345fcff2143dabc044.png]]
+[[file:./.ob-jupyter/be4ec7ae08da9e40bc00470687ceac1b0c048be4.png]]
+[[file:./.ob-jupyter/97e17637f2cb8bfa571758dd9bf6556c0e9a8320.png]]
+[[file:./.ob-jupyter/84d2574a7c2559e4f84743c9268c6fd8f4992822.png]]
+[[file:./.ob-jupyter/4d42840e6c2675a7d371a74eafaa723891236760.png]]
+[[file:./.ob-jupyter/fbf18e775057aa278dd7da9d80faeddf6a94b2b3.png]]
+[[file:./.ob-jupyter/1b5cb33c9ccb73e431597fc40b1c373db5780399.png]]
+[[file:./.ob-jupyter/89f55330c108c44223d345cf9c75a49c407fe820.png]]
+[[file:./.ob-jupyter/ac6cbb6d7cf494455ad3067eeb6f40efed8837ba.png]]
+[[file:./.ob-jupyter/4e4496a598e45838dbd5e9bae3a26bc8f3d7357e.png]]
+[[file:./.ob-jupyter/21e5d15a3ce357d07089648a62bde539e4e77be3.png]]
+[[file:./.ob-jupyter/2cc8588611b857a520f71008bafeea83b9417fe5.png]]
+[[file:./.ob-jupyter/7fad3daa8c55e56fa1ff8131c1934021090d0bb5.png]]
+:END:
+
+
+
+#+BEGIN_SRC jupyter-python
+
+
+
+
+legend = []
+fig,ax = plt.subplots(1,1, figsize = (15,15))
+for year in range(2008,2022):
+    ax.plot(albedo.loc[str(year)].index.dayofyear,albedo.loc[str(year)])
+    legend.append(str(year))
+ax.set_xlim(200,220)    
+ax.legend(legend)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: <matplotlib.legend.Legend at 0x7f7754909460>
+[[file:./.ob-jupyter/b07335654080efbfddb0e4f0eedbff5e0d0ca1d6.png]]
+:END:
 
 
 **** QC
@@ -9780,7 +10285,8 @@ boom_a = pd.read_csv(datapath+'zac_a_hour_boom_height.csv', parse_dates = True, 
 
 fig, ax = plt.subplots(3,1,figsize=(10,10), sharex = True, sharey = True)
 boom_l.plot(ax=ax[0])
-boom_l.rolling(24,center=True).median().plot(ax = ax[0])
+boom_l.rolling(24,center=True).median().rolling(24*7,center=True).median().plot(ax = ax[0])
+
 boom_u.plot(ax=ax[1])
 boom_u.rolling(24,center=True).median().plot(ax = ax[1])
 boom_a.plot(ax=ax[2])
@@ -9789,17 +10295,35 @@ ax[2].set_xlim(datetime.datetime(2008,1,1),datetime.datetime(2022,12,31))
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out [145]: 
-# text/plain
-: (333096.0, 464568.0)
+:RESULTS:
+| 333096.0 | 464568.0 |
+[[file:./.ob-jupyter/bcd36ee3d30f9763450e8db3ba8b636d6984d84f.png]]
+:END:
 
-# text/plain
-: <Figure size 720x720 with 3 Axes>
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+variable = 'z_boom'
+boom_l = pd.read_csv(datapath+'zac_l_day_boom_height.csv', parse_dates = True, index_col=0)
+boom_u = pd.read_csv(datapath+'zac_u_day_boom_height.csv', parse_dates = True, index_col=0)
+boom_a = pd.read_csv(datapath+'zac_a_day_boom_height.csv', parse_dates = True, index_col=0)
 
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/03dc603ab64affef53827a4c370c94b37507eb1d.png]]
-:end:
+fig, ax = plt.subplots(3,1,figsize=(10,10), sharex = True, sharey = True)
+boom_l.plot(ax=ax[0])
+boom_l.rolling(3,center=True).median().plot(ax = ax[0])
+
+boom_u.plot(ax=ax[1])
+boom_u.rolling(3,center=True).median().plot(ax = ax[1])
+boom_a.plot(ax=ax[2])
+boom_a.rolling(3,center=True).median().plot(ax = ax[2])
+ax[2].set_xlim(datetime.datetime(2008,1,1),datetime.datetime(2022,12,31))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+| 13879.0 | 19357.0 |
+[[file:./.ob-jupyter/81fb4d89fdc56b4e19e0c8e887899f079463af9c.png]]
+:END:
 
 
 **** QC
@@ -10427,29 +10951,43 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
   2008-03-29 19:00:00     19.9169      19.1078  167.366  217.078       NaN   
   2008-03-29 20:00:00      2.9253          NaN  168.569  221.049       NaN   
   ...                         ...          ...      ...      ...       ...   
-  2022-04-19 07:00:00     99.7908      79.7940  250.738  250.335       NaN   
-  2022-04-19 08:00:00    175.9790     136.1550  254.152  256.830       NaN   
+  2022-04-19 07:00:00     99.7908      79.7940  250.738  250.335  0.956798   
+  2022-04-19 08:00:00    175.9790     136.1550  254.152  256.830  0.859225   
   2022-04-19 09:00:00    462.9640     287.3090  245.243  259.306  0.619616   
   2022-04-19 10:00:00    357.5950     260.1020  236.072  255.021  0.724935   
   2022-04-19 11:00:00    329.7010     263.9390  256.040  269.540  0.801010   
 
-                       cloudcover   T_surf        WS        H  Ablation  
-  time                                                                   
-  2008-03-29 16:00:00    0.125282 -21.9616  4.543500  2.66900       NaN  
-  2008-03-29 17:00:00    0.112939 -22.1859  4.715000  2.67291       NaN  
-  2008-03-29 18:00:00    0.127969 -23.3492  2.866330  2.66831       NaN  
-  2008-03-29 19:00:00    0.116779 -23.9642  2.806330  2.67440       NaN  
-  2008-03-29 20:00:00    0.117033 -22.8161  5.395000  2.67063       NaN  
-  ...                         ...      ...       ...      ...       ...  
-  2022-04-19 07:00:00    0.993019 -15.3841  0.857667  2.07494       NaN  
-  2022-04-19 08:00:00    0.957921 -13.7031  1.421830  2.07687       NaN  
-  2022-04-19 09:00:00    0.837836 -12.9951  0.820333  2.08100       NaN  
-  2022-04-19 10:00:00    0.773889 -14.0433  0.940333  2.07443       NaN  
-  2022-04-19 11:00:00    0.899866 -10.4726  2.136500  2.07567       NaN  
+                       cloudcover   T_surf         I        WS        H  \
+  time                                                                    
+  2008-03-29 16:00:00    0.125282 -21.9616  230.0700  4.543500  2.66900   
+  2008-03-29 17:00:00    0.112939 -22.1859  140.4730  4.715000  2.67291   
+  2008-03-29 18:00:00    0.127969 -23.3492   47.1582  2.866330  2.66831   
+  2008-03-29 19:00:00    0.116779 -23.9642  -43.4902  2.806330  2.67440   
+  2008-03-29 20:00:00    0.117033 -22.8161 -125.2700  5.395000  2.67063   
+  ...                         ...      ...       ...       ...      ...   
+  2022-04-19 07:00:00    0.993019 -15.3841  379.9530  0.857667  2.07494   
+  2022-04-19 08:00:00    0.957921 -13.7031  461.0740  1.421830  2.07687   
+  2022-04-19 09:00:00    0.837836 -12.9951  527.9620  0.820333  2.08100   
+  2022-04-19 10:00:00    0.773889 -14.0433  576.0830  0.940333  2.07443   
+  2022-04-19 11:00:00    0.899866 -10.4726  602.1820  2.136500  2.07567   
 
-  [123212 rows x 15 columns]
+                       Ablation  
+  time                           
+  2008-03-29 16:00:00       NaN  
+  2008-03-29 17:00:00       NaN  
+  2008-03-29 18:00:00       NaN  
+  2008-03-29 19:00:00       NaN  
+  2008-03-29 20:00:00       NaN  
+  ...                       ...  
+  2022-04-19 07:00:00       NaN  
+  2022-04-19 08:00:00       NaN  
+  2022-04-19 09:00:00       NaN  
+  2022-04-19 10:00:00       NaN  
+  2022-04-19 11:00:00       NaN  
+
+  [123212 rows x 16 columns]
 #+end_example
-[[file:./.ob-jupyter/65f005fbf0d96042b27c6d3f3ac2bd4cdac94387.png]]
+[[file:./.ob-jupyter/b987563344b0e6b04b400333292c4ae22b8d71a7.png]]
 :END:
 
 
@@ -10515,21 +11053,21 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
   2022-04-19 13:00:00      432.590  237.073  280.150  0.803078    0.625535   
   2022-04-19 14:00:00      357.564  231.321  280.398  0.798091    0.505859   
 
-                         T_surf       WS        H  Ablation  
-  time                                                       
-  2008-03-29 18:00:00       NaN  3.06183      NaN       NaN  
-  2008-03-29 19:00:00       NaN  1.73083      NaN       NaN  
-  2008-03-29 20:00:00       NaN  2.68367      NaN       NaN  
-  2008-03-29 21:00:00       NaN  3.08867      NaN       NaN  
-  2008-03-29 22:00:00       NaN  4.31950      NaN       NaN  
-  ...                       ...      ...      ...       ...  
-  2022-04-19 10:00:00 -11.65090      NaN  2.17570       NaN  
-  2022-04-19 11:00:00 -11.33500      NaN  2.17573       NaN  
-  2022-04-19 12:00:00  -9.48939      NaN  2.17417       NaN  
-  2022-04-19 13:00:00  -7.75355      NaN  2.17322       NaN  
-  2022-04-19 14:00:00  -7.63614      NaN  2.17596       NaN  
+                         T_surf        I       WS        H  Ablation  
+  time                                                                
+  2008-03-29 18:00:00       NaN      NaN  3.06183      NaN       NaN  
+  2008-03-29 19:00:00       NaN      NaN  1.73083      NaN       NaN  
+  2008-03-29 20:00:00       NaN      NaN  2.68367      NaN       NaN  
+  2008-03-29 21:00:00       NaN      NaN  3.08867      NaN       NaN  
+  2008-03-29 22:00:00       NaN      NaN  4.31950      NaN       NaN  
+  ...                       ...      ...      ...      ...       ...  
+  2022-04-19 10:00:00 -11.65090  575.890      NaN  2.17570       NaN  
+  2022-04-19 11:00:00 -11.33500  601.973      NaN  2.17573       NaN  
+  2022-04-19 12:00:00  -9.48939  604.294      NaN  2.17417       NaN  
+  2022-04-19 13:00:00  -7.75355  582.722      NaN  2.17322       NaN  
+  2022-04-19 14:00:00  -7.63614  538.751      NaN  2.17596       NaN  
 
-  [123213 rows x 15 columns]
+  [123213 rows x 16 columns]
 #+end_example
 
 #+BEGIN_SRC jupyter-python
@@ -10586,28 +11124,28 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
   2009-05-16 00:00:00         NaN          NaN      NaN      NaN       NaN   
   ...                         ...          ...      ...      ...       ...   
   2019-04-13 07:00:00   133.29700          NaN  249.076  267.367       NaN   
-  2019-04-13 08:00:00   208.95600   207.027000  258.101  279.943       NaN   
-  2019-04-13 09:00:00   312.81000   303.702000  264.028  281.681       NaN   
+  2019-04-13 08:00:00   208.95600   207.027000  258.101  279.943  0.612047   
+  2019-04-13 09:00:00   312.81000   303.702000  264.028  281.681  0.909237   
   2019-04-13 10:00:00   376.86800   358.215000  263.821  281.756  0.951206   
   2019-04-13 11:00:00   561.34200   495.338000  251.199  283.532  0.885045   
 
-                       cloudcover    T_surf       WS        H  
-  time                                                         
-  2009-05-15 20:00:00    0.869447  16.07180  0.00000      NaN  
-  2009-05-15 21:00:00         NaN       NaN      NaN      NaN  
-  2009-05-15 22:00:00         NaN       NaN      NaN      NaN  
-  2009-05-15 23:00:00         NaN       NaN      NaN      NaN  
-  2009-05-16 00:00:00         NaN       NaN      NaN      NaN  
-  ...                         ...       ...      ...      ...  
-  2019-04-13 07:00:00    0.427362 -10.97330  6.06417  2.18327  
-  2019-04-13 08:00:00    0.466625  -7.91416  8.00800  2.19128  
-  2019-04-13 09:00:00    0.517423  -7.53442  6.28483  2.19484  
-  2019-04-13 10:00:00    0.503184  -7.51478  4.95967  2.19339  
-  2019-04-13 11:00:00    0.375824  -6.99982  4.48017  2.19040  
+                       cloudcover    T_surf        I       WS        H  
+  time                                                                  
+  2009-05-15 20:00:00    0.869447  16.07180  231.812  0.00000      NaN  
+  2009-05-15 21:00:00         NaN       NaN      NaN      NaN      NaN  
+  2009-05-15 22:00:00         NaN       NaN      NaN      NaN      NaN  
+  2009-05-15 23:00:00         NaN       NaN      NaN      NaN      NaN  
+  2009-05-16 00:00:00         NaN       NaN      NaN      NaN      NaN  
+  ...                         ...       ...      ...      ...      ...  
+  2019-04-13 07:00:00    0.427362 -10.97330  331.829  6.06417  2.18327  
+  2019-04-13 08:00:00    0.466625  -7.91416  413.404  8.00800  2.19128  
+  2019-04-13 09:00:00    0.517423  -7.53442  480.670  6.28483  2.19484  
+  2019-04-13 10:00:00    0.503184  -7.51478  529.068  4.95967  2.19339  
+  2019-04-13 11:00:00    0.375824  -6.99982  555.326  4.48017  2.19040  
 
-  [86872 rows x 14 columns]
+  [86872 rows x 15 columns]
 #+end_example
-[[file:./.ob-jupyter/66b5899539ab04e554fa137b622e79600169e7ed.png]]
+[[file:./.ob-jupyter/33f659e9aee47ea0f700dfa3372036ccc90503af.png]]
 :END:
 
 
