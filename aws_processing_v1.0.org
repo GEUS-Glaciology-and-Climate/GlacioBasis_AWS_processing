@@ -19,7 +19,48 @@ ipython kernel install --name "aws_processing" --user
 
 * Code to process all downloaded data
 
-  
+Overall workflow:
+
+Updates done in the raw data, then everything needs to be done again.
+
+#+BEGIN_SRC jupyter-python
+# Raw to L0
+<<run_all_L0_zac_l>>
+<<run_all_L0_zac_u>>
+<<run_all_L0_zac_a>>
+#+END_SRC
+
+#+RESULTS:
+: Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
+:        'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
+:        'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
+:        't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
+:        'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
+:        'fan_dc'],
+:       dtype='object')
+
+#+BEGIN_SRC bash :results verbatim
+# L0 to L0M
+<<make_L0M_zac_l>>
+<<make_L0M_zac_u>>
+<<make_L0M_zac_a>>
+#+END_SRC
+
+
+TODO print success lines in a better way in make L0M
+
+#+BEGIN_SRC jupyter-python
+# L0M to L1
+<<convert_to_physical_values_workflow>>
+
+# L1 to QC + databases
+<<run_all_QC_filtering_steps_for_meterological_observations>>
+#+END_SRC
+
+TODO
+- Clear out figures created in the QC process
+- update nead
+
 ** Create L0 files: extract raw data and unify headers and correct special cases
 
 Reading in raw files and writing them out as L0 files with nice headers and special case issues solved
@@ -593,6 +634,7 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 <<zac_u_2010_2011>>
 <<zac_u_2011_2012>>
 <<zac_u_2012_2013>>
+<<zac_u_2013_2014>>
 <<zac_u_2014_2015>>
 <<zac_u_2015_2016>>
 <<zac_u_2016_2017>>
@@ -786,7 +828,7 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
-df['tilt_x'] = df['tilt_x'].astype(float)*10 
+df['tilt_x'] = df['tilt_x'].astype(float)*10
 df['tilt_y'] = df['tilt_y'].astype(float)*10 
 df.to_csv(outfilename,sep=',', index=True)
 
@@ -866,8 +908,8 @@ variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)
 df[variables] = df[variables]/100
 #df['p'] = df['p']*mmHg2hPa
-df['tilt_x'] = df['tilt_x'].astype(float)*10 
-df['tilt_y'] = df['tilt_y'].astype(float)*10 
+df['tilt_x'] = df['tilt_x'].astype(float)*10
+df['tilt_y'] = df['tilt_y'].astype(float)*10
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1084,6 +1126,7 @@ df.to_csv(outfilename,sep=',', index=True)
 <<zac_a_2010_2011>>
 <<zac_a_2011_2012>>
 <<zac_a_2012_2013>>
+<<zac_a_2013_2014>>
 <<zac_a_2014_2015>>
 <<zac_a_2015_2016>>
 <<zac_a_2016_2017>>
@@ -1285,7 +1328,7 @@ endtime = df.index[-1] # time to be transferred to next file to cut it where thi
 variables = ['dsr','usr','dlr','ulr']
 df[variables] = df[variables].astype(float)/100
 df['tilt_x'] = df['tilt_x'].astype(float)*10 
-df['tilt_y'] = df['tilt_y'].astype(float)*10 
+df['tilt_y'] = df['tilt_y'].astype(float)*10
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
@@ -1700,7 +1743,7 @@ endyear=2021
 years=2021-2022
 endyear=2022 
 <<concat_nead_and_data>>
-
+echo "ZAC_L data now has nead headers"
 #+END_SRC
 
 #+RESULTS: make_L0M_zac_l
@@ -1777,6 +1820,8 @@ endyear=2021
 years=2021-2022
 endyear=2022 
 <<concat_nead_and_data>>
+echo "ZAC_U data now has nead headers"
+
 #+END_SRC
 
 #+RESULTS: make_L0M_zac_u
@@ -1849,6 +1894,7 @@ years=2018-2019
 endyear=2019 
 <<concat_nead_and_data>>
 
+echo "ZAC_A data now has nead headers"
 
 #+END_SRC
 
@@ -2243,7 +2289,7 @@ NB I use the NEAD data format for L0 data. Program installed via:
 pip install --upgrade git+https://github.com/GEUS-PROMICE/pyNEAD.git
 
 
-
+#+NAME: convert_to_physical_values_workflow
 #+BEGIN_SRC jupyter-python :tangle convert_to_physical_values.py
 import nead
 import pandas as pd
@@ -2259,7 +2305,6 @@ station = 'zac_l'
 station = 'zac_u'
 <<convert_to_physical_values>>
 
-
 station = 'zac_a'
 <<convert_to_physical_values>>
 
@@ -2267,531 +2312,531 @@ station = 'zac_a'
 <<Make_a_single_netcdf_per_station>>
 #+END_SRC
 
-#+RESULTS:
+#+RESULTS: convert_to_physical_values_workflow
 #+begin_example
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2017.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2020.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2015.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2016.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2012.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2014.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2018.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2021.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2013.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2022.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2011.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2010.csv
-  /tmp/ipykernel_11697/4070531957.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:136: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:138: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:140: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2017.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:596: RuntimeWarning: divide by zero encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:596: RuntimeWarning: divide by zero encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2016.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2019.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:596: RuntimeWarning: divide by zero encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:596: RuntimeWarning: divide by zero encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2020.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:596: RuntimeWarning: divide by zero encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:596: RuntimeWarning: divide by zero encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2010.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:596: RuntimeWarning: invalid value encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:596: RuntimeWarning: invalid value encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2021.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2013.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2012.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:596: RuntimeWarning: invalid value encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:596: RuntimeWarning: invalid value encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2011.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:596: RuntimeWarning: invalid value encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:596: RuntimeWarning: invalid value encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2014.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2015.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2022.csv
-  /tmp/ipykernel_11697/4070531957.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:400: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:497: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:499: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:501: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2011.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2016.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2012.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2018.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2014.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2017.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2013.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2015.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2010.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:958: RuntimeWarning: divide by zero encountered in true_divide
+  /tmp/ipykernel_15308/431301956.py:957: RuntimeWarning: divide by zero encountered in true_divide
     phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
   /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2019.csv
-  /tmp/ipykernel_11697/4070531957.py:762: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+  /tmp/ipykernel_15308/431301956.py:761: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_11697/4070531957.py:859: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+  /tmp/ipykernel_15308/431301956.py:858: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
   Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
     s = np.int(win_size/2)
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:861: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:860: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_x'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',     center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
-  /tmp/ipykernel_11697/4070531957.py:863: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  /tmp/ipykernel_15308/431301956.py:862: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
     ds['tilt_y'] = (('time'), tdf.iloc[:s][::-1].append(tdf).append(tdf.iloc[-s:][::-1]).rolling(win_size, win_type='boxcar',    center=True).mean()[s:-s].values.flatten())
 #+end_example
 
@@ -4299,26 +4344,42 @@ import datetime
 
 ** Loading raw data and filtering data based on QC below
 
- Key variables to deliver:
- Temperature
- RH
- Pressure
- Wind speed
- Radiation
- SR50 boom height
-
-All the code blocs need to be run in order to get the correct output. This is in order to understand all the steps that have been taken to create the dataseries
-
-Flags??
-['2020-08-15']:['2021-08-01'] Station was tilted
-
-*** Meterological observations
-**** zac_a
-
-
-***** Pre QC
+Workflow
 #+BEGIN_SRC jupyter-python
 
+#+END_SRC
+
+
+*** Meterological observations
+Workflow
+
+#+NAME: run_all_QC_filtering_steps_for_meterological_observations
+#+BEGIN_SRC jupyter-python :tangle QC_filtering_of_meterological_data.py
+
+<<run_all_preQC_for_zac_a>>
+<<run_all_postQC_for_zac_a>>
+
+<<run_all_preQC_for_zac_l>>
+<<run_all_postQC_for_zac_l>>
+
+<<run_all_preQC_for_zac_u>>
+<<run_all_postQC_for_zac_u>>
+#+END_SRC
+
+
+
+**** zac_a
+
+***** Pre QC
+#+NAME: run_all_preQC_for_zac_a
+#+BEGIN_SRC jupyter-python
+<<zac_a_preQC_temperature>>
+<<zac_a_preQC_radiation>>
+<<zac_a_preQC_relative_humidity>>
+<<zac_a_preQC_wind_speed>>
+<<zac_a_preQC_pressure>>
+<<zac_a_preQC_boom_height>>
+<<zac_a_preQC_stake_height>>
 #+END_SRC
 
 
@@ -4411,8 +4472,9 @@ Flags??
   :end:
 
 ****** Temperature
- First load in libraries and data
-  #+BEGIN_SRC jupyter-python
+#+NAME: zac_a_preQC_temperature
+ #+BEGIN_SRC jupyter-python
+
  <<load_libs>>
  <<data_file_paths>>
  <<load_transmitted_trusted>>
@@ -4510,8 +4572,8 @@ Flags??
 ****** Radiation 
  The transmitted radiation data does not look right - and since we do not have the tilt, I think I will declare this data too uncertain to use. 
  So we only use the downloaded data:
-
-   #+BEGIN_SRC jupyter-python
+#+NAME: zac_a_preQC_radiation
+  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
     
@@ -4634,7 +4696,7 @@ Flags??
 
 
 ****** Relative humidity
-
+#+NAME: zac_a_preQC_relative_humidity
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4668,7 +4730,7 @@ Flags??
  :END:
 
 ****** Windspeed
-
+#+NAME: zac_a_preQC_wind_speed
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4722,7 +4784,7 @@ Flags??
  :end:
 
 ****** pressure
-
+#+NAME: zac_a_preQC_pressure
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4777,7 +4839,7 @@ Flags??
 
 
 ****** boom height
-
+#+NAME: zac_a_preQC_boom_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4832,7 +4894,7 @@ Flags??
 
 
 ****** SR50 on stakes
-
+#+NAME: zac_a_preQC_stake_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4889,8 +4951,18 @@ Flags??
 
 
 ***** Post QC
-
+#+NAME: run_all_postQC_for_zac_a
+#+BEGIN_SRC jupyter-python
+<<zac_a_postQC_temperature>>
+<<zac_a_postQC_radiation>>
+<<zac_a_postQC_relative_humidity>>
+<<zac_a_postQC_wind_speed>>
+<<zac_a_postQC_pressure>>
+<<zac_a_postQC_boom_height>>
+<<zac_a_postQC_stake_height>>
+#+END_SRC
 ****** Temperature
+#+NAME: zac_a_postQC_temperature
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4918,6 +4990,7 @@ Flags??
  :end:
 
 ****** Radiation
+#+NAME: zac_a_postQC_radiation
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -4967,6 +5040,7 @@ Flags??
  #+RESULTS:
 
 ****** Relative humidity
+#+NAME: zac_a_postQC_relative_humidity
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -4992,6 +5066,7 @@ Flags??
  #+RESULTS:
 
 ****** Wind speed
+#+NAME: zac_a_postQC_wind_speed
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5015,6 +5090,7 @@ Flags??
  #+RESULTS:
 
 ****** Pressure
+#+NAME: zac_a_postQC_pressure
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5040,6 +5116,7 @@ Flags??
 
 
 ****** Boom height
+#+NAME: zac_a_postQC_boom_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5072,7 +5149,19 @@ Flags??
 
 **** zac_l
 ***** Pre QC
+#+NAME: run_all_preQC_for_zac_l
+#+BEGIN_SRC jupyter-python
+<<zac_l_preQC_temperature>>
+<<zac_l_preQC_radiation>>
+<<zac_l_preQC_relative_humidity>>
+<<zac_l_preQC_wind_speed>>
+<<zac_l_preQC_pressure>>
+<<zac_l_preQC_boom_height>>
+<<zac_l_preQC_stake_height>>
+#+END_SRC
+
 ****** Temperature
+#+NAME: zac_l_preQC_temperature
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5128,6 +5217,7 @@ Flags??
 
 
 ****** Radiation
+#+NAME: zac_l_preQC_radiation
    #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5168,7 +5258,7 @@ Flags??
 
 
 ****** Relative humidity
-
+#+NAME: zac_l_preQC_relative_humidity
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5223,7 +5313,7 @@ Flags??
 
 
 ****** Windspeed
-
+#+NAME: zac_l_preQC_wind_speed
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5277,7 +5367,7 @@ Flags??
  :end:
 
 ****** pressure
-
+#+NAME: zac_l_preQC_pressure
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5331,7 +5421,7 @@ Flags??
  :end:
 
 
-****** Surface lowering (z_pt)
+****** OLD? Surface lowering (z_pt)
 
 #+BEGIN_SRC jupyter-python
  <<load_libs>>
@@ -5359,7 +5449,7 @@ Flags??
 
 
 ****** boom height
-
+#+NAME: zac_l_preQC_boom_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5414,7 +5504,7 @@ Flags??
 
 
 ****** SR50 on stakes
-
+#+NAME: zac_l_preQC_stake_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5470,7 +5560,18 @@ Flags??
 
 
 ***** Post QC
+#+NAME: run_all_postQC_for_zac_l
+#+BEGIN_SRC jupyter-python
+<<zac_l_postQC_temperature>>
+<<zac_l_postQC_radiation>>
+<<zac_l_postQC_relative_humidity>>
+<<zac_l_postQC_wind_speed>>
+<<zac_l_postQC_pressure>>
+<<zac_l_postQC_boom_height>>
+<<zac_l_postQC_stake_height>>
+#+END_SRC
 ****** Temperature
+#+NAME: zac_l_postQC_temperature
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5496,7 +5597,7 @@ Flags??
 
 
 ****** Radiation
-
+#+NAME: zac_l_postQC_radiation
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5538,6 +5639,7 @@ Flags??
  rad_hour['2020-07-01':'2021-07-22'] = np.nan
  rad_hour['dsr_corr']['22-Jan-2020':] = np.nan
  rad_hour['usr_corr']['22-Jan-2020':] = np.nan
+ rad_hour['albedo']['22-Jan-2020':] = np.nan
 
  # Then calculate daily averages again
  count_hours = rad_hour.resample('D').count()
@@ -5554,6 +5656,7 @@ Flags??
 
 
 ****** Relative humidity
+#+NAME: zac_l_postQC_relative_humidity
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5580,6 +5683,7 @@ Flags??
 
 
 ****** Wind speed
+#+NAME: zac_l_postQC_wind_speed
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5602,6 +5706,7 @@ Flags??
 
 
 ****** Pressure
+#+NAME: zac_l_postQC_pressure
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5632,6 +5737,7 @@ Flags??
 
 
 ****** Boom height
+#+NAME: zac_l_postQC_boom_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -5659,7 +5765,18 @@ Flags??
 **** zac_u
 
 ***** Pre QC
+#+NAME: run_all_preQC_for_zac_u
+#+BEGIN_SRC jupyter-python
+<<zac_u_preQC_temperature>>
+<<zac_u_preQC_radiation>>
+<<zac_u_preQC_relative_humidity>>
+<<zac_u_preQC_wind_speed>>
+<<zac_u_preQC_pressure>>
+<<zac_u_preQC_boom_height>>
+<<zac_u_preQC_stake_height>>
+#+END_SRC
 ****** Temperature
+#+NAME: zac_u_preQC_temperature
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5713,8 +5830,8 @@ Flags??
  :end:
 
 ****** Radiation
-
-   #+BEGIN_SRC jupyter-python
+#+NAME: zac_u_preQC_radiation
+ #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
     
@@ -5751,7 +5868,7 @@ Flags??
  #+RESULTS:
 
 ****** Relative humidity
-
+#+NAME: zac_u_preQC_relative_humidity
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5805,7 +5922,7 @@ Flags??
  :end:
 
 ****** Windspeed
-
+#+NAME: zac_u_preQC_wind_speed
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5859,7 +5976,7 @@ Flags??
  :end:
 
 ****** pressure
-
+#+NAME: zac_u_preQC_pressure
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5918,7 +6035,7 @@ Flags??
 
 
 ****** boom height
-
+#+NAME: zac_u_preQC_boom_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -5974,7 +6091,7 @@ Flags??
 
 
 ****** SR50 on stakes
-
+#+NAME: zac_u_preQC_stake_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -6029,8 +6146,20 @@ Flags??
 
 
 ***** Post QC
-****** Temperature
 
+#+NAME: run_all_postQC_for_zac_u
+#+BEGIN_SRC jupyter-python
+<<zac_u_postQC_temperature>>
+<<zac_u_postQC_radiation>>
+<<zac_u_postQC_relative_humidity>>
+<<zac_u_postQC_wind_speed>>
+<<zac_u_postQC_pressure>>
+<<zac_u_postQC_boom_height>>
+<<zac_u_postQC_stake_height>>
+#+END_SRC
+
+****** Temperature
+#+NAME: zac_u_postQC_temperature
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -6055,6 +6184,7 @@ Flags??
  #+RESULTS:
 
 ****** Radiation
+#+NAME: zac_u_postQC_radiation
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
@@ -6115,6 +6245,7 @@ Flags??
  :END:
 
 ****** Relative humidity
+#+NAME: zac_u_postQC_relative_humidity
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -6144,6 +6275,7 @@ Flags??
 
 
 ****** Wind speed
+#+NAME: zac_u_postQC_wind_speed
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -6167,6 +6299,7 @@ Flags??
  #+RESULTS:
 
 ****** Pressure
+#+NAME: zac_u_postQC_pressure
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -6199,6 +6332,7 @@ Flags??
 
 
 ****** Boom height
+#+NAME: zac_u_postQC_boom_height
  #+BEGIN_SRC jupyter-python
  <<load_libs>>
  datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -7228,7 +7362,7 @@ z_l.loc['2008-8-23':'2008-12-31'] = np.nan
 z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-7-2'].mean()
 
 z_l.loc['2009-1-1':'2009-7-4'] = np.nan
-z_l.loc['2009-8-16':'2009-12-31'] = np.nan
+z_l.loc['2009-7-18':'2009-12-31'] = np.nan
 z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-7-5'].mean()
 
 z_l.loc['2010-1-1':'2010-6-22'] = np.nan
@@ -7285,13 +7419,13 @@ z_l[month>9] = np.nan
 
 z_l_hour = z_l.resample('H').mean()
 z_l_day = z_l.resample('D').mean() 
-z_l_hour.plot()
-z_l_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height_ice.csv', index = True, float_format = '%g')
-z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height_ice', index = True, float_format = '%g')
+z_l_hour.loc['July-2009'].plot()
+z_l_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_SR50_stake_height_ice.csv', index = True, float_format = '%g')
+z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_SR50_stake_height_ice.csv', index = True, float_format = '%g')
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/7d701100f666432536385f545e1fe0294c3fcb72.png]]
+[[file:./.ob-jupyter/65c7e8c24419d9abd9c242d65bf01348d9d51bce.png]]
 
 ****** zac_u
 
@@ -7401,8 +7535,8 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_ice_ablation.cs
 
 #+RESULTS:
 :RESULTS:
-[[file:./.ob-jupyter/837bd9fea41b840a73368756c092f4976eb82679.png]]
-[[file:./.ob-jupyter/4930f5737868763a32cce98ff05fba02f77771e3.png]]
+[[file:./.ob-jupyter/ae1bac728566fafd45235e8ea5a7913ed5f9a049.png]]
+[[file:./.ob-jupyter/6ff466e5d9c24f1a77ddc4cdb996ca954ac39aef.png]]
 :END:
 
 
@@ -7473,51 +7607,58 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_ice_ablation.cs
 
 **** Final filtering of ice ablation
 ****** zac_l
-
+This is just a plot
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
+import matplotlib.dates as mdates
 datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index_col=0)
-sr50 = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
+sr50 = pd.read_csv(datapath+'zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
 pta = -pta
 
-fig, ax = plt.subplots(3,2,figsize = (8,10))
-pta.loc['1-June-2008':'1-Sep-2008'].plot(ax = ax[0,0])
-sr50.loc['1-June-2008':'1-Sep-2008'].plot(ax = ax[0,0])
+pta = pta.resample('D').mean()
+sr50 = sr50.resample('D').mean()
+
+fig, ax = plt.subplots(2,3,figsize = (8,6), sharey = True)
+pta.loc['20-June-2008':'1-Sep-2008'].plot(ax = ax[0,0])
+sr50.loc['20-June-2008':'1-Sep-2008'].plot(ax = ax[0,0])
 ax[0,0].set_ylim(0,2.7)
 
-pta.loc['1-June-2009':'1-Sep-2009'].plot(ax = ax[0,1])
-sr50.loc['1-June-2009':'1-Sep-2009'].plot(ax = ax[0,1])
+#ax[0,0].set_xticks([])
+
+pta.loc['20-June-2009':'1-Sep-2009'].plot(ax = ax[0,1])
+sr50.loc['20-June-2009':'1-Sep-2009'].plot(ax = ax[0,1])
 ax[0,1].set_ylim(0,2.7)
 
-pta.loc['1-June-2010':'1-Sep-2010'].plot(ax = ax[1,0])
-sr50.loc['1-June-2010':'1-Sep-2010'].plot(ax = ax[1,0])
-ax[0,1].set_ylim(0,2.7)
+pta.loc['20-June-2010':'1-Sep-2010'].plot(ax = ax[0,2])
+sr50.loc['20-June-2010':'1-Sep-2010'].plot(ax = ax[0,2])
+ax[0,2].set_ylim(0,2.7)
 
-pta.loc['1-June-2012':'1-Sep-2012'].plot(ax = ax[1,1])
-sr50.loc['1-June-2012':'1-Sep-2012'].plot(ax = ax[1,1])
-ax[0,1].set_ylim(0,2.7)
-
-pta.loc['1-June-2015':'1-Sep-2015'].plot(ax = ax[2,0])
-sr50.loc['1-June-2015':'1-Sep-2015'].plot(ax = ax[2,0])
-#ax[0].set_xlim(datetime.datetime(2015,6,1),datetime.datetime(2015,9,1))
+pta.loc['20-June-2012':'1-Sep-2012'].plot(ax = ax[1,0])
+sr50.loc['20-June-2012':'1-Sep-2012'].plot(ax = ax[1,0])
 ax[1,0].set_ylim(0,2.7)
+
+pta.loc['20-June-2015':'1-Sep-2015'].plot(ax = ax[1,1])
+sr50.loc['20-June-2015':'1-Sep-2015'].plot(ax = ax[1,1])
+#ax[0].set_xlim(datetime.datetime(2015,6,1),datetime.datetime(2015,9,1))
 ax[1,1].set_ylim(0,2.7)
 
-pta.loc['1-June-2016':'1-Sep-2016'].plot(ax = ax[2,1])
-sr50.loc['1-June-2016':'1-Sep-2016'].plot(ax = ax[2,1])
+pta.loc['20-June-2016':'1-Sep-2016'].plot(ax = ax[1,2])
+sr50.loc['20-June-2016':'1-Sep-2016'].plot(ax = ax[1,2])
 #ax[1].set_xlim(datetime.datetime(2016,6,1),datetime.datetime(2016,9,1))
-ax[1,1].set_ylim(0,2.7)
+ax[1,2].set_ylim(0,2.7)
+
 ax[0,0].set_ylabel('m ice')
 ax[1,0].set_ylabel('m ice')
+fig.tight_layout()
 
-fig.savefig('QCfigs/PTA_vs_SR50.png', dpi = 300)
-
+#fig.savefig('QCfigs/PTA_vs_SR50.png', dpi = 300)
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig11.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/145b9f0ec47b65ba47196d70a4a13f6c0646c443.png]]
+[[file:./.ob-jupyter/1cc7db42c0b12157b7f278775ad46eebf6d5c738.png]]
 
 #+BEGIN_SRC jupyter-python
 
@@ -7546,22 +7687,6 @@ z_l.loc[str(year)].plot(ax=ax)
 datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
 
-
-z_l.loc['2008-Jan-1':'2008-July-2'] = np.nan
-z_l.loc['2008-Aug-28':'2008-Dec-31'] = np.nan
-
-
-z_l.loc['2009-Jan-1':'2009-July-15'] = np.nan
-z_l.loc['2009-Aug-25':'2009-Dec-31'] = np.nan
-
-
-
-
-#z_l.loc['2010-Jan-1':'2010-June-22'] = np.nan
-#z_l.loc['2010-July-28':'2010-Dec-31'] = np.nan
-
-
-
 month = z_l.index.month
 z_l[month<4] = np.nan
 z_l[month>9] = np.nan
@@ -7574,7 +7699,7 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_ice_ablation.csv', index =
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/39f37394a07050eb2dc03a73e668244bfe45a33a.png]]
+[[file:./.ob-jupyter/6ff466e5d9c24f1a77ddc4cdb996ca954ac39aef.png]]
 
 
 
@@ -7774,7 +7899,7 @@ plt.show()
 **** Utilities
 #+NAME: plot_gradients_full_period
 #+BEGIN_SRC jupyter-python
-fig,ax = plt.subplots(5,1,figsize = (10,10), sharex=True)
+fig,ax = plt.subplots(5,1,figsize = (7.5,7), sharex=True)
 panel1 = ax[0]
 panel2 = ax[1]
 panel3 = ax[2]
@@ -7784,14 +7909,15 @@ panel5 = ax[4]
 
 zac_l_pre[variable].plot(ax = panel1, label = 'zac_l', color = 'tab:blue')
 zac_u_pre[variable].plot(ax = panel1, label = 'zac_u', color = 'tab:orange')
-zac_a_pre[variable].plot(ax = panel1, label = 'zac_a', color = 'tab:pink')
+zac_a_pre[variable].plot(ax = panel1, label = 'zac_a', color = 'tab:green')
 panel1.legend(ncol = 1)
 panel1.set_title('Pre QC')
 panel1.set_ylabel(ylabel)
+#panel1.text(datetime.datetime(2008,7,1),15,'A')
 
 zac_l[variable].plot(ax = panel2, label = '', color = 'tab:blue')
 zac_u[variable].plot(ax = panel2, label = '', color = 'tab:orange')
-zac_a[variable].plot(ax = panel2, label = '', color = 'tab:pink')
+zac_a[variable].plot(ax = panel2, label = '', color = 'tab:green')
 
 #panel2.legend(ncol = 3)
 panel2.set_title('Post QC')
@@ -7805,13 +7931,13 @@ d_l_u_pre = (zac_l_pre-zac_u_pre)/(zac_l_elev-zac_u_elev)*100
 d_u_a_pre = (zac_u_pre-zac_a_pre)/(zac_u_elev-zac_a_elev)*100
 d_l_a_pre = (zac_l_pre-zac_a_pre)/(zac_l_elev-zac_a_elev)*100
 
-d_l_u_pre[variable].plot(ax = panel3, label = 'Flagged in QC', color = 'tab:red')
-d_u_a_pre[variable].plot(ax=panel4, label = 'Flagged in QC', color = 'tab:red')
-d_l_a_pre[variable].plot(ax=panel5, label = 'Flagged in QC', color = 'tab:red')
+d_l_u_pre[variable].plot(ax = panel3, label = 'Flagged in QC', color = 'tab:red', linewidth = 0.8)
+d_u_a_pre[variable].plot(ax=panel4, label = 'Flagged in QC', color = 'tab:red', linewidth = 0.8)
+d_l_a_pre[variable].plot(ax=panel5, label = 'Flagged in QC', color = 'tab:red', linewidth = 0.8)
 
-d_l_u[variable].plot(ax=panel3, label = 'zac_l minus zac_u', color = 'tab:green')
-d_u_a[variable].plot(ax=panel4, label = 'zac_u minus zac_a', color = 'tab:green')
-d_l_a[variable].plot(ax=panel5, label = 'zac_l minus zac_a', color = 'tab:green')
+d_l_u[variable].plot(ax=panel3, label = 'zac_l minus zac_u', color = 'gray')
+d_u_a[variable].plot(ax=panel4, label = 'zac_u minus zac_a', color = 'gray')
+d_l_a[variable].plot(ax=panel5, label = 'zac_l minus zac_a', color = 'gray')
 panel3.set_title('Gradients')
 panel3.legend(ncol = 2)
 panel3.set_ylabel(ylabel + '/100m')
@@ -7819,14 +7945,17 @@ panel4.legend(ncol = 2)
 panel4.set_ylabel(ylabel + '/100m')
 panel5.legend(ncol = 2)
 panel5.set_ylabel(ylabel + '/100m')
+# Label each subplot
+for i, ax in enumerate(ax, start=1):
+    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
+            fontsize=16, fontweight='bold', va='top')
+
+fig.tight_layout()
 
 #+END_SRC
 
 #+RESULTS: plot_gradients_full_period
-:RESULTS:
-: Text(0, 0.5, 'm/s/100m')
-[[file:./.ob-jupyter/61b4c23c048fa1eef72692321485d30dae98db9a.png]]
-:END:
+[[file:./.ob-jupyter/9773108045260fe2f5ff01766896c651ee152732.png]]
 
 #+NAME: plot_the_timeperiod
 #+BEGIN_SRC jupyter-python
@@ -7901,11 +8030,11 @@ ax[0,0].set_ylim(-40,20)
 
 
 **** post QC check
-
+***** data only
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
 # meta data
-rcParams.update({'font.size': 8})
+#rcParams.update({'font.size': 8})
 zac_l_elev = 644
 zac_u_elev = 877
 zac_a_elev = 1477
@@ -7935,11 +8064,11 @@ zac_a[variable][zac_a[variable]==0] = np.nan
 fig,ax = plt.subplots(3,1,figsize = (8,6), sharex=True)
 zac_l[variable].plot(ax = ax[0], label = 'ZAC_L', color = 'tab:blue')
 zac_u[variable].plot(ax = ax[1], label = 'ZAC_U', color = 'tab:orange')
-zac_a[variable].plot(ax = ax[2], label = 'ZAC_A', color = 'tab:pink')
+zac_a[variable].plot(ax = ax[2], label = 'ZAC_A', color = 'tab:green')
 
 zac_l_pre[variable].plot(ax = ax[0], label = 'Discarded', color = 'tab:blue', alpha = 0.3)
 zac_u_pre[variable].plot(ax = ax[1], label = 'Discarded', color = 'tab:orange', alpha = 0.3)
-zac_a_pre[variable].plot(ax = ax[2], label = 'Discarded', color = 'tab:pink', alpha = 0.3)
+zac_a_pre[variable].plot(ax = ax[2], label = 'Discarded', color = 'tab:green', alpha = 0.3)
 
 ax[0].grid(True)
 ax[1].grid(True)
@@ -7954,12 +8083,12 @@ ax[2].set_ylabel(ylabel)
 ax[0].legend()
 ax[1].legend()
 ax[2].legend()
-fig.savefig('QCfigs/Temp_compare.png')
+
 
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/0166c70e80d443c02ee6f146012683ca9ff0a124.png]]
+[[file:./.ob-jupyter/d9005a5b31fda77e08df1cee03d63752d437cc34.png]]
 
 ***** Drift 
 #+BEGIN_SRC jupyter-python
@@ -8035,8 +8164,8 @@ print('The total percentage of discarded data at: ')
 print('zac_l is '+ str(disc_data_l))
 print('zac_u is '+ str(disc_data_u))
 print('zac_a is '+ str(disc_data_a))
-fig.savefig('QCfigs/Temperature_final.png')
-
+#fig.savefig('QCfigs/Temperature_final.png')
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig04.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
@@ -8045,7 +8174,7 @@ fig.savefig('QCfigs/Temperature_final.png')
 : zac_l is 0.0
 : zac_u is 8.88088248376479
 : zac_a is 3.625990251766395
-[[file:./.ob-jupyter/d51e6094f811fbca47a153abbe5eb64f0049fcf3.png]]
+[[file:./.ob-jupyter/9773108045260fe2f5ff01766896c651ee152732.png]]
 :END:
 
 
@@ -8565,33 +8694,60 @@ ax[3].legend()
 #+BEGIN_SRC jupyter-python
  <<load_libs>>
  <<data_file_paths>>
-fig, ax
+
+fig, ax = plt.subplots(3,1,figsize = (7.5,5), sharex = True)
  with xr.open_dataset(zac_l_path) as ds:
      df = ds[['tilt_x','tilt_y']].to_dataframe()
-     wspd = ds[['wspd']].to_dataframe()
- df.loc['2020-Jan'].plot()
- wspd.loc['2020-Jan'].plot()
+     df = df.where(df<22, np.nan)
+     df = df.where(df>-20, np.nan)
+     df = df.where(df!=0, np.nan)
+
+ df['tilt_x'].plot(ax = ax[0], color = 'tab:blue', label = '$ZAC\_L$: $Tilt_x$')
+ df['tilt_y'].loc[:'2020-Jan'].plot(ax = ax[0], color = 'deepskyblue', label = '$ZAC\_L$: $Tilt_y$')
+ df['tilt_y'].loc['2020-Jan':].plot(ax = ax[0], color = 'gray', alpha = 0.3, label = '$ZAC\_L$: $Tilt_y$ discarded')
+
 
 # ZAC_L Tilt_y looks wrong in 2020-2022
 
  with xr.open_dataset(zac_u_path) as ds:
      df = ds[['tilt_x','tilt_y']].to_dataframe()
- df.plot()
+     df = df.where(df<22, np.nan)
+     df = df.where(df>-20, np.nan)
+     df = df.where(df!=0, np.nan)
+ df['tilt_y'].plot(ax= ax[1], color = 'tab:orange', label = '$ZAC\_U$: $Tilt_x$')
+ df['tilt_x'].plot(ax= ax[1], color = 'darkgoldenrod', label = '$ZAC\_U$: $Tilt_y$')
+ #df['tilt_y'].plot(ax= ax[1], color = 'tab:orange')
+ #df['tilt_x'].plot(ax= ax[1], color = 'tab:blue')
 
 # ZAC_A and ZAC_U, it looks like the data is a factor 10 off, but I don't really understand how that error could be made? 
  with xr.open_dataset(zac_a_path) as ds:
      df = ds[['tilt_x','tilt_y']].to_dataframe()
- df.plot()
+     df = df.where(df<22, np.nan)
+     df = df.where(df>-20, np.nan)
+     df = df.where(df!=0, np.nan)
+ df['tilt_y'].plot(ax= ax[2], color = 'tab:green', label = '$ZAC\_A$: $Tilt_x$')
+ df['tilt_x'].plot(ax= ax[2], color = 'limegreen', label = '$ZAC\_A$: $Tilt_y$')
+
+ax[0].set_ylabel('Degree')
+ax[1].set_ylabel('Degree')
+ax[2].set_ylabel('Degree')
+ax[0].legend(loc=3)
+ax[1].legend(loc=3)
+ax[2].legend(loc=3)
+
+
+for i, ax in enumerate(ax, start=1):
+    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
+            fontsize=16, fontweight='bold', va='top')
+
+fig.tight_layout()
+
+#fig.savefig('QCfigs/tilt.png')
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig06.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/45c9f028609ba6f844f1bfa56267d2752a695acf.png]]
-[[file:./.ob-jupyter/e64403c6daf8f04c2463b2be9bfbda39ea9e7156.png]]
-[[file:./.ob-jupyter/d37efa9329f45312f032e01120a07e67202a2051.png]]
-[[file:./.ob-jupyter/b3b779a25662ccb6d4221d5eef5cfaed97454804.png]]
-:END:
+[[file:./.ob-jupyter/86b300d922e7c0ed85a3a3f34f06f4e3fd07d4b6.png]]
 
 
 *** Radiation
@@ -8708,6 +8864,73 @@ ax[3].set_xlim(startdate,enddate)
 
 
 ***** SRin
+****** Final
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+
+# meta data
+#rcParams.update({'font.size': 8})
+zac_l_elev = 644
+zac_u_elev = 877
+zac_a_elev = 1477
+
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+zac_l_pre = pd.read_csv(datapath+'preQC/zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u_pre = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a_pre = pd.read_csv(datapath+'preQC/zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+variable = 'dsr_corr'
+ylabel = 'W/m2'
+
+
+zac_l_pre[variable][zac_l_pre[variable]==0] = np.nan
+zac_l[variable][zac_l[variable]==0] = np.nan
+zac_u_pre[variable][zac_u_pre[variable]==0] = np.nan
+zac_u[variable][zac_u[variable]==0] = np.nan
+zac_a_pre[variable][zac_a_pre[variable]==0] = np.nan
+zac_a[variable][zac_a[variable]==0] = np.nan
+
+
+fig,ax = plt.subplots(3,1,figsize = (7.5,5))
+zac_l[variable].plot(ax = ax[0], label = 'ZAC_L', color = 'tab:blue')
+zac_u[variable].plot(ax = ax[1], label = 'ZAC_U', color = 'tab:orange')
+zac_a[variable].plot(ax = ax[2], label = 'ZAC_A', color = 'tab:green')
+
+#zac_l_pre[variable].plot(ax = ax[0], label = 'Discarded', color = 'tab:blue', alpha = 0.3)
+zac_u_pre[variable].plot(ax = ax[1], label = 'Discarded', color = 'tab:orange', alpha = 0.3)
+zac_a_pre[variable].plot(ax = ax[2], label = 'Discarded', color = 'tab:green', alpha = 0.3)
+
+ax[0].grid(True)
+ax[1].grid(True)
+ax[2].grid(True)
+ax[0].set_ylabel(ylabel)
+ax[1].set_ylabel(ylabel)
+ax[2].set_ylabel(ylabel)
+#ax[0].set_ylim(0,100)
+#ax[1].set_ylim(0,100)
+#ax[2].set_ylim(0,100)
+ax[0].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
+ax[1].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
+ax[2].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
+
+ax[0].legend()
+ax[1].legend()
+ax[2].legend()
+#fig.savefig('QCfigs/SRin_compare.png')
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig07.png', dpi = 300)
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/e0a0aae8b274bcb7af99cd0d15723dcb4c9ecaa9.png]]
+
+
+
 ****** Gradients
 
 #+BEGIN_SRC jupyter-python
@@ -9337,6 +9560,94 @@ fig.savefig('QCfigs/SRout_final.png')
 
 ***** LWin
 
+****** Final
+
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+# meta data
+#rcParams.update({'font.size': 8})
+zac_l_elev = 644
+zac_u_elev = 877
+zac_a_elev = 1477
+
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+zac_l_pre = pd.read_csv(datapath+'preQC/zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u_pre = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a_pre = pd.read_csv(datapath+'preQC/zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+variable1 = 'dlr'
+variable2 = 'ulr'
+ylabel = 'W m$^{-2}$'
+
+
+#zac_l_pre[variable][zac_l_pre[variable]==0] = np.nan
+#zac_l[variable][zac_l[variable]==0] = np.nan
+#zac_u_pre[variable][zac_u_pre[variable]==0] = np.nan
+#zac_u[variable][zac_u[variable]==0] = np.nan
+#zac_a_pre[variable][zac_a_pre[variable]==0] = np.nan
+#zac_a[variable][zac_a[variable]==0] = np.nan
+
+
+fig,ax = plt.subplots(3,1,figsize = (7.5,5))
+zac_l[variable1].plot(ax = ax[0], label = '$ZAC\_L$: $LR_{in}$', color = 'tab:blue')
+zac_u[variable1].plot(ax = ax[1], label = '$ZAC\_U$: $LR_{in}$', color = 'tab:orange')
+zac_a[variable1].plot(ax = ax[2], label = '$ZAC\_A$: $LR_{in}$', color = 'tab:green')
+
+zac_l[variable2].plot(ax = ax[0], label = '$ZAC\_L$: $LR_{out}$', color = 'deepskyblue')
+zac_u[variable2].plot(ax = ax[1], label = '$ZAC\_U$: $LR_{out}$', color = 'darkgoldenrod')
+zac_a[variable2].plot(ax = ax[2], label = '$ZAC\_A$: $LR_{out}$', color = 'limegreen')
+
+
+zac_l_pre[variable1].plot(ax = ax[0], label = '', color = 'tab:blue', alpha = 0.3)
+zac_u_pre[variable1].plot(ax = ax[1], label = '', color = 'tab:orange', alpha = 0.3)
+zac_a_pre[variable1].plot(ax = ax[2], label = '', color = 'tab:green', alpha = 0.3)
+
+zac_l_pre[variable2].plot(ax = ax[0], label = '', color = 'deepskyblue', alpha = 0.3)
+zac_u_pre[variable2].plot(ax = ax[1], label = '', color = 'darkgoldenrod', alpha = 0.3)
+zac_a_pre[variable2].plot(ax = ax[2], label = '', color = 'limegreen', alpha = 0.3)
+
+ax[0].grid(True)
+ax[1].grid(True)
+ax[2].grid(True)
+ax[0].set_ylabel(ylabel)
+ax[1].set_ylabel(ylabel)
+ax[2].set_ylabel(ylabel)
+#ax[0].set_title('ZAC_L')
+#ax[1].set_title('ZAC_U')
+#ax[2].set_title('ZAC_A')
+#ax[0].set_ylim(0,100)
+#ax[1].set_ylim(0,100)
+#ax[2].set_ylim(0,100)
+ax[0].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
+ax[1].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
+ax[2].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
+ax[0].set_xlabel('')
+ax[1].set_xlabel('')
+ax[2].set_xlabel('')
+ax[0].legend(loc = 3)
+ax[1].legend(loc = 3)
+ax[2].legend()
+
+for i, ax in enumerate(ax, start=1):
+    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
+            fontsize=16, fontweight='bold', va='top')
+
+fig.tight_layout()
+#fig.savefig('QCfigs/LRin_compare.png')
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig10.png', dpi = 300)
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/c1c6cd26ceaaa9a2877a718ca02327308d2e6127.png]]
+
+
+
+****** gradients
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
 # meta data
@@ -9505,10 +9816,10 @@ ax[0].legend()
 ***** Albedo
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
-
+from sklearn.metrics import mean_squared_error,r2_score
 import matplotlib.colors as mcolors
 # meta data
-rcParams.update({'font.size': 8})
+#rcParams.update({'font.size': 8})
 zac_l_elev = 644
 zac_u_elev = 877
 zac_a_elev = 1477
@@ -9550,11 +9861,23 @@ unique_years = np.unique(years)
 color_map = plt.get_cmap('nipy_spectral', len(unique_years))
 norm = plt.Normalize(min(unique_years), max(unique_years)+1)
 
-fig, ax = plt.subplots(1,1, figsize = (6,6))
+fig, ax = plt.subplots(1,1, figsize = (3.5,3))
+ax.plot([0, 1], [0, 1], color = 'gray', alpha = 0.5)
+scatter = ax.scatter(df['albedo'], df['Albedo'], s = 5, alpha = 0.8)
+#scatter = ax.scatter(df['albedo'], df['Albedo'], c=years, cmap=color_map, norm=norm, s = 5, alpha = 0.8)
+#cbar = plt.colorbar(scatter, ticks=unique_years)
+#cbar.set_label('Year')   
+ 
 
-scatter = ax.scatter(df['albedo'], df['Albedo'], c=years, cmap=color_map, norm=norm)
-cbar = plt.colorbar(scatter, ticks=unique_years)
-cbar.set_label('Year')    
+r2 = 1-(((df['albedo']-df['Albedo'])**2).sum())/(((df['albedo']-df['albedo'].mean())**2).sum())
+r2 = np.round(r2*100)/100
+#r2 = r2_score(observed_ice_melt_clean,modelled_ice_melt_clean) 
+rmse = np.sqrt(mean_squared_error(df['albedo'], df['Albedo']))
+rmse = np.round(rmse*100)/100
+
+ax.text(0.01, 0.95, 'R² = '+str(r2), transform=ax.transAxes, fontsize=10, va='top')
+ax.text(0.01, 0.85, 'rmse = '+str(rmse), transform=ax.transAxes, fontsize=10, va='top')
+
 # Scatterplot of 'Value1' vs 'Value2' with colors by 'Year'
 #ax.scatter(df['albedo'], df['Albedo'], color=cmap(norm(df['Year'].values)))
 
@@ -9564,10 +9887,11 @@ cbar.set_label('Year')
 
 ax.set_ylabel('Satellite derived albedo')
 ax.set_xlabel('In-situ albedo')
-ax.set_ylim(0.1,0.8)
-ax.set_xlim(0.1,0.8)
-fig.savefig('QCfigs/albedo_vs_deep_purple_albedo.png', dpi = 300)
-
+ax.set_ylim(0,1)
+ax.set_xlim(0,1)
+fig.tight_layout()
+#fig.savefig('QCfigs/albedo_vs_deep_purple_albedo.png', dpi = 300)
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig09.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
@@ -9589,7 +9913,7 @@ fig.savefig('QCfigs/albedo_vs_deep_purple_albedo.png', dpi = 300)
 
   [5135 rows x 1 columns]
 #+end_example
-[[file:./.ob-jupyter/7de1845e348f35994dc6e214e38692e1097e79f3.png]]
+[[file:./.ob-jupyter/b5ca8d9df2baa68bae324deca2f7b815e064755f.png]]
 :END:
 
 #+BEGIN_SRC jupyter-python
@@ -9644,6 +9968,68 @@ ax.legend(legend)
 
 
 **** QC
+***** paper plot
+#+BEGIN_SRC jupyter-python
+<<load_libs>>
+from matplotlib import rcParams
+# meta data
+
+
+datapath = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+zac_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+zac_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+
+rcParams.update({'font.size': 8})
+startyear = 2008
+endyear = 2022
+station = zac_l
+station_name = 'zac_l'
+
+station['I'] = station['I'].where(station['I']>=0,0)
+#fig1, ax1 = plt.subplots(1,1, figsize = (10,3))
+#fig2, ax2 = plt.subplots(1,1,figsize =(10,3))
+#station['dsr_corr'].resample('D').max().plot(ax=ax2)
+
+fig, axs = plt.subplots(2,1,figsize = (3.5, 5))
+ax1 = axs[0]
+ax2 = axs[1]
+
+year = 2009
+ax = ax1
+station['I'].loc[str(year)].plot(ax = ax, color = 'gray', alpha = 0.5, label = '$I_{toa}$' )
+station['dsr'].loc[str(year)].resample('D').max().plot(ax = ax,color = 'gray', label =  'SRin max')
+station['dsr'].loc[str(year)].resample('D').min().plot(ax = ax, color = 'gray', linestyle = '--', label = 'SRin min')
+station['dsr_corr'].loc[str(year)].resample('D').max().plot(ax = ax, color = 'gold', label =  'SRin_corr max', alpha = 0.8)
+station['dsr_corr'].loc[str(year)].resample('D').min().plot(ax = ax, color = 'gold', linestyle = '--', label = 'SRin_corr min')
+
+    
+ax.set_ylim(0,1200)
+ax.legend(loc = 2, ncols = 2)
+ax.set_ylabel('$Wm^{⁻2}$')
+
+year = 2016
+ax = ax2
+station['I'].loc[str(year)].plot(ax = ax, color = 'gray', alpha = 0.5, label = '$I_{toa}$')
+station['dsr'].loc[str(year)].resample('D').max().plot(ax = ax,color = 'gray', label =  'SRin max')
+station['dsr'].loc[str(year)].resample('D').min().plot(ax = ax, color = 'gray', linestyle = '--', label = 'SRin min')
+station['dsr_corr'].loc[str(year)].resample('D').max().plot(ax = ax, color = 'gold', label =  'SRin_corr max', alpha = 0.8)
+station['dsr_corr'].loc[str(year)].resample('D').min().plot(ax = ax, color = 'gold', linestyle = '--', label = 'SRin_corr min')
+
+    
+ax.set_ylim(0,1200)
+#ax.legend()g
+ax.set_ylabel('$Wm^{⁻2}$')
+
+fig.tight_layout()
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig08.png',dpi = 300)
+#fig2.savefig('QCfigs/'+station_name+'_SRin_corr_max_all_years.png')
+
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/db402c2e042a62d4a5885e3c8ec937e9b7a39a2d.png]]
 
 ***** Comparing potential global radiation to observations at zac_l
 
@@ -10267,14 +10653,14 @@ zac_a_pre[variable][zac_a_pre[variable]==0] = np.nan
 zac_a[variable][zac_a[variable]==0] = np.nan
 
 
-fig,ax = plt.subplots(3,1,figsize = (10,10), sharex=True)
+fig,ax = plt.subplots(3,1,figsize = (7.5,5), sharex=True)
 zac_l['rh'].plot(ax = ax[0], label = 'ZAC_L', color = 'tab:blue')
 zac_u['rh'].plot(ax = ax[1], label = 'ZAC_U', color = 'tab:orange')
-zac_a['rh'].plot(ax = ax[2], label = 'ZAC_A', color = 'tab:pink')
+zac_a['rh'].plot(ax = ax[2], label = 'ZAC_A', color = 'tab:green')
 
 zac_l_pre['rh'].plot(ax = ax[0], label = 'Discarded', color = 'tab:blue', alpha = 0.3)
 zac_u_pre['rh'].plot(ax = ax[1], label = 'Discarded', color = 'tab:orange', alpha = 0.3)
-zac_a_pre['rh'].plot(ax = ax[2], label = 'Discarded', color = 'tab:pink', alpha = 0.3)
+zac_a_pre['rh'].plot(ax = ax[2], label = 'Discarded', color = 'tab:green', alpha = 0.3)
 
 
 #ax0 = ax[0].twinx()
@@ -10295,15 +10681,21 @@ ax[0].set_ylim(0,100)
 ax[1].set_ylim(0,100)
 ax[2].set_ylim(0,100)
 
-ax[0].legend()
-ax[1].legend()
-ax[2].legend()
-fig.savefig('QCfigs/RH_compare.png')
+ax[0].legend(loc = 3)
+ax[1].legend(loc = 3)
+ax[2].legend(loc = 3)
 
+# Label each subplot
+for i, ax in enumerate(ax, start=1):
+    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
+            fontsize=16, fontweight='bold', va='top')
+fig.tight_layout()
+#fig.savefig('QCfigs/RH_compare.png')
+fig.savefig('../glaciobasis/essd/manuscript/figures/fig05.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/d449231c9350dfd2d3d8213b7f4d4cb983e3e7b5.png]]
+[[file:./.ob-jupyter/72db4d0315dab3adbc7fe5b7618fcccdc2ce40e3.png]]
 
 #+BEGIN_SRC jupyter-python
 <<load_libs>>
@@ -11913,7 +12305,11 @@ ax[1].plot(transmitted_day['temperature'])
 import pandas as pd
 import xarray as xr
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+import matplotlib.dates as mdates
 
+rcParams.update({'font.size': 8})
 workingfolder = '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
 #zac_l
@@ -11929,81 +12325,52 @@ ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_co
 
 merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
-merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H', 'ice_ablation':'Ablation' }, inplace = True)
-merged.plot(subplots = True, figsize = (12,12))
+merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom', 'ice_ablation':'ice_ablation' }, inplace = True)
+#merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H','Ablation']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
 <<drop_head_and_tail_nans_fast>>
 merged_slim = drop_nan_rows(merged)
 
-print(merged_slim)
-#merged.plot(subplots = True, figsize = (12,12))
+ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
+
+merged.index = pd.to_datetime(merged.index)
+years = range(merged.index.year.min(), merged.index.year.max() + 1)
+
+#ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
+
+#ax[0].set_xticklabels(years)
+
+
+ax[0].set_ylabel('$\circ$C')
+ax[1].set_ylabel('%')
+ax[2].set_ylabel('hPa')
+ax[3].set_ylabel('W/m²')
+ax[4].set_ylabel('W/m²')
+ax[5].set_ylabel('W/m²')
+ax[6].set_ylabel('W/m²')
+ax[7].set_ylabel('m/s')
+ax[8].set_ylabel('m')
+ax[9].set_ylabel('m')
+
+ax[0].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[1].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[2].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[3].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[4].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[5].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[6].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[7].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[8].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
+
+#plt.tight_layout()
+plt.savefig('ZAC_L_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
 merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-#+begin_example
-                         T_air       RH    P_air      SR_in    SR_out  \
-  time                                                                  
-  2008-03-29 16:00:00 -16.4576  44.9127  929.918   63.40130   55.8106   
-  2008-03-29 17:00:00 -15.3733  39.7983  929.886   51.02750   45.8625   
-  2008-03-29 18:00:00 -15.9197  40.2219  929.918   36.03590   33.2352   
-  2008-03-29 19:00:00 -15.2297  38.3744  930.267   19.91690       NaN   
-  2008-03-29 20:00:00 -14.9098  37.6170  930.800    5.35267       NaN   
-  ...                      ...      ...      ...        ...       ...   
-  2022-04-19 07:00:00 -15.2152  71.5954  937.630   99.67730   79.7940   
-  2022-04-19 08:00:00 -13.3936  66.2411  937.437  176.67000  136.1550   
-  2022-04-19 09:00:00 -12.7611  59.6480  937.428  480.32200       NaN   
-  2022-04-19 10:00:00 -13.5455  61.2137  937.338  385.29600  260.1020   
-  2022-04-19 11:00:00 -11.5440  63.5458  936.829  342.67400  263.9390   
-
-                       SR_in_corr  SR_out_corr    LR_in   LR_out    albedo  \
-  time                                                                       
-  2008-03-29 16:00:00     51.6721          NaN  163.724  223.870       NaN   
-  2008-03-29 17:00:00     32.9248          NaN  166.493  223.170       NaN   
-  2008-03-29 18:00:00     12.3203          NaN  165.922  219.147       NaN   
-  2008-03-29 19:00:00         NaN          NaN  167.366  217.078       NaN   
-  2008-03-29 20:00:00         NaN          NaN  168.569  221.049       NaN   
-  ...                         ...          ...      ...      ...       ...   
-  2022-04-19 07:00:00         NaN          NaN  250.738  250.335  0.956798   
-  2022-04-19 08:00:00         NaN          NaN  254.152  256.830  0.859225   
-  2022-04-19 09:00:00         NaN          NaN  245.243  259.306  0.619616   
-  2022-04-19 10:00:00         NaN          NaN  236.072  255.021  0.724935   
-  2022-04-19 11:00:00         NaN          NaN  256.040  269.540  0.801010   
-
-                       cloudcover   T_surf         I        WS        H  \
-  time                                                                    
-  2008-03-29 16:00:00    0.125282 -21.9616  231.9300  4.543500  2.66900   
-  2008-03-29 17:00:00    0.112939 -22.1859  141.6080  4.715000  2.67291   
-  2008-03-29 18:00:00    0.127969 -23.3492   47.5393  2.866330  2.66831   
-  2008-03-29 19:00:00    0.116779 -23.9642    0.0000  2.806330  2.67440   
-  2008-03-29 20:00:00    0.117033 -22.8161    0.0000  5.395000  2.67063   
-  ...                         ...      ...       ...       ...      ...   
-  2022-04-19 07:00:00    0.993019 -15.3841  383.0240  0.857667  2.07494   
-  2022-04-19 08:00:00    0.957921 -13.7031  464.8010  1.421830  2.07687   
-  2022-04-19 09:00:00    0.837836 -12.9951  532.2300  0.820333  2.08100   
-  2022-04-19 10:00:00    0.773889 -14.0433  580.7390  0.940333  2.07443   
-  2022-04-19 11:00:00    0.899866 -10.4726  607.0490  2.136500  2.07567   
-
-                       Ablation  
-  time                           
-  2008-03-29 16:00:00       NaN  
-  2008-03-29 17:00:00       NaN  
-  2008-03-29 18:00:00       NaN  
-  2008-03-29 19:00:00       NaN  
-  2008-03-29 20:00:00       NaN  
-  ...                       ...  
-  2022-04-19 07:00:00       NaN  
-  2022-04-19 08:00:00       NaN  
-  2022-04-19 09:00:00       NaN  
-  2022-04-19 10:00:00       NaN  
-  2022-04-19 11:00:00       NaN  
-
-  [123212 rows x 16 columns]
-#+end_example
-[[file:./.ob-jupyter/df322b9a66fd32c56f2172b1b29af858421d60fc.png]]
-:END:
+[[file:./.ob-jupyter/02073ee68a3cd38487918e64dcc4fe59cbb442ea.png]]
 
 
 #+BEGIN_SRC jupyter-python
@@ -12026,64 +12393,56 @@ ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_co
 
 merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
-merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H', 'ice_ablation':'Ablation' }, inplace = True)
+merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom', 'ice_ablation':'ice_ablation' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
+
 <<drop_head_and_tail_nans_fast>>
+
 merged_slim = drop_nan_rows(merged)
 
-print(merged_slim)
+ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
+
+merged.index = pd.to_datetime(merged.index)
+years = range(merged.index.year.min(), merged.index.year.max() + 1)
+
+#ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
+
+#ax[0].set_xticklabels(years)
+
+
+ax[0].set_ylabel('$\circ$C')
+ax[1].set_ylabel('%')
+ax[2].set_ylabel('hPa')
+ax[3].set_ylabel('W/m²')
+ax[4].set_ylabel('W/m²')
+ax[5].set_ylabel('W/m²')
+ax[6].set_ylabel('W/m²')
+ax[7].set_ylabel('m/s')
+ax[8].set_ylabel('m')
+ax[9].set_ylabel('m')
+
+ax[0].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[1].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[2].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[3].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[4].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[5].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[6].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[7].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[8].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
+
+
+plt.savefig('ZAC_U_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
+
 #merged.plot(subplots = True, figsize = (12,12))
 merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-                          T_air       RH    P_air    SR_in   SR_out  SR_in_corr  \
-  time                                                                            
-  2008-03-29 18:00:00       NaN      NaN      NaN      NaN      NaN         NaN   
-  2008-03-29 19:00:00       NaN      NaN      NaN      NaN      NaN         NaN   
-  2008-03-29 20:00:00       NaN      NaN      NaN      NaN      NaN         NaN   
-  2008-03-29 21:00:00       NaN      NaN      NaN      NaN      NaN         NaN   
-  2008-03-29 22:00:00       NaN      NaN      NaN      NaN      NaN         NaN   
-  ...                       ...      ...      ...      ...      ...         ...   
-  2022-04-19 10:00:00 -12.12970  53.4731  909.600  423.506      NaN         NaN   
-  2022-04-19 11:00:00 -11.02920  54.5762  909.379  345.935  277.579     327.017   
-  2022-04-19 12:00:00 -10.76460  55.5457  909.050  367.582  296.479     359.702   
-  2022-04-19 13:00:00  -9.78430  56.0870  908.870  540.751      NaN         NaN   
-  2022-04-19 14:00:00  -8.39235  50.1146  908.599  448.758      NaN         NaN   
-
-                       SR_out_corr    LR_in   LR_out    albedo  cloudcover  \
-  time                                                                       
-  2008-03-29 18:00:00          NaN      NaN      NaN       NaN         NaN   
-  2008-03-29 19:00:00          NaN      NaN      NaN       NaN         NaN   
-  2008-03-29 20:00:00          NaN      NaN      NaN       NaN         NaN   
-  2008-03-29 21:00:00          NaN      NaN      NaN       NaN         NaN   
-  2008-03-29 22:00:00          NaN      NaN      NaN       NaN         NaN   
-  ...                          ...      ...      ...       ...         ...   
-  2022-04-19 10:00:00          NaN  212.059  263.624  0.862568    0.463043   
-  2022-04-19 11:00:00      277.579  221.505  265.081  0.851890    0.516157   
-  2022-04-19 12:00:00      296.479  240.777  273.084  0.825516    0.706587   
-  2022-04-19 13:00:00          NaN  237.073  280.150  0.815458    0.625535   
-  2022-04-19 14:00:00          NaN  231.321  280.398  0.795960    0.505859   
-
-                         T_surf        I       WS        H  Ablation  
-  time                                                                
-  2008-03-29 18:00:00       NaN      NaN  3.06183      NaN       NaN  
-  2008-03-29 19:00:00       NaN      NaN  1.73083      NaN       NaN  
-  2008-03-29 20:00:00       NaN      NaN  2.68367      NaN       NaN  
-  2008-03-29 21:00:00       NaN      NaN  3.08867      NaN       NaN  
-  2008-03-29 22:00:00       NaN      NaN  4.31950      NaN       NaN  
-  ...                       ...      ...      ...      ...       ...  
-  2022-04-19 10:00:00 -11.65090  580.545      NaN  2.17570       NaN  
-  2022-04-19 11:00:00 -11.33500  606.838      NaN  2.17573       NaN  
-  2022-04-19 12:00:00  -9.48939  609.178      NaN  2.17417       NaN  
-  2022-04-19 13:00:00  -7.75355  587.432      NaN  2.17322       NaN  
-  2022-04-19 14:00:00  -7.63614  543.105      NaN  2.17596       NaN  
-
-  [123213 rows x 16 columns]
-#+end_example
+[[file:./.ob-jupyter/7af423e309624bc1990d2afa0f255af133530ca2.png]]
 
 #+BEGIN_SRC jupyter-python
 
@@ -12099,14 +12458,50 @@ height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col =
 
 merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer')
 
-merged.rename(columns = {'t_1':'T_air', 'rh': 'RH', 'p': 'P_air', 'dsr':'SR_in', 'usr':'SR_out','dsr_corr':'SR_in_corr', 'usr_corr':'SR_out_corr', 'dlr':'LR_in', 'ulr':'LR_out','cloud_cov':'cloudcover','t_surf':'T_surf', 'wspd':'WS', 'z_boom':'H' }, inplace = True)
-merged.plot(subplots = True, figsize = (12,12))
+merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom' }, inplace = True)
+#merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['T_air', 'RH', 'P_air', 'SR_in', 'SR_out', 'LR_in','LR_out', 'WS', 'H']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom']
+
 <<drop_head_and_tail_nans_fast>>
 merged_slim = drop_nan_rows(merged)
 
-print(merged_slim)
+ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
+
+merged.index = pd.to_datetime(merged.index)
+years = range(merged.index.year.min(), merged.index.year.max() + 1)
+
+#ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
+
+#ax[0].set_xticklabels(years)
+
+
+ax[0].set_ylabel('$\circ$C')
+ax[1].set_ylabel('%')
+ax[2].set_ylabel('hPa')
+ax[3].set_ylabel('W/m²')
+ax[4].set_ylabel('W/m²')
+ax[5].set_ylabel('W/m²')
+ax[6].set_ylabel('W/m²')
+ax[7].set_ylabel('m/s')
+ax[8].set_ylabel('m')
+#ax[9].set_ylabel('m')
+
+ax[0].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[1].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[2].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[3].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[4].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[5].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[6].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[7].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[8].legend(loc='upper left', bbox_to_anchor=(1, 1))
+#ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
+
+
+plt.savefig('ZAC_A_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
+
+
 #merged.plot(subplots = True, figsize = (12,12))
 merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
 
@@ -12114,54 +12509,7 @@ merged_slim.to_csv('/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-#+begin_example
-                          T_air       RH    P_air      SR_in      SR_out  \
-  time                                                                     
-  2009-05-15 20:00:00       NaN  38.3762      NaN    1.94764    0.873082   
-  2009-05-15 21:00:00       NaN      NaN      NaN        NaN         NaN   
-  2009-05-15 22:00:00       NaN      NaN      NaN        NaN         NaN   
-  2009-05-15 23:00:00       NaN      NaN      NaN        NaN         NaN   
-  2009-05-16 00:00:00       NaN      NaN      NaN        NaN         NaN   
-  ...                       ...      ...      ...        ...         ...   
-  2019-04-13 07:00:00 -2.603130      NaN  843.031  133.18900  153.904000   
-  2019-04-13 08:00:00 -1.455170      NaN  843.462  208.84800  207.027000   
-  2019-04-13 09:00:00 -1.221730      NaN  843.523  312.73900  303.702000   
-  2019-04-13 10:00:00 -0.974421      NaN  843.556  376.89400         NaN   
-  2019-04-13 11:00:00 -1.077870      NaN  843.517  561.48400         NaN   
-
-                       SR_in_corr  SR_out_corr    LR_in   LR_out    albedo  \
-  time                                                                       
-  2009-05-15 20:00:00     1.94457     0.873082  397.430  396.762       NaN   
-  2009-05-15 21:00:00         NaN          NaN      NaN      NaN       NaN   
-  2009-05-15 22:00:00         NaN          NaN      NaN      NaN       NaN   
-  2009-05-15 23:00:00         NaN          NaN      NaN      NaN       NaN   
-  2009-05-16 00:00:00         NaN          NaN      NaN      NaN       NaN   
-  ...                         ...          ...      ...      ...       ...   
-  2019-04-13 07:00:00   144.18900          NaN  249.076  267.367       NaN   
-  2019-04-13 08:00:00   219.19900   207.027000  258.101  279.943  0.755015   
-  2019-04-13 09:00:00   319.31800   303.702000  264.028  281.681  0.853313   
-  2019-04-13 10:00:00         NaN          NaN  263.821  281.756  0.956461   
-  2019-04-13 11:00:00         NaN          NaN  251.199  283.532  0.905228   
-
-                       cloudcover    T_surf        I       WS        H  
-  time                                                                  
-  2009-05-15 20:00:00    0.869447  16.07180  233.685  0.00000      NaN  
-  2009-05-15 21:00:00         NaN       NaN      NaN      NaN      NaN  
-  2009-05-15 22:00:00         NaN       NaN      NaN      NaN      NaN  
-  2009-05-15 23:00:00         NaN       NaN      NaN      NaN      NaN  
-  2009-05-16 00:00:00         NaN       NaN      NaN      NaN      NaN  
-  ...                         ...       ...      ...      ...      ...  
-  2019-04-13 07:00:00    0.427362 -10.97330  334.511  6.06417  2.18327  
-  2019-04-13 08:00:00    0.466625  -7.91416  416.746  8.00800  2.19128  
-  2019-04-13 09:00:00    0.517423  -7.53442  484.555  6.28483  2.19484  
-  2019-04-13 10:00:00    0.503184  -7.51478  533.344  4.95967  2.19339  
-  2019-04-13 11:00:00    0.375824  -6.99982  559.814  4.48017  2.19040  
-
-  [86872 rows x 15 columns]
-#+end_example
-[[file:./.ob-jupyter/e0203c1c341215bdcc2a7687259141cf799395c9.png]]
-:END:
+[[file:./.ob-jupyter/8c922b511c864247818b2907b40f46ee7c1b324d.png]]
 
 
 #+NAME: drop_head_and_tail_nans_fast
