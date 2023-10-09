@@ -5,13 +5,11 @@
 #+DESCRIPTION: Getting the GlacioBasis raw data into usefull formats
 #+KEYWORDS:
 #+OPTIONS:   H:4 num:4 toc:nil \n:nil ::t |:t ^:{} -:t f:t *:t <:t
-#+EXCLUDE_TAGS: noexport
+# g#+EXCLUDE_TAGS: noexport
 #+ARCHIVE: ::* Archive
-#+PROPERTY: header-args:bash :noweb yes :tangle-mode (identity #o544)
 
-#+PROPERTY: header-args :session *aws_processing_v1.0-shell* :noweb yes :eval yes
-#+PROPERTY: header-args:jupyter-python :noweb yes :kernel aws_processing
-
+#+PROPERTY: header-args :session :noweb yes :eval yes
+#+PROPERTY: header-args:python :session aws_python :noweb yes 
 
 Kernel:
 #+BEGIN_SRC sh
@@ -27,7 +25,7 @@ Overall workflow:
 
 Updates done in the raw data, then everything needs to be done again.
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 # Raw to L0
 <<run_all_L0_zac_l>>
 <<run_all_L0_zac_u>>
@@ -35,13 +33,7 @@ Updates done in the raw data, then everything needs to be done again.
 #+END_SRC
 
 #+RESULTS:
-: Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
-:        'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
-:        'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
-:        't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
-:        'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
-:        'fan_dc'],
-:       dtype='object')
+: None
 
 #+BEGIN_SRC bash :results verbatim
 # L0 to L0M
@@ -53,7 +45,7 @@ Updates done in the raw data, then everything needs to be done again.
 
 TODO print success lines in a better way in make L0M
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 # L0M to L1
 <<convert_to_physical_values_workflow>>
 
@@ -70,7 +62,7 @@ TODO
 Reading in raw files and writing them out as L0 files with nice headers and special case issues solved
 *** Workflow for generating all L0 files
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<run_all_L0_zac_l>>
 <<run_all_L0_zac_u>>
 <<run_all_L0_zac_a>>
@@ -84,11 +76,10 @@ Reading in raw files and writing them out as L0 files with nice headers and spec
 :        't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
 :        'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
 :        'fan_dc'],
-:       dtype='object')
-
+:       dtype='object'
 *** Libraries
 #+NAME: load_libraries
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 from glob import glob
 import pandas as pd
 import numpy as np
@@ -101,14 +92,14 @@ import os as os
 *** Constants
 
 #+NAME: define_constants
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 mmHg2hPa = 1.33322368
 #+END_SRC
 
 *** working folders
 
 #+NAME: define_working_folders
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 raw = '/home/shl@geus.dk/OneDrive/projects/glaciobasis/data/aws_raw/'
 destination = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0/'
 #+END_SRC
@@ -116,7 +107,7 @@ destination = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0
 
 *** Define which headers to pass forward
 #+NAME: headers_to_pass_forward
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 new_headers = ['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr', 'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q', 'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7', 't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon', 'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log', 'fan_dc']
 
 
@@ -127,7 +118,7 @@ new_headers = ['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 
 
 **** Take a look at all the table mem files and find the long one
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 station_id = 'zac_l'
 ystart = '2017'
@@ -172,7 +163,7 @@ Name: AS_T_Avg, Length: 35461, dtype: object
 **** zac_l
 
 #+NAME: run_all_L0_zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_l_2008_2010>>
 <<zac_l_2010_2011>>
 <<zac_l_2011_2014>>
@@ -211,7 +202,7 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 
 
 #+NAME: zac_l_2008_2010
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -255,7 +246,7 @@ Read in and concatenate the raw files
 ***** zac_l_2010_2011
 
 #+NAME: zac_l_2010_2011
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -296,7 +287,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2011_2014
 
 #+NAME: zac_l_2011_2014
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -353,7 +344,7 @@ df.to_csv(outfilename2,sep=',', index=True)
 ***** zac_l_2012_2013
 
 #+NAME: zac_l_2012_2013
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -388,7 +379,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2014_2015
 
 #+NAME: zac_l_2014_2015
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -423,7 +414,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2015_2016
 
 #+NAME: zac_l_2015_2016
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -457,7 +448,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2016_2017
 
 #+NAME: zac_l_2016_2017
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -491,7 +482,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2017_2018
 
 #+NAME: zac_l_2017_2018
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -525,7 +516,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2018_2020
 
 #+NAME: zac_l_2018_2020
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -556,7 +547,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2020_2021
 
 #+NAME: zac_l_2020_2021
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -589,7 +580,7 @@ df.to_csv(outfilename,sep=',', index=True)
 ***** zac_l_2021_2022
 
 #+NAME: zac_l_2021_2022
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -633,7 +624,7 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 
 **** zac_u
 #+NAME: run_all_L0_zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_u_2008_2010>>
 <<zac_u_2010_2011>>
 <<zac_u_2011_2012>>
@@ -655,7 +646,7 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 
 ***** zac_u_2008_2010
 #+NAME: zac_u_2008_2010
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -690,7 +681,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2010_2011
 #+NAME: zac_u_2010_2011
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -725,7 +716,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2011_2012
 #+NAME: zac_u_2011_2012
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -766,7 +757,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2012_2013
 #+NAME: zac_u_2012_2013
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -805,7 +796,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2013_2014
 #+NAME: zac_u_2013_2014
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -845,7 +836,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2014_2015
 #+NAME: zac_u_2014_2015
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -885,7 +876,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2015_2016
 #+NAME: zac_u_2015_2016
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -925,7 +916,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2016_2017
 #+NAME: zac_u_2016_2017
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -964,7 +955,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2017_2019
 #+NAME: zac_u_2017_2019
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1002,7 +993,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2019_2020
 #+NAME: zac_u_2019_2020
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1040,7 +1031,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2020_2021
 #+NAME: zac_u_2020_2021
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1081,7 +1072,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_u_2021_2022
 #+NAME: zac_u_2021_2022
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1125,7 +1116,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 **** zac_a
 #+NAME: run_all_L0_zac_a
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_a_2009_2010>>
 <<zac_a_2010_2011>>
 <<zac_a_2011_2012>>
@@ -1155,7 +1146,7 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 
 ***** zac_a_2009_2010
 #+NAME: zac_a_2009_2010
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1193,7 +1184,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2010_2011
 #+NAME: zac_a_2010_2011
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1232,7 +1223,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2011_2012
 #+NAME: zac_a_2011_2012
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1272,7 +1263,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2012_2013
 #+NAME: zac_a_2012_2013
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1306,7 +1297,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2013_2014
 #+NAME: zac_a_2013_2014
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1345,7 +1336,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2014_2015
 #+NAME: zac_a_2014_2015
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1383,7 +1374,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2015_2016
 #+NAME: zac_a_2015_2016
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1420,7 +1411,7 @@ df.to_csv(outfilename,sep=',', index=True)
 :end:
 ***** zac_a_2016_2017
 #+NAME: zac_a_2016_2017
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1458,7 +1449,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 ***** zac_a_2017_2018
 #+NAME: zac_a_2017_2018
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1508,7 +1499,7 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 
 ***** zac_a_2018_2019
 #+NAME: zac_a_2018_2019
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 <<define_constants>>
 <<define_working_folders>>
@@ -1551,7 +1542,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 **** Code
 #+NAME: read_and_concat_all_TableMem_files_in_raw_folder
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 filelist = glob(raw + station_id + '/' + ystart + '-' + yend +'/*TableMem*')
 df = pd.concat((pd.read_csv(f, header=1,skiprows=[2,3],sep=',',engine='python') for f in filelist))
@@ -1565,7 +1556,7 @@ df = df.replace('NAN',np.NaN)
 #+END_SRC
 
 #+NAME: read_named_TableMem_file
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 df = pd.read_csv(raw + station_id + '/' + ystart + '-' + yend +'/'+filename, header=1,skiprows=[2,3],sep=',',engine='python')
 df.index = pd.to_datetime(df.TIMESTAMP)
 df = df.drop(['TIMESTAMP'], axis=1)
@@ -1578,7 +1569,7 @@ df = df.replace('NAN',np.NaN)
 
 
 #+NAME: fix_headers_type0_SR50_switched
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 df = df.rename(columns = {'TIMESTAMP':'time', 'RECORD':'rec', 'BP_mmHg_Avg':'p','AS_Pt100_Avg':'t_1', 'AS_T_Avg':'t_2', 'AS_RH_Avg':'rh', 'WS_ms_S_WVT':'wspd', 'WindDir_D1_WVT':'wdir', 'WindDir_SD1_WVT':'wd_std', 'CNR1_SWin_Avg':'dsr', 'CNR1_SWout_Avg':'usr', 'CNR1_LWin_Avg':'dlr', 'CNR1_LWout_Avg':'ulr','CNR1_Pt100_Avg':'t_rad', 'SnowHeight':'z_stake', 'SnowHeightQuality':'z_stake_q', 'Ablation':'z_boom', 'AblationQuality':'z_boom_q', 'Ablation_meter_Avg':'z_pt', 'Thermistor_1':'t_i_1', 'Thermistor_2':'t_i_2', 'Thermistor_3':'t_i_3', 'Thermistor_4':'t_i_4', 'Thermistor_5':'t_i_5', 'Thermistor_6':'t_i_6','Thermistor_7':'t_i_7', 'Thermistor_8':'t_i_8', 'Xtilt_Avg':'tilt_x', 'Ytilt_Avg':'tilt_y', 'TIME':'gps_time', 'LAT':'gps_lat', 'LONGI':'gps_lon', 'ALTDE':'gps_alt', 'GIODAL':'gps_geoid', 'QUAL':'gps_q', 'NUMSATS':'gps_numsat', 'HDP':'gps_hdop', 'PTemp_C_Avg':'t_log', 'Fan_current_avg':'fan_dc' })
 
@@ -1586,7 +1577,7 @@ df = df.rename(columns = {'TIMESTAMP':'time', 'RECORD':'rec', 'BP_mmHg_Avg':'p',
 #+END_SRC
 
 #+NAME: fix_headers_type0
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 df = df.rename(columns = {'TIMESTAMP':'time', 'RECORD':'rec', 'BP_mmHg_Avg':'p','AS_Pt100_Avg':'t_1', 'AS_T_Avg':'t_2', 'AS_RH_Avg':'rh', 'WS_ms_S_WVT':'wspd', 'WindDir_D1_WVT':'wdir', 'WindDir_SD1_WVT':'wd_std', 'CNR1_SWin_Avg':'dsr', 'CNR1_SWout_Avg':'usr', 'CNR1_LWin_Avg':'dlr', 'CNR1_LWout_Avg':'ulr','CNR1_Pt100_Avg':'t_rad', 'SnowHeight':'z_boom', 'SnowHeightQuality':'z_boom_q', 'Ablation':'z_stake', 'AblationQuality':'z_stake_q', 'Ablation_meter_Avg':'z_pt', 'Thermistor_1':'t_i_1', 'Thermistor_2':'t_i_2', 'Thermistor_3':'t_i_3', 'Thermistor_4':'t_i_4', 'Thermistor_5':'t_i_5', 'Thermistor_6':'t_i_6','Thermistor_7':'t_i_7', 'Thermistor_8':'t_i_8', 'Xtilt_Avg':'tilt_x', 'Ytilt_Avg':'tilt_y', 'TIME':'gps_time', 'LAT':'gps_lat', 'LONGI':'gps_lon', 'ALTDE':'gps_alt', 'GIODAL':'gps_geoid', 'QUAL':'gps_q', 'NUMSATS':'gps_numsat', 'HDP':'gps_hdop', 'PTemp_C_Avg':'t_log', 'Fan_current_avg':'fan_dc' })
 
@@ -1594,12 +1585,12 @@ df = df.rename(columns = {'TIMESTAMP':'time', 'RECORD':'rec', 'BP_mmHg_Avg':'p',
 #+END_SRC
 
 #+NAME: fix_headers_type1
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 df = df.rename(columns = {'RECORD':'rec', 'AirPressure_Avg':'p','Temperature_Avg':'t_1', 'Temperature2_Avg':'t_2', 'RelativeHumidity_Avg':'rh', 'WindSpeed':'wspd', 'WindDirection':'wdir', 'WindDirection_SD':'wd_std', 'ShortwaveRadiationIn_Avg':'dsr', 'ShortwaveRadiationOut_Avg':'usr','LongwaveRadiationIn_Avg':'dlr', 'LongwaveRadiationOut_Avg':'ulr','TemperatureRadSensor_Avg':'t_rad', 'SnowHeight':'z_boom', 'SnowHeightQuality':'z_boom_q', 'SurfaceHeight':'z_stake', 'SurfaceHeightQuality':'z_stake_q', 'IceHeight_Avg':'z_pt', 'TemperatureIce1m_Avg':'t_i_1', 'TemperatureIce2m_Avg':'t_i_2', 'TemperatureIce3m_Avg':'t_i_3', 'TemperatureIce4m_Avg':'t_i_4', 'TemperatureIce5m_Avg':'t_i_5', 'TemperatureIce6m_Avg':'t_i_6','TemperatureIce7m_Avg':'t_i_7', 'TemperatureIce10m_Avg':'t_i_8', 'TiltX_Avg':'tilt_x', 'TiltY_Avg':'tilt_y', 'TimeGPS':'gps_time', 'Latitude':'gps_lat', 'Longitude':'gps_lon', 'Altitude':'gps_alt', 'Giodal':'gps_geoid', 'Quality':'gps_q', 'NumberSatellites':'gps_numsat', 'HDOP':'gps_hdop', 'TemperatureLogger_Avg':'t_log', 'Fan_current_avg':'fan_dc' })
 #+END_SRC
 
 #+NAME: fix_headers_type1a
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 df = df.rename(columns = {'RECORD':'rec', 'AirPressure_Avg':'p','Temperature_Avg':'t_1', 'Temperature2_Avg':'t_2', 'RelativeHumidity_Avg':'rh', 'WindSpeed':'wspd', 'WindDirection':'wdir', 'WindDirection_SD':'wd_std', 'ShortwaveRadiationIn_Avg':'dsr', 'ShortwaveRadiationOut_Avg':'usr','LongwaveRadiationIn_Avg':'dlr', 'LongwaveRadiationOut_Avg':'ulr','TemperatureRadSensor_Avg':'t_rad', 'SnowHeight':'z_boom', 'SnowHeightQuality':'z_boom_q', 'SurfaceHeight':'z_stake', 'SurfaceHeightQuality':'z_stake_q', 'IceHeight_Avg':'z_pt', 'TemperatureIce1m_Avg':'t_i_1', 'TemperatureIce2m_Avg':'t_i_2', 'TemperatureIce3m_Avg':'t_i_3', 'TemperatureIce4m_Avg':'t_i_4', 'TemperatureIce5m_Avg':'t_i_5', 'TemperatureIce6m_Avg':'t_i_6','TemperatureIce7m_Avg':'t_i_7', 'TemperatureIce10m_Avg':'t_i_8', 'TiltX_Avg':'tilt_x', 'TiltY_Avg':'tilt_y', 'TimeGPS':'gps_time', 'Latitude':'gps_lat', 'Longitude':'gps_lon', 'Altitude':'gps_alt', 'Giodal':'gps_geoid', 'Quality':'gps_q', 'NumberSatellites':'gps_numsat', 'HDOP':'gps_hdop', 'TemperatureLogger_Avg':'t_log', 'FanCurrent_Avg':'fan_dc' })
 #+END_SRC
 
@@ -1608,7 +1599,7 @@ df = df.rename(columns = {'RECORD':'rec', 'AirPressure_Avg':'p','Temperature_Avg
 
 
 **** zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 folder = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0/'
 station_id = 'zac_l'
@@ -1647,7 +1638,7 @@ for index,key in enumerate(variables):
 
 
 **** zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libraries>>
 folder = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0/'
 station_id = 'zac_u'
@@ -1909,7 +1900,7 @@ echo "ZAC_A data now has nead headers"
 
 ** Get best guess for PTA calibration coefficient for 2015-2022
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import nead
 import pandas as pd
 import numpy as np
@@ -1965,7 +1956,7 @@ ax.legend()
 [[file:./.ob-jupyter/37a55ccc8ba3ca07fff1d6cb88d82a36e441de98.png]]
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 infile = filenamestart +'-2017.csv'
 <<read_infile_from_filelist>>
@@ -2009,7 +2000,7 @@ ax.legend()
 [[file:./.ob-jupyter/ecee1a9cce7626c13bda9c1727a3c74632ef7a14.png]]
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 print(ds.time)
 #+END_SRC
 
@@ -2028,7 +2019,7 @@ print(ds.time)
 
 *** Debugging: check raw tilt values to make sure the unit is correct  
 
-#+BEGIN_SRC jupyter-python :tangle convert_to_physical_values.py
+#+BEGIN_SRC python :tangle convert_to_physical_values.py
 import nead
 import pandas as pd
 import numpy as np
@@ -2051,7 +2042,7 @@ for infile in filelist:
 #+END_SRC
 
 
-#+BEGIN_SRC jupyter-python :tangle convert_to_physical_values.py
+#+BEGIN_SRC python :tangle convert_to_physical_values.py
 station = 'zac_u'
 filelist = glob.glob(workingdir+'data_v1.0/L0M/'+station+'/'+station+'**.csv')
 
@@ -2228,7 +2219,7 @@ pip install --upgrade git+https://github.com/GEUS-PROMICE/pyNEAD.git
 
 
 #+NAME: convert_to_physical_values_workflow
-#+BEGIN_SRC jupyter-python :tangle convert_to_physical_values.py
+#+BEGIN_SRC python :tangle convert_to_physical_values.py
 import nead
 import pandas as pd
 import numpy as np
@@ -2252,7 +2243,7 @@ station = 'zac_a'
 
 
 #+NAME: convert_to_physical_values
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 filelist = glob.glob(workingdir+'data_v1.0/L0M/'+station+'/'+station+'**.csv')
 
 for infile in filelist:
@@ -2274,7 +2265,7 @@ for infile in filelist:
 **** Debugging
 
 #+NAME: Debugging
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import nead
 import pandas as pd
 import numpy as np
@@ -2320,7 +2311,7 @@ AssertionError                            Traceback (most recent call last)
 AssertionError: None
 :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 <<plot_dsr_usr>>
 
@@ -2333,13 +2324,13 @@ AssertionError: None
 #+END_SRC
 
 #+NAME: plot_dsr_usr
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,2)
 ds.usr.plot(ax = ax[0])
 ds.dsr.plot(ax = ax[1])
 #+END_SRC
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 workingdir ='/home/shl@geus.dk/Dropbox/GEUS/projects/glaciobasis/aws_processing/'  
 station = 'zac_u'
 infile = workingdir+'data/L0M/'+station+'/'+station+'-2013.csv'
@@ -2358,7 +2349,7 @@ print(liste)
 :end:
 
 #+NAME: plot_ds_all_variab
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 liste = list(ds.keys())
 data = {}
 for variab in liste:
@@ -2434,7 +2425,7 @@ data_df.plot(subplots=True, layout=(6,7), figsize=(30,30))
 
 **** read files and add metadata
 #+NAME: read_infile_from_filelist
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 #infile = filelist[0]
 ds = nead.read(infile)
 ds = ds.set_coords(['time'])
@@ -2456,7 +2447,7 @@ for column in ds.keys():
 
 
 #+NAME: add_variable_metadata
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 def add_variable_metadata(ds):
     """Uses the variable DB (variables.csv) to add metadata to the xarray dataset."""
     df = pd.read_csv("./variables.csv", index_col=0, comment="#")
@@ -2476,7 +2467,7 @@ def add_variable_metadata(ds):
 
 ***** raw_to_phys
 #+NAME: raw_to_phys
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 T_0 = 273.15
 
 # Calculate pressure transducer fluid density
@@ -2623,7 +2614,7 @@ ds['wspd_y'] = ds['wspd'] * np.cos(ds['wdir'] * deg2rad)
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import matplotlib.pyplot as plt
 #sel = (dates.index > pd.to_datetime('2009-05-01', format = '%Y-%m-%d')) & (dates.index < pd.to_datetime('2009-05-04', format = '%Y-%m-%d'))
 sel = (dates.index.year==2009) & (dayofyear > 200) & (dayofyear < 203)
@@ -2649,7 +2640,7 @@ plt.plot(dates.index.values[sel],ds['tilt_x'][sel])
 ***** Correct rh and rad
 
  #+NAME: correct_rh_and_rad
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 <<correct_RH>>
 <<calc_t_surf>>
 if 'dsr' in ds:
@@ -2668,7 +2659,7 @@ if 'dsr' in ds:
   Relative humidity is recorded as over water - it needs to be corrected as it is over ice when the surface is freezing
 
 #+NAME: correct_RH
-#+BEGIN_SRC jupyter-python :tangle correct_RH.py
+#+BEGIN_SRC python :tangle correct_RH.py
 below = ds['t_1'].values < 0
 T = ds['t_1'].values + 273.15
 
@@ -2694,7 +2685,7 @@ ds['rh_corr'].attrs['long_name'] = ds['rh'].long_name + " corrected"
   # Out [35]: 
   :end:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 ds['rh'].plot()
  #+END_SRC
 
@@ -2711,7 +2702,7 @@ ds['rh'].plot()
  [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/bdf2167b88409bfb17ca4dde11cfeee2cdca87b5.png]]
  :end:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 ds['rh_corr'].plot()
  #+END_SRC
 
@@ -2733,7 +2724,7 @@ ds['rh_corr'].plot()
 
 
 #+NAME: calc_t_surf
-#+BEGIN_SRC jupyter-python :tagle calculate_t_surface.py
+#+BEGIN_SRC python :tagle calculate_t_surface.py
 T_0 = 273.15
 epsilon = 0.97
 sigma = 5.67*10**(-8)
@@ -2754,7 +2745,7 @@ ds = ds.assign({'t_surf':Tsurf})
  This code is adapted from the promice processing idl code version 2012.
 
  #+NAME: correct_short_wave_radiation_for_tilt
- #+BEGIN_SRC jupyter-python :tagle correct_shortwave_radiation_for_tilt.py
+ #+BEGIN_SRC python :tagle correct_shortwave_radiation_for_tilt.py
 <<cloud_cover_tsurf>>
 <<tilt_angle_rotate>>
 <<zenith_and_hour_angle>>
@@ -2774,7 +2765,7 @@ ds = ds.assign({'t_surf':Tsurf})
 ******* Code                                                       :noexport:
  Calculate cloud cover for SRin correction and surface temperature
  #+NAME: cloud_cover_tsurf
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Calculate cloud cover
 T_0 = 273.15
 eps_overcast = 1
@@ -2799,7 +2790,7 @@ DifFrac = 0.2+0.8*CloudCov
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 plt.plot(CloudCov)
 #+END_SRC
 
@@ -2819,7 +2810,7 @@ plt.plot(CloudCov)
  Calculating the tilt angle and direction of senson and rotating to a north-south aligned coordinate system
 
 #+NAME: tilt_angle_rotate
-#+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+#+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Calculating the tilt angle and direction of senson and rotating to a north-south aligned coordinate system
 deg2rad = np.pi / 180
 tiltX_rad = ds['tilt_x'].values*deg2rad
@@ -2851,7 +2842,7 @@ theta_sensor_deg = theta_sensor_rad*180/np.pi # radians to degrees
    phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
 
  :end:
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 plt.plot(theta_sensor_deg)
 #plt.plot(X)
@@ -2873,7 +2864,7 @@ plt.plot(theta_sensor_deg)
 
 
 
- #+BEGIN_SRC jupyter-python 
+ #+BEGIN_SRC python 
 import matplotlib.pyplot as plt
 #sel = (dates.index > pd.to_datetime('2009-05-01', format = '%Y-%m-%d')) & (dates.index < pd.to_datetime('2009-05-04', format = '%Y-%m-%d'))
 sel = (dates.index.year==2009) & (dayofyear > 200) & (dayofyear < 203)
@@ -2897,7 +2888,7 @@ plt.plot(dates.index.values,ds['tilt_x'])
 
  Calculating zenith and hour angle of the sun
  #+NAME: zenith_and_hour_angle
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Calculating zenith and hour angle of the sun
 lat = float(ds.geometry[13:19]) #ds['gps_lat'].median().values
 lon = float(ds.geometry[6:12]) #ds['gps_lon'].median().values
@@ -2932,7 +2923,7 @@ SRtoa[sundown] = 0
  :end:
 
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 #import matplotlib.pyplot as plt
 #sel = (dates.index > pd.to_datetime('2009-05-01', format = '%Y-%m-%d')) & (dates.index < pd.to_datetime('2009-05-04', format = '%Y-%m-%d'))
 plt.plot(ZenithAngle_rad)
@@ -2963,7 +2954,7 @@ CorFac = sin(Declination_rad).*sin(lat*pi/180.).*cos(theta_sensor_rad)...
 
 
  #+NAME: correction_factor_for_direct_beam_radiation
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # correction factor for direct beam radiation
 CorFac = np.sin(Declination_rad) * np.sin(lat*np.pi/180.) * np.cos(theta_sensor_rad) \
          -np.sin(Declination_rad) * np.cos(lat*np.pi/180.) * np.sin(theta_sensor_rad) * np.cos(phi_sensor_rad+np.pi) \
@@ -2981,7 +2972,7 @@ CorFac[no_correction] = 1
  # Out [33]: 
  :end:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 plt.plot(CorFac)
  #+END_SRC
 
@@ -3001,7 +2992,7 @@ plt.plot(CorFac)
 
  Calculating SRin over a horizontal surface corrected for station/sensor tilt
  #+NAME: corr_srin_for_tilt
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
  # Calculating SRin over a horizontal surface corrected for station/sensor tilt
 CorFac_all = CorFac/(1-DifFrac+CorFac*DifFrac)
 SRin_cor = ds['dsr']*CorFac_all
@@ -3013,7 +3004,7 @@ SRin_cor = ds['dsr']*CorFac_all
  # Out [58]: 
  :end:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 plt.plot(SRin_cor)
 #plt.ylim([0,1000])
  #+END_SRC
@@ -3035,7 +3026,7 @@ plt.plot(SRin_cor)
 
  Calculating albedo based on albedo values when sun is in sight of the upper sensor
  #+NAME: ok_albedos
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Calculating albedo based on albedo values when sun is in sight of the upper sensor
 AngleDif_deg = 180/np.pi*np.arccos(np.sin(ZenithAngle_rad)*np.cos(HourAngle_rad+np.pi)*np.sin(theta_sensor_rad)*np.cos(phi_sensor_rad) \
                              +np.sin(ZenithAngle_rad)*np.sin(HourAngle_rad+np.pi)*np.sin(theta_sensor_rad)*np.sin(phi_sensor_rad) \
@@ -3057,7 +3048,7 @@ albedo = albedo.ffill('time')
 
  #+RESULTS: ok_albedos
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 print(OKalbedos)
 #+END_SRC
 
@@ -3073,7 +3064,7 @@ Coordinates:
 :end:
 
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 plt.plot(OKalbedos)
 #plt.ylim([0,1000])
  #+END_SRC
@@ -3094,7 +3085,7 @@ plt.plot(OKalbedos)
  Correcting SR using SRin when sun is in field of view of lower sensor assuming sensor measures only diffuse radiation
 
  #+NAME: corr_sr_diffuse_radiation
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Correcting SR using SRin when sun is in field of view of lower sensor assuming sensor measures only diffuse radiation
 sunonlowerdome = (AngleDif_deg >= 90) & (ZenithAngle_deg <= 90)
 SRin_cor[sunonlowerdome] = ds['dsr'][sunonlowerdome].values/DifFrac[sunonlowerdome]
@@ -3110,7 +3101,7 @@ SRout_cor[sunonlowerdome] = albedo[sunonlowerdome]*ds['dsr'][sunonlowerdome].val
  # Out [64]: 
  :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 plt.plot(SRout_cor)
 #+END_SRC
 
@@ -3130,7 +3121,7 @@ plt.plot(SRout_cor)
  Setting SRin and SRout to zero for solar zenith angles larger than 95 deg or either SRin or SRout are (less than) zero
 
  #+NAME: corr_large_zenith_angles
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Setting SRin and SRout to zero for solar zenith angles larger than 95 deg or either SRin or SRout are (less than) zero
 no_SR = (ZenithAngle_deg > 95) | (SRin_cor <= 0) | (SRout_cor <= 0)
 
@@ -3143,7 +3134,7 @@ SRout_cor[no_SR] = 0
  :results:
  # Out [68]: 
  :end:
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 plt.plot(SRin_cor)
 #+END_SRC
 
@@ -3167,7 +3158,7 @@ plt.plot(SRin_cor)
 
  This gives problems for some  of the years
  #+NAME: corr_srin_upper_sensor_not_in_sight
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Correcting SRin using more reliable SRout when sun not in sight of upper sensor
 
 #SRin_cor[no_correction] = SRout_cor[no_correction]/albedo[no_correction]
@@ -3182,7 +3173,7 @@ SRin_cor[~notOKalbedos] = SRout_cor[~notOKalbedos]/albedo[~notOKalbedos]
  # Out [70]: 
  :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 plt.plot(SRin_cor)
 #+END_SRC
 
@@ -3203,7 +3194,7 @@ plt.plot(SRin_cor)
  % Removing spikes by interpolation based on a simple top-of-the-atmosphere limitation
 
  #+NAME: removing_spikes
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Removing spikes by interpolation based on a simple top-of-the-atmosphere limitation
 
 SRin_cor_mark = SRin_cor.copy()
@@ -3222,7 +3213,7 @@ SRin_cor_final = SRin_cor.copy()
  # Out [72]: 
  :end:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 plt.plot(SRin_cor)
  #+END_SRC
 
@@ -3241,7 +3232,7 @@ plt.plot(SRin_cor)
 
 
  #+NAME: adding_columns
- #+BEGIN_SRC jupyter-python :tangle correct_sw_for_tilt.py
+ #+BEGIN_SRC python :tangle correct_sw_for_tilt.py
 # Assign columns to ds file
 
 ds = ds.assign({'albedo':albedo, 'dsr_corr':SRin_cor, 'usr_corr':SRout_cor, 'cloud_cov':CloudCov})
@@ -3302,7 +3293,7 @@ ds['usr_corr'].attrs['long_name'] = ds['usr'].long_name + " corrected"
 
 **** Write out L1 files
  #+NAME: write_out_L1_nc
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 
 outpath = 'data_v1.0/L1/'+station+'/'
 outfile = infile[-14:-4]
@@ -3386,7 +3377,7 @@ ds.to_netcdf(outpathfile, mode='w', format='NETCDF4', compute=True)
 
  :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 print(ds.time[0].data)
 #+END_SRC
 
@@ -3399,7 +3390,7 @@ print(ds.time[0].data)
 :end:
 **** Testing what part of the tilt correction that matters in the 'bad' years like 2016
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 import xarray as xr
 ds = xr.load_dataset('data_v1.0/L1/zac_l/zac_l-2016_test.nc')
@@ -3418,7 +3409,7 @@ ax.legend()
 
 #+END_SRC
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 ds = xr.load_dataset('data_v1.0/L1/zac_l/zac_l-2017.nc')
 ds_sel = ds[['dsr','dsr_corr']].to_pandas().loc['June-2016']
 
@@ -3442,7 +3433,7 @@ ax.legend()
 **** Make one single netcdf per station
 
  #+NAME: Make_a_single_netcdf_per_station
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 
  import pandas as pd
  import xarray as xr
@@ -3471,7 +3462,7 @@ ax.legend()
 
  #+RESULTS:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 
  if os.path.isfile(outfile):
      os.remove(outfile)
@@ -3525,7 +3516,7 @@ ax.legend()
 
 
 **** dataseries examples
-#+BEGIN_SRC jupyter-python 
+#+BEGIN_SRC python 
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -3571,7 +3562,7 @@ ds['rh_corr'].plot(ax=ax[4])
 :end:
 
 
-#+BEGIN_SRC jupyter-python 
+#+BEGIN_SRC python 
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -3617,7 +3608,7 @@ ds['rh_corr'].plot(ax=ax[4])
 
 
 **** Get positions for all three stations
-#+BEGIN_SRC jupyter-python 
+#+BEGIN_SRC python 
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -3668,7 +3659,7 @@ zac_a    74.647475 -21.651841  1476.043991
 
 :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
     
 ds_filtered = ds.copy()
@@ -3692,7 +3683,7 @@ ds['rh_corr'].plot(ax=ax[4])
 
 
 **** Gradients
-#+BEGIN_SRC jupyter-python 
+#+BEGIN_SRC python 
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -3738,7 +3729,7 @@ zac_a['p'].plot(ax = ax[1])
 ** Python libs
 
 #+NAME: load_libs
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python :session
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -3770,55 +3761,11 @@ Workflow
 <<run_all_postQC_for_zac_u>>
 #+END_SRC
 
-#+RESULTS: run_all_QC_filtering_steps_for_meterological_observations
-:RESULTS:
-/home/shl@geus.dk/anaconda3/envs/py38/lib/python3.8/site-packages/scipy/__init__.py:146: UserWarning: A NumPy version >=1.16.5 and <1.23.0 is required for this version of SciPy (detected version 1.24.3
-  warnings.warn(f"A NumPy version >={np_minversion} and <{np_maxversion}"
-# [goto error]
----------------------------------------------------------------------------
-ValueError                                Traceback (most recent call last)
-Cell In[1], line 51
-     45 transmitted_day = transmitted[0:-1][(timestep_day==1).values]
-     50 fig, ax = plt.subplots(1,1,figsize = (10,5))
----> 51 with xr.open_dataset(zac_a_path) as ds:
-     52     df = ds[['t_1']].to_dataframe()
-     54 count10min = df.resample('H').count()
-
-File ~/anaconda3/envs/py38/lib/python3.8/site-packages/xarray/backends/api.py:523, in open_dataset(filename_or_obj, engine, chunks, cache, decode_cf, mask_and_scale, decode_times, decode_timedelta, use_cftime, concat_characters, decode_coords, drop_variables, inline_array, backend_kwargs, **kwargs)
-    520     kwargs.update(backend_kwargs)
-    522 if engine is None:
---> 523     engine = plugins.guess_engine(filename_or_obj)
-    525 backend = plugins.get_backend(engine)
-    527 decoders = _resolve_decoders_kwargs(
-    528     decode_cf,
-    529     open_backend_dataset_parameters=backend.open_dataset_parameters,
-   (...)
-    535     decode_coords=decode_coords,
-    536 )
-
-File ~/anaconda3/envs/py38/lib/python3.8/site-packages/xarray/backends/plugins.py:177, in guess_engine(store_spec)
-    169 else:
-    170     error_msg = (
-    171         "found the following matches with the input file in xarray's IO "
-    172         f"backends: {compatible_engines}. But their dependencies may not be installed, see:\n"
-    173         "https://docs.xarray.dev/en/stable/user-guide/io.html \n"
-    174         "https://docs.xarray.dev/en/stable/getting-started-guide/installing.html"
-    175     )
---> 177 raise ValueError(error_msg)
-
-ValueError: found the following matches with the input file in xarray's IO backends: ['netcdf4', 'h5netcdf']. But their dependencies may not be installed, see:
-https://docs.xarray.dev/en/stable/user-guide/io.html 
-https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
-[[file:./.ob-jupyter/c1d90525e9d61c26b03e0db236bfea5f563769ff.png]]
-:END:
-
-
-
 **** zac_a
 
 ***** Pre QC
 #+NAME: run_all_preQC_for_zac_a
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_a_preQC_temperature>>
 <<zac_a_preQC_radiation>>
 <<zac_a_preQC_relative_humidity>>
@@ -3832,7 +3779,7 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
  There are so many quality issues with the transmitted data - that I will omit it for now...
 ****** Transmitted data - what data do we have
  Plotting  all the transmitted data:
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
  <<load_libs>>
  <<Load_transmitted_data>>
 
@@ -3843,7 +3790,7 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
  Plotting the transmitted data that makes sense:
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
  fig, ax = plt.subplots(6,1,figsize=(10,10))
  transmitted['temperature.1'].plot(ax=ax[0], label = 'temperature.1')
  transmitted['temperature2'].plot(ax=ax[0] , label = 'temperature2')
@@ -3882,7 +3829,7 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ****** Transmitted data what is actually usable (when was the station buried)
   We look at the incoming shortwave radiation to define when the station is buried
-  #+BEGIN_SRC jupyter-python
+  #+BEGIN_SRC python
   #transmitted_trusted = transmitted[:'2019-August-30']
   <<load_libs>>
   <<data_file_paths>>
@@ -3919,62 +3866,36 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ****** Temperature
 #+NAME: zac_a_preQC_temperature
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 
- <<load_libs>>
- <<data_file_paths>>
- <<load_transmitted_trusted>>
+<<load_libs>>
+<<data_file_paths>>
+<<load_transmitted_trusted>>
   
 
- fig, ax = plt.subplots(1,1,figsize = (10,5))
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['t_1']].to_dataframe()
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_a_path) as ds:
+    df = ds[['t_1']].to_dataframe()
 
- count10min = df.resample('H').count()
- temp_hour = df.resample('H').mean()
- temp_hour[count10min<6] = np.nan
- count_hours = temp_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- temp_day = temp_hour.resample('D').mean()
- temp_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+temp_hour = df.resample('H').mean()
+temp_hour[count10min<6] = np.nan
+#count_hours = temp_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#temp_day = temp_hour.resample('D').mean()
+#temp_day[count_hours<24 ] = np.nan
 
- temp_day.plot()
- temp_hour.plot(ax=ax)
-
- temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_temperature.csv', index = True, float_format = '%g')
- temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_temperature.csv', index = True, float_format = '%g')
+#temp_day.plot()
+#temp_hour.plot(ax=ax)
+temp_hour = pd.DataFrame(temp_hour)
+temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_temperature.csv', index = True, float_format = '%g')
+#temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_temperature.csv', index = True, float_format = '%g')
 
   #+END_SRC
 
-  #+RESULTS:
-  :results:
-  # Out [183]: 
-  # text/plain
-  : <Figure size 720x360 with 1 Axes>
-
-  # image/png
-  [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ed93017186a51340562c5fa8fb287a7c894fd633.png]]
-
-  # text/plain
-  : <Figure size 432x288 with 1 Axes>
-
-  # image/png
-  [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/752b99ca255333fa6c58b84ef91d21f30588eef7.png]]
-
-  # text/plain
-  : <Figure size 432x288 with 1 Axes>
-
-  # image/png
-  [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/94573e3b437b1b46c8361a0ac1e4195571d048b4.png]]
-
-  # text/plain
-  : <Figure size 432x288 with 1 Axes>
-
-  # image/png
-  [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/8d6196d0ef52f6f9afa5370f67570ce4ddc88c9c.png]]
-  :end:
-
+  #+RESULTS: zac_a_preQC_temperature
+  : None
 
 
 ******* Adding the transmitted data 
@@ -3983,7 +3904,7 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
  So we trust that the data for now and we can concatenate the hourly and the daily temperature record
 
  Merging the data
-    #+BEGIN_SRC jupyter-python
+    #+BEGIN_SRC python
  temperature_hour_full = pd.concat((t_1_hour['t_1'],transmitted['temperature']), axis=1)
  temperature_hour_full['merged'] = temperature_hour_full[['t_1','temperature']].sum(axis=1, min_count=1)
  temp_hour = pd.DataFrame(temperature_hour_full['merged'].copy())
@@ -4019,43 +3940,46 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
  The transmitted radiation data does not look right - and since we do not have the tilt, I think I will declare this data too uncertain to use. 
  So we only use the downloaded data:
 #+NAME: zac_a_preQC_radiation
-  #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
     
- fig, ax = plt.subplots(1,1,figsize = (10,5))
- with xr.open_dataset(zac_a_path) as ds:
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_a_path) as ds:
  #    ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
  #    ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
  #    ds['usr'] = ds['usr'].where(ds['usr'] != -9999.)
-     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov', 't_surf', 'I']].to_dataframe()
-     ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
-     ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
-     ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
-     ds['ulr'] = ds['ulr'].where(ds['ulr'] != -9999.)
+    ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov', 't_surf', 'I']].to_dataframe()
+    ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
+    ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
+    ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
+    ds['ulr'] = ds['ulr'].where(ds['ulr'] != -9999.)
     
 
- count10min = ds.resample('H').count()
- rad_hour = ds.resample('H').mean()
- rad_hour[count10min<6] = np.nan
- count_hours = rad_hour.resample('D').count()
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
+count10min = ds.resample('H').count()
+rad_hour = ds.resample('H').mean()
+rad_hour[count10min<6] = np.nan
+#count_hours = rad_hour.resample('D').count()
+# rad_day = rad_hour.resample('D').mean()
+# rad_day[count_hours<24 ] = np.nan
 
- rad_day.plot(ax=ax)
+#rad_day.plot(ax=ax)
 
- rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_radiation.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_radiation.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
 
 
  #+END_SRC
+
+ #+RESULTS: zac_a_preQC_radiation
+ : None
 
  #+RESULTS:
  [[file:./.ob-jupyter/9a496215b8df3344e37c6157acd2573a5cf43944.png]]
 
 ******* Looking into the possibilities of merging with transmitted data
  First load in libraries and data
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
  <<load_libs>>
  <<data_file_paths>>
  <<load_transmitted_trusted>>
@@ -4114,7 +4038,7 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
  [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/63eed35ae21f8ca75549ff6a8fac58cad7d70027.png]]
  :end:
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
  dsr_hour = dsr.resample('H').mean()
  dsr_hour_full = pd.concat((dsr_hour['dsr'], dsr_trans), axis = 1)
  dsr_hour_full['dsr'].plot(ax=ax)
@@ -4143,262 +4067,181 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ****** Relative humidity
 #+NAME: zac_a_preQC_relative_humidity
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python :session
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['rh']].to_dataframe()
+with xr.open_dataset(zac_a_path) as ds:
+    RH = ds['rh'].to_pandas()
+    T = ds['t_1'].to_pandas()
 
- count10min = df.resample('H').count()
- rh_hour = df.resample('H').mean()
- rh_hour[count10min<6] = np.nan
- count_hours = rh_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- rh_day = rh_hour.resample('D').mean()
- rh_day[count_hours<24 ] = np.nan
+count10min = RH.resample('H').count()
 
- rh_day.plot()
- rh_hour.plot()
+# To get the hourly mean we need to go to specific humidity and back
+# defining constants based on Lowe, 1972
+a0 = 6.107799961
+a1 = 4.436518521*10**(-1)
+a2 = 1.428945805*10**(-2)
+a3 = 2.650648471*10**(-4)
+a4 = 3.031240396*10**(-6)
+a5 = 2.034080948*10**(-8)
+a6 = 6.136820929*10**(-11)
 
- rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_relative_humidity.csv', index = True, float_format = '%g')
- rh_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_relative_humidity.csv', index = True, float_format = '%g')
-    
+es = a0 + a1*T+a2*T**2 +a3*T**3+a4*T**4+a5*T**5+a6*T**6
+e = RH*es/100
+
+es_hour = es.resample('H').mean()
+e_hour = e.resample('H').mean()
+rh_hour = 100*e_hour/es_hour
+
+rh_hour_simple =RH.resample('H').mean()
+#rh_hour_simple[count10min<6] = np.nan
+#rh_hour[count10min<6] = np.nan
+ 
+#rh_day = rh_hour.resample('D').mean()
+#rh_day[count_hours<24 ] = np.nan
+rh_hour = rh_hour.where(rh_hour.values > 0, np.nan)
+rh_hour = rh_hour.where(rh_hour.values <100, np.nan)
+
+#rh_hour.plot()
+#rh_hour_simple.plot()
+
+rh_hour = pd.DataFrame(rh_hour)
+rh_hour.columns = ['rh']
+rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_relative_humidity.csv', index = True, float_format = '%g')
+#rh_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_relative_humidity.csv', index = True, float_format = '%g')
+
+
  #+END_SRC
 
- #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/a0ca46b66dfd8c0c0ce4f72a45154598dd8c8d19.png]]
- [[file:./.ob-jupyter/60eb7396c1ca1351c7aea3bbe9e64e8d50669b48.png]]
- [[file:./.ob-jupyter/9f1e3291f0cdeef3bca0b5a06cbd4b5935588e78.png]]
- [[file:./.ob-jupyter/17307f12369c8cf3a3aa32d22928c03d0b49df09.png]]
- :END:
+ #+RESULTS: zac_a_preQC_relative_humidity
+ : None
+
+
 
 ****** Windspeed
 #+NAME: zac_a_preQC_wind_speed
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['wspd']].to_dataframe()
+with xr.open_dataset(zac_a_path) as ds:
+    df = ds[['wspd']].to_dataframe()
 
- count10min = df.resample('H').count()
- wspd_hour = df.resample('H').mean()
- wspd_hour[count10min<6] = np.nan
- count_hours = wspd_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- wspd_day = wspd_hour.resample('D').mean()
- wspd_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+wspd_hour = df.resample('H').mean()
+wspd_hour[count10min<6] = np.nan
+# count_hours = wspd_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# wspd_day = wspd_hour.resample('D').mean()
+# wspd_day[count_hours<24 ] = np.nan
 
- wspd_day.plot()
- wspd_hour.plot()
+# wspd_day.plot()
+# wspd_hour.plot()
 
- wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_wind_speed.csv', index = True, float_format = '%g')
- wspd_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_wind_speed.csv', index = True, float_format = '%g')
+wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_wind_speed.csv', index = True, float_format = '%g')
+# wspd_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_wind_speed.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [56]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/99f67ea6506aee5ea5a3d0be0b52f58a1f6bbe4c.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/25e685dc49b8d27b42be59ef213586b01caf67d2.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ac31fe396fea775950e8e83551066c0ebf3b48b1.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/6e9f9bfaf86c2a956b000a488283425f3a6df749.png]]
- :end:
+ #+RESULTS: zac_a_preQC_wind_speed
+ : None
 
 ****** pressure
 #+NAME: zac_a_preQC_pressure
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['p']].to_dataframe()
+with xr.open_dataset(zac_a_path) as ds:
+    df = ds[['p']].to_dataframe()
 
- count10min = df.resample('H').count()
- p_hour = df.resample('H').mean()
- p_hour[count10min<6] = np.nan
- count_hours = p_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- p_day = p_hour.resample('D').mean()
- p_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+p_hour = df.resample('H').mean()
+p_hour[count10min<6] = np.nan
+#count_hours = p_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#p_day = p_hour.resample('D').mean()
+#p_day[count_hours<24 ] = np.nan
 
- p_day.plot()
- p_hour.plot()
+#p_day.plot()
+#p_hour.plot()
 
- p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_pressure.csv', index = True, float_format = '%g')
- p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_pressure.csv', index = True, float_format = '%g')
+p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_pressure.csv', index = True, float_format = '%g')
+#p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_pressure.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [84]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d513de89470a2b5df497d438279e6ba9a6319806.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d172f5826f47d143054a3436fe58db72c59f805c.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b6c4138501f9e83dacd7dab238ee2db465c759e9.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0ee61f8980a301a220416da13eb168b15d1fc723.png]]
- :end:
+ #+RESULTS: zac_a_preQC_pressure
+ : None
 
 
 ****** boom height
 #+NAME: zac_a_preQC_boom_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['z_boom']].to_dataframe()
+with xr.open_dataset(zac_a_path) as ds:
+    df = ds[['z_boom']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+#count_hours = z_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#z_day = z_hour.resample('D').median()
+#z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+#z_day.plot()
+#z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_boom_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_boom_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_boom_height.csv', index = True, float_format = '%g')
+#z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_boom_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [89]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/dd13ab107a5a921a7d47d6018db718cd72abe0a1.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b9a88ddb598c3c176718f4a9ec22ebf515228c52.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/fe937a1889dce97f6172a02ee3b19fb1318959ce.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c1e6baaec1b6ce7c47ccc80f8311373f1234f595.png]]
- :end:
+ #+RESULTS: zac_a_preQC_boom_height
+ : None
 
 
 ****** SR50 on stakes
 #+NAME: zac_a_preQC_stake_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['z_stake']].to_dataframe()
+with xr.open_dataset(zac_a_path) as ds:
+    df = ds[['z_stake']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+#count_hours = z_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#z_day = z_hour.resample('D').median()
+#z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+#z_day.plot()
+#z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_SR50_stake_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_SR50_stake_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+#z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_SR50_stake_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [1]: 
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1e60f322c4a1514f9bffafb7146f8b7e4c40c2b2.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/709b80d899638c1ecb75d736a9b64c291fbf11e6.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/6d7faa045f80cd1898c61af93eb25692783441e0.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/f0232b5cc3f3cbe1b141baf7552c7d87760f946f.png]]
- :end:
-
+ #+RESULTS: zac_a_preQC_stake_height
+ : None
 
 
 
 ***** Post QC
 #+NAME: run_all_postQC_for_zac_a
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_a_postQC_temperature>>
 <<zac_a_postQC_radiation>>
 <<zac_a_postQC_relative_humidity>>
@@ -4409,194 +4252,198 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 #+END_SRC
 ****** Temperature
 #+NAME: zac_a_postQC_temperature
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
- temp_hour = pd.read_csv(datapath+'preQC/zac_a_hour_temperature.csv', parse_dates = True, index_col=0)
+temp_hour = pd.read_csv(datapath+'preQC/zac_a_hour_temperature.csv', parse_dates = True, index_col=0)
 
+# Bad data deleted
+temp_hour['2015-01-05':'2015-05-01'] = np.nan
+temp_hour[:'2009-08-08 21:00'] = np.nan
 
- # Bad data deleted
- temp_hour['2015-01-05':'2015-05-01'] = np.nan
- temp_hour[:'2009-08-08 21:00'] = np.nan
+#count_hours = temp_hour.resample('D').count()
+#temp_day = temp_hour.resample('D').mean()
+#temp_day[count_hours<24 ] = np.nan
 
- count_hours = temp_hour.resample('D').count()
- temp_day = temp_hour.resample('D').mean()
- temp_day[count_hours<24 ] = np.nan
-
- temp_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_temperature.csv', index = True, float_format = '%g')
- temp_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_temperature.csv', index = True, float_format = '%g')
+temp_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_temperature.csv', index = True, float_format = '%g')
+#temp_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_temperature.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [205]: 
- :end:
+ #+RESULTS: zac_a_postQC_temperature
+ : None
 
 ****** Radiation
 #+NAME: zac_a_postQC_radiation
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
- rad_hour = pd.read_csv(datapath+'preQC/zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
+rad_hour = pd.read_csv(datapath+'preQC/zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
 
  # Deliting bad data: Out of bounds
- maximum = 1000
- variable = 'dsr_corr'
- rad_hour[variable][rad_hour[variable]>maximum] = np.nan
- rad_hour[variable][rad_hour[variable]<0] = np.nan
+maximum = 1000
+variable = 'dsr_corr'
+rad_hour[variable][rad_hour[variable]>maximum] = np.nan
+rad_hour[variable][rad_hour[variable]<0] = np.nan
 
- variable = 'usr_corr'
- albedo = rad_hour['usr_corr']/rad_hour['dsr_corr']
- rad_hour[variable][albedo>1] = np.nan
- variable = 'albedo'
- rad_hour[variable][albedo>1] = np.nan
+variable = 'usr_corr'
+albedo = rad_hour['usr_corr']/rad_hour['dsr_corr']
+rad_hour[variable][albedo>1] = np.nan
+variable = 'albedo'
+rad_hour[variable][albedo>1] = np.nan
  
- variable = 'ulr'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
- variable = 'cloud_cov'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
- variable = 't_surf'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 'ulr'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 'cloud_cov'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 't_surf'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
 
- variable = 'dlr'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan
- variable = 'cloud_cov'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan 
- variable = 't_surf'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan 
+variable = 'dlr'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan
+variable = 'cloud_cov'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan 
+variable = 't_surf'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan 
 
  # Deleting bad data manually
- rad_hour['2015-01-01':'2015-05-01'] = np.nan
+cols = ['usr','dsr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']
+rad_hour.loc['2015-01-01':'2015-05-01',cols] = np.nan
 
  # Then calculate daily averages again
- count_hours = rad_hour.resample('D').count()
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
+#count_hours = rad_hour.resample('D').count()
+#rad_day = rad_hour.resample('D').mean()
+#rad_day[count_hours<24 ] = np.nan
 
- rad_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_radiation.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_radiation.csv', index = True, float_format = '%g')
+rad_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_radiation.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_radiation.csv', index = True, float_format = '%g')
 
  #+END_SRC
+
+ #+RESULTS: zac_a_postQC_radiation
+ : None
 
  #+RESULTS:
 
 ****** Relative humidity
 #+NAME: zac_a_postQC_relative_humidity
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- rh_hour = pd.read_csv(datapath+'preQC/zac_a_hour_relative_humidity.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+rh_hour = pd.read_csv(datapath+'preQC/zac_a_hour_relative_humidity.csv', parse_dates = True, index_col=0)
 
 
- # Outliers
- #rh_hour = rh_hour.where(rh_hour['rh']<= 110., np.nan)
- rh_hour = rh_hour.where(rh_hour['rh']>= 0., np.nan)
- # Deleting bad data manually
- rh_hour['2014-12-01':'2015-05-01'] = np.nan
- rh_hour['2011':'2014'] = np.nan
- rh_hour['2016-04-01':] = np.nan
+# Outliers
+rh_hour = rh_hour.where(rh_hour['rh']< 100., np.nan)
+rh_hour = rh_hour.where(rh_hour['rh']>= 0., np.nan)
+# Deleting bad data manually
+rh_hour['2014-12-01':'2015-05-01'] = np.nan
+rh_hour['2011':'2014'] = np.nan
+rh_hour['2016-04-01':] = np.nan
 
- count_hours = rh_hour.resample('D').count()
- rh_day = rh_hour.resample('D').mean()
- rh_day[count_hours<24 ] = np.nan
+#count_hours = rh_hour.resample('D').count()
+#rh_day = rh_hour.resample('D').mean()
+#rh_day[count_hours<24 ] = np.nan
 
- rh_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_relative_humidity.csv', index = True, float_format = '%g')
- rh_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_relative_humidity.csv', index = True, float_format = '%g')
+rh_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_relative_humidity.csv', index = True, float_format = '%g')
+#rh_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_relative_humidity.csv', index = True, float_format = '%g')
  #+END_SRC
+
+ #+RESULTS: zac_a_postQC_relative_humidity
+ : None
 
  #+RESULTS:
 
 ****** Wind speed
 #+NAME: zac_a_postQC_wind_speed
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- wspd_hour = pd.read_csv(datapath+'preQC/zac_a_hour_wind_speed.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+wspd_hour = pd.read_csv(datapath+'preQC/zac_a_hour_wind_speed.csv', parse_dates = True, index_col=0)
 
 
- # Bad data
- startday = datetime.datetime(2020,8,15)
- endday = datetime.datetime(2022,4,21)
- wspd_hour['2020-August-15':'2021-July-21'] = np.nan
- wspd_hour['2014-12-01':'2015-05-01'] = np.nan
+# Bad data
+wspd_hour['2020-August-15':'2021-July-21'] = np.nan
+wspd_hour['2014-12-01':'2015-05-01'] = np.nan
 
- count_hours = wspd_hour.resample('D').count()
- wspd_day = wspd_hour.resample('D').mean()
- wspd_day[count_hours<24 ] = np.nan
+#count_hours = wspd_hour.resample('D').count()
+#wspd_day = wspd_hour.resample('D').mean()
+#wspd_day[count_hours<24 ] = np.nan
 
- wspd_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_wind_speed.csv', index = True, float_format = '%g')
- wspd_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_wind_speed.csv', index = True, float_format = '%g')
+wspd_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_wind_speed.csv', index = True, float_format = '%g')
+# wspd_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_wind_speed.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_a_postQC_wind_speed
+ : None
+
 
 ****** Pressure
 #+NAME: zac_a_postQC_pressure
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- p_hour = pd.read_csv(datapath+'preQC/zac_a_hour_pressure.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+p_hour = pd.read_csv(datapath+'preQC/zac_a_hour_pressure.csv', parse_dates = True, index_col=0)
 
- #Outliers
+#Outliers
 
- p_hour = p_hour.where(p_hour['p']> 800., np.nan)
+p_hour = p_hour.where(p_hour['p']> 800., np.nan)
 
 
- count_hours = p_hour.resample('D').count()
- p_day = p_hour.resample('D').mean()
- p_day[count_hours<24 ] = np.nan
+# Bad Data
+p_hour['2020-August-15':'2021-July-21'] = np.nan
+p_hour['2014-12-01':'2015-05-01'] = np.nan
 
- p_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_pressure.csv', index = True, float_format = '%g')
- p_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_pressure.csv', index = True, float_format = '%g')
+#count_hours = p_hour.resample('D').count()
+#p_day = p_hour.resample('D').mean()
+#p_day[count_hours<24 ] = np.nan
+
+p_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_pressure.csv', index = True, float_format = '%g')
+#p_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_pressure.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [94]: 
- :end:
+ #+RESULTS: zac_a_postQC_pressure
+ : None
 
 
 ****** Boom height
 #+NAME: zac_a_postQC_boom_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- boom_hour = pd.read_csv(datapath+'preQC/zac_a_hour_boom_height.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+boom_hour = pd.read_csv(datapath+'preQC/zac_a_hour_boom_height.csv', parse_dates = True, index_col=0)
 
- #Outliers
+#Outliers
 
- boom_hour = boom_hour.where(boom_hour['z_boom']> 0.1, np.nan)
- boom_hour = boom_hour.where(boom_hour['z_boom']< 4, np.nan)
+boom_hour = boom_hour.where(boom_hour['z_boom']> 0.1, np.nan)
+boom_hour = boom_hour.where(boom_hour['z_boom']< 4, np.nan)
 
- # Bad data
- boom_hour['2012-April-16':'2013-August-28'] = np.nan
- boom_hour['2013-December-20':'2014-April-22'] = np.nan
- boom_hour['2015-January-2':'2016-April-22'] = np.nan
- boom_hour['2018-April-20':'2018-April-24'] = np.nan
+# Bad data
+boom_hour['2012-April-16':'2013-August-28'] = np.nan
+boom_hour['2013-December-20':'2014-April-22'] = np.nan
+boom_hour['2015-January-2':'2016-April-22'] = np.nan
+boom_hour['2018-April-20':'2018-April-24'] = np.nan
 
 
- count_hours = boom_hour.resample('D').count()
- boom_day = boom_hour.resample('D').median()
- boom_day[count_hours<24 ] = np.nan
+#count_hours = boom_hour.resample('D').count()
+#boom_day = boom_hour.resample('D').median()
+#boom_day[count_hours<24 ] = np.nan
 
- boom_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_boom_height.csv', index = True, float_format = '%g')
- boom_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_boom_height.csv', index = True, float_format = '%g')
+boom_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_boom_height.csv', index = True, float_format = '%g')
+#boom_day.to_csv('data_v1.0/gem_database/2022/zac_a_day_boom_height.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [144]: 
- :end:
+ #+RESULTS: zac_a_postQC_boom_height
+ : None
 
 **** zac_l
 ***** Pre QC
 #+NAME: run_all_preQC_for_zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 
 <<zac_l_preQC_temperature>>
@@ -4610,309 +4457,187 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ****** Temperature
 #+NAME: zac_l_preQC_temperature
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['t_1']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['t_1']].to_dataframe()
 
- count10min = df.resample('H').count()
- temp_hour = df.resample('H').mean()
- temp_hour[count10min<6] = np.nan
- count_hours = temp_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- temp_day = temp_hour.resample('D').mean()
- temp_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+temp_hour = df.resample('H').mean()
+temp_hour[count10min<6] = np.nan
+#count_hours = temp_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#temp_day = temp_hour.resample('D').mean()
+#temp_day[count_hours<24 ] = np.nan
 
- temp_day.plot()
- temp_hour.plot()
+#temp_day.plot()
+#temp_hour.plot()
 
- temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_temperature.csv', index = True, float_format = '%g')
- temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_temperature.csv', index = True, float_format = '%g')
+temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_temperature.csv', index = True, float_format = '%g')
+#temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_temperature.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [180]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/a2af43761d6603a432521a5fa8930961dd6fa826.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/72abb9b3f5c7d6055ef0c15fd216e3f22182da95.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/3e388564fb64bfe5f80ab6922b98a4649a36b9e8.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/40786f3480905c749fb162c4ee974012f7adeab0.png]]
- :end:
+ #+RESULTS: zac_l_preQC_temperature
+ : None
 
 
 
 ****** Radiation
 #+NAME: zac_l_preQC_radiation
-   #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+   #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
     
- fig, ax = plt.subplots(1,1,figsize = (10,5))
- with xr.open_dataset(zac_l_path) as ds:
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_l_path) as ds:
      #print(ds)
-     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
+    ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
 
-     ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
-     ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
-     ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
-     ds['ulr'] = ds['ulr'].where(ds['ulr'] != -9999.)#.to_dataframe()
-     ds['ulr'] = ds['ulr'].where(ds['ulr'] < 10000.)#.to_dataframe()
-     ds['dlr'] = ds['dlr'].where(ds['dlr'] < 10000.)#.to_dataframe()
+    ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
+    ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
+    ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
+    ds['ulr'] = ds['ulr'].where(ds['ulr'] != -9999.)#.to_dataframe()
+    ds['ulr'] = ds['ulr'].where(ds['ulr'] < 10000.)#.to_dataframe()
+    ds['dlr'] = ds['dlr'].where(ds['dlr'] < 10000.)#.to_dataframe()
 
- count10min = ds.resample('H').count()
- rad_hour = ds.resample('H').mean()
- rad_hour[count10min<6] = np.nan
- count_hours = rad_hour.resample('D').count()
- count_hours.plot()
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
+count10min = ds.resample('H').count()
+rad_hour = ds.resample('H').mean()
+rad_hour[count10min<6] = np.nan
+#count_hours = rad_hour.resample('D').count()
+#count_hours.plot()
+#rad_day = rad_hour.resample('D').mean()
+#rad_day[count_hours<24 ] = np.nan
 
- rad_day.plot(ax=ax)
+#rad_day.plot(ax=ax)
 
- rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_radiation.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_radiation.csv', index = True, float_format = '%g')
+rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_radiation.csv', index = True, float_format = '%g')
+#rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_radiation.csv', index = True, float_format = '%g')
 
 
  #+END_SRC
 
  #+RESULTS: zac_l_preQC_radiation
- :RESULTS:
- # [goto error]
- ---------------------------------------------------------------------------
- ValueError                                Traceback (most recent call last)
- Cell In[5], line 22
-      19 zac_a_path = datapath+filename
-      21 fig, ax = plt.subplots(1,1,figsize = (10,5))
- ---> 22 with xr.open_dataset(zac_l_path) as ds:
-      23     #print(ds)
-      24     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
-      26     ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
-
- File ~/anaconda3/envs/py38/lib/python3.8/site-packages/xarray/backends/api.py:523, in open_dataset(filename_or_obj, engine, chunks, cache, decode_cf, mask_and_scale, decode_times, decode_timedelta, use_cftime, concat_characters, decode_coords, drop_variables, inline_array, backend_kwargs, **kwargs)
-     520     kwargs.update(backend_kwargs)
-     522 if engine is None:
- --> 523     engine = plugins.guess_engine(filename_or_obj)
-     525 backend = plugins.get_backend(engine)
-     527 decoders = _resolve_decoders_kwargs(
-     528     decode_cf,
-     529     open_backend_dataset_parameters=backend.open_dataset_parameters,
-    (...)
-     535     decode_coords=decode_coords,
-     536 )
-
- File ~/anaconda3/envs/py38/lib/python3.8/site-packages/xarray/backends/plugins.py:177, in guess_engine(store_spec)
-     169 else:
-     170     error_msg = (
-     171         "found the following matches with the input file in xarray's IO "
-     172         f"backends: {compatible_engines}. But their dependencies may not be installed, see:\n"
-     173         "https://docs.xarray.dev/en/stable/user-guide/io.html \n"
-     174         "https://docs.xarray.dev/en/stable/getting-started-guide/installing.html"
-     175     )
- --> 177 raise ValueError(error_msg)
-
- ValueError: found the following matches with the input file in xarray's IO backends: ['netcdf4', 'h5netcdf']. But their dependencies may not be installed, see:
- https://docs.xarray.dev/en/stable/user-guide/io.html 
- https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
- [[file:./.ob-jupyter/c1d90525e9d61c26b03e0db236bfea5f563769ff.png]]
- :END:
-
- #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/f7f0d34b3ba7808ce192cab19ab55df897b2fc3c.png]]
- [[file:./.ob-jupyter/7c67dc8ae81842090316a2c6561812ff7b325735.png]]
- :END:
+ : None
 
 
 ****** Relative humidity
 #+NAME: zac_l_preQC_relative_humidity
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python :session
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['rh']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    RH = ds['rh'].to_pandas()
+    T = ds['t_1'].to_pandas()
 
- count10min = df.resample('H').count()
- rh_hour = df.resample('H').mean()
- rh_hour[count10min<6] = np.nan
- count_hours = rh_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- rh_day = rh_hour.resample('D').mean()
- rh_day[count_hours<24 ] = np.nan
+count10min = RH.resample('H').count()
 
- rh_day.plot()
- rh_hour.plot()
+# To get the hourly mean we need to go to specific humidity and back
+# defining constants based on Lowe, 1972
+a0 = 6.107799961
+a1 = 4.436518521*10**(-1)
+a2 = 1.428945805*10**(-2)
+a3 = 2.650648471*10**(-4)
+a4 = 3.031240396*10**(-6)
+a5 = 2.034080948*10**(-8)
+a6 = 6.136820929*10**(-11)
 
- rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_relative_humidity.csv', index = True, float_format = '%g')
- rh_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_relative_humidity.csv', index = True, float_format = '%g')
+es = a0 + a1*T+a2*T**2 +a3*T**3+a4*T**4+a5*T**5+a6*T**6
+e = RH*es/100
+
+es_hour = es.resample('H').mean()
+e_hour = e.resample('H').mean()
+
+rh_hour = 100*e_hour/es_hour
+#rh_hour_simple =RH.resample('H').mean()
+#rh_hour_simple[count10min<6] = np.nan
+#rh_hour[count10min<6] = np.nan
+ 
+#rh_day = rh_hour.resample('D').mean()
+#rh_day[count_hours<24 ] = np.nan
+#rh_hour = rh_hour.where(rh_hour.values > 0, np.nan)
+#rh_hour = rh_hour.where(rh_hour.values <100, np.nan)
+
+#rh_hour.plot()
+#rh_hour_simple.plot()
+rh_hour = pd.DataFrame(rh_hour)
+rh_hour.columns = ['rh']
+rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_relative_humidity.csv', index = True, float_format = '%g')
+# rh_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_relative_humidity.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [2]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/49204a121b210b62cd1f7bd53c971d5d683ae966.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/9f0eabee8d045cc1ac0979a999023a869f5bcfab.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7fd78f6c43cb99b9f86244f1e127bffdb6fc4499.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/dfb592e40191de5216dab0ce1b199b8d88725c86.png]]
- :end:
+ #+RESULTS: zac_l_preQC_relative_humidity
+ : None
 
 
 ****** Windspeed
 #+NAME: zac_l_preQC_wind_speed
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['wspd']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['wspd']].to_dataframe()
 
- count10min = df.resample('H').count()
- wspd_hour = df.resample('H').mean()
- wspd_hour[count10min<6] = np.nan
- count_hours = wspd_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- wspd_day = wspd_hour.resample('D').mean()
- wspd_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+wspd_hour = df.resample('H').mean()
+wspd_hour[count10min<6] = np.nan
+#count_hours = wspd_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#wspd_day = wspd_hour.resample('D').mean()
+#wspd_day[count_hours<24 ] = np.nan
 
- wspd_day.plot()
- wspd_hour.plot()
+#wspd_day.plot()
+#wspd_hour.plot()
 
- wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_wind_speed.csv', index = True, float_format = '%g')
- wspd_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_wind_speed.csv', index = True, float_format = '%g')
+wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_wind_speed.csv', index = True, float_format = '%g')
+#wspd_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_wind_speed.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [57]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
+ #+RESULTS: zac_l_preQC_wind_speed
+ : None
 
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1d52117124a1ba01c32c9ef2a79a2be5db4680e4.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/2aea217ee3f0c6fde9a968c08f1b63a9ad99beff.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/cbd85bcaeed30463a6ef53fb85df00f4271fd33a.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7e67105463dbd73b8b4c46123a496a4e063ae38b.png]]
- :end:
 
 ****** pressure
 #+NAME: zac_l_preQC_pressure
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['p']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['p']].to_dataframe()
 
- count10min = df.resample('H').count()
- p_hour = df.resample('H').mean()
- p_hour[count10min<6] = np.nan
- count_hours = p_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- p_day = p_hour.resample('D').mean()
- p_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+p_hour = df.resample('H').mean()
+p_hour[count10min<6] = np.nan
+#count_hours = p_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#p_day = p_hour.resample('D').mean()
+#p_day[count_hours<24 ] = np.nan
 
- p_day.plot()
- p_hour.plot()
+#p_day.plot()
+#p_hour.plot()
 
- p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_pressure.csv', index = True, float_format = '%g')
- p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_pressure.csv', index = True, float_format = '%g')
+p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_pressure.csv', index = True, float_format = '%g')
+#p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_pressure.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [83]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e2d596eaf7af0fb76ce9a5c11393be8d5833b46e.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ce2ae00073d30f3fc9d365e7fdb4cae990ca2787.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/569f68c817905a6316b135816769c917e3312071.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/336a6b6d1ed5518d60e95c612a5697314dbad5ae.png]]
- :end:
+ #+RESULTS: zac_l_preQC_pressure
+ : None
 
 
 ****** OLD? Surface lowering (z_pt)
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
  <<load_libs>>
  <<data_file_paths>>
 
@@ -4939,118 +4664,66 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ****** boom height
 #+NAME: zac_l_preQC_boom_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['z_boom']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['z_boom']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+count_hours = z_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#z_day = z_hour.resample('D').median()
+#z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+#z_day.plot()
+#z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_boom_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_boom_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_boom_height.csv', index = True, float_format = '%g')
+#z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_boom_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [87]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e009940083985fb7c42c826b26a88c9bdc484a9c.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/8861d7850218464f9126c23d0713e58254032fec.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/786f16eff176a587bc3f7e87e979ae11bd49c49f.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/9844b4436943e28f87e63bc907ed8b25b60667a3.png]]
- :end:
-
+ #+RESULTS: zac_l_preQC_boom_height
+ : None
 
 ****** SR50 on stakes
 #+NAME: zac_l_preQC_stake_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['z_stake']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['z_stake']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+#count_hours = z_hour.resample('D').count()
+#count_hours.plot()
+#count10min.plot()
+#z_day = z_hour.resample('D').median()
+#z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+#z_day.plot()
+#z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+#z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [2]: 
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/6fc7a35ccb35ca925f247d1599554aa24adbfeaa.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/a53258f286b8c99517c0dae8fbbf8dac6437bd9d.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/037b3574dfa13a1709cd3f483b68996d51f2a141.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/48b0d60f32c3261e7bf38a2cbbe1ef948a849fb3.png]]
- :end:
-
+ #+RESULTS: zac_l_preQC_stake_height
+ : None
 
 
 ***** Post QC
 #+NAME: run_all_postQC_for_zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_l_postQC_temperature>>
 <<zac_l_postQC_radiation>>
 <<zac_l_postQC_relative_humidity>>
@@ -5061,199 +4734,189 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 #+END_SRC
 ****** Temperature
 #+NAME: zac_l_postQC_temperature
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
- temp_hour = pd.read_csv(datapath+'preQC/zac_l_hour_temperature.csv', parse_dates = True, index_col=0)
- #Deling bad data
+temp_hour = pd.read_csv(datapath+'preQC/zac_l_hour_temperature.csv', parse_dates = True, index_col=0)
 
- count_hours = temp_hour.resample('D').count()
- temp_day = temp_hour.resample('D').mean()
- temp_day[count_hours<24 ] = np.nan
+#count_hours = temp_hour.resample('D').count()
+#temp_day = temp_hour.resample('D').mean()
+#temp_day[count_hours<24 ] = np.nan
 
 
- temp_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_temperature.csv', index = True, float_format = '%g')
- temp_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_temperature.csv', index = True, float_format = '%g')
+temp_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_temperature.csv', index = True, float_format = '%g')
+#temp_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_temperature.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [193]: 
- :end:
+ #+RESULTS: zac_l_postQC_temperature
+ : None
 
 
 ****** Radiation
 #+NAME: zac_l_postQC_radiation
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
- rad_hour = pd.read_csv(datapath+'preQC/zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
+rad_hour = pd.read_csv(datapath+'preQC/zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
 
  # Deliting bad data: Out of bounds
- maximum = 1000
+maximum = 1000
  
- variable = 'dsr_corr'
- rad_hour[variable][rad_hour[variable]>maximum] = np.nan
- rad_hour[variable][rad_hour[variable]<0] = np.nan
+variable = 'dsr_corr'
+rad_hour[variable][rad_hour[variable]>maximum] = np.nan
+rad_hour[variable][rad_hour[variable]<0] = np.nan
 
- variable = 'usr_corr'
- albedo = rad_hour['usr_corr']/rad_hour['dsr_corr']
- rad_hour[variable][albedo>1] = np.nan
- variable = 'albedo'
- rad_hour[variable][albedo>1] = np.nan
+variable = 'usr_corr'
+albedo = rad_hour['usr_corr']/rad_hour['dsr_corr']
+rad_hour[variable][albedo>1] = np.nan
+variable = 'albedo'
+rad_hour[variable][albedo>1] = np.nan
  
- variable = 'ulr'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
- variable = 'cloud_cov'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
- variable = 't_surf'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 'ulr'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 'cloud_cov'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 't_surf'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
 
- variable = 'dlr'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan
- variable = 'cloud_cov'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan 
- variable = 't_surf'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan 
+variable = 'dlr'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan
+variable = 'cloud_cov'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan 
+variable = 't_surf'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan 
 
- # Deleting bad data manually
- rad_hour['usr_corr']['2021-01-01':'2021-07-21'] = np.nan
- rad_hour['2020-07-01':'2021-07-22'] = np.nan
-# rad_hour['dsr_corr']['22-Jan-2020':] = np.nan
-# rad_hour['usr_corr']['22-Jan-2020':] = np.nan
-# rad_hour['albedo']['22-Jan-2020':] = np.nan
+# Deleting bad data manually
 
- # Then calculate daily averages again
- count_hours = rad_hour.resample('D').count()
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
+rad_hour['usr_corr']['2021-01-01':'2021-07-21'] = np.nan
+cols = ['usr','dsr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']
+rad_hour.loc['2020-07-01':'2021-07-22',cols] = np.nan
 
- rad_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_radiation.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_radiation.csv', index = True, float_format = '%g')
+rad_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_radiation.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_radiation.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
  #+RESULTS: zac_l_postQC_radiation
+ : None
 
 
 
 ****** Relative humidity
 #+NAME: zac_l_postQC_relative_humidity
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- rad_hour = pd.read_csv(datapath+'preQC/zac_l_hour_relative_humidity.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+rad_hour = pd.read_csv(datapath+'preQC/zac_l_hour_relative_humidity.csv', parse_dates = True, index_col=0)
 
 
- # Outliers
- rad_hour = rad_hour.where(rad_hour['rh']<= 100., np.nan)
- rad_hour = rad_hour.where(rad_hour['rh']>= 0., np.nan)
+# Outliers
+rad_hour = rad_hour.where(rad_hour<= 100., np.nan)
+rad_hour = rad_hour.where(rad_hour>= 0., np.nan)
 
 
- count_hours = rad_hour.resample('D').count()
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
+#count_hours = rad_hour.resample('D').count()
+#rad_day = rad_hour.resample('D').mean()
+#rad_day[count_hours<24 ] = np.nan
 
- rad_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_relative_humidity.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_relative_humidity.csv', index = True, float_format = '%g')
+rad_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_relative_humidity.csv', index = True, float_format = '%g')
+#rad_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_relative_humidity.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [16]: 
- :end:
+ #+RESULTS: zac_l_postQC_relative_humidity
+ : None
+
+
+
 
 
 ****** Wind speed
 #+NAME: zac_l_postQC_wind_speed
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- wspd_hour = pd.read_csv(datapath+'preQC/zac_l_hour_wind_speed.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+wspd_hour = pd.read_csv(datapath+'preQC/zac_l_hour_wind_speed.csv', parse_dates = True, index_col=0)
 
 
 
- count_hours = wspd_hour.resample('D').count()
- wspd_day = wspd_hour.resample('D').mean()
- wspd_day[count_hours<24 ] = np.nan
+# count_hours = wspd_hour.resample('D').count()
+# wspd_day = wspd_hour.resample('D').mean()
+# wspd_day[count_hours<24 ] = np.nan
 
- wspd_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_wind_speed.csv', index = True, float_format = '%g')
- wspd_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_wind_speed.csv', index = True, float_format = '%g')
+wspd_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_wind_speed.csv', index = True, float_format = '%g')
+#wspd_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_wind_speed.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [156]: 
- :end:
+ #+RESULTS: zac_l_postQC_wind_speed
+ : None
 
 
 ****** Pressure
 #+NAME: zac_l_postQC_pressure
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- p_hour = pd.read_csv(datapath+'preQC/zac_l_hour_pressure.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+p_hour = pd.read_csv(datapath+'preQC/zac_l_hour_pressure.csv', parse_dates = True, index_col=0)
 
- #Outliers
+#Outliers
 
- p_hour = p_hour.where(p_hour['p']> 870., np.nan)
-
-
- p_hour['2016-February-26':'2016-March-1'] = np.nan
- p_hour['2017-January-5':'2017-February-22'] = np.nan
- p_hour['2018-February-21':'2018-February-28'] = np.nan
+p_hour = p_hour.where(p_hour['p']> 870., np.nan)
 
 
- count_hours = p_hour.resample('D').count()
- p_day = p_hour.resample('D').mean()
- p_day[count_hours<24 ] = np.nan
+p_hour['2016-February-26':'2016-March-1'] = np.nan
+p_hour['2017-January-5':'2017-February-22'] = np.nan
+p_hour['2018-February-21':'2018-February-28'] = np.nan
 
- p_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_pressure.csv', index = True, float_format = '%g')
- p_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_pressure.csv', index = True, float_format = '%g')
+
+count_hours = p_hour.resample('D').count()
+p_day = p_hour.resample('D').mean()
+p_day[count_hours<24 ] = np.nan
+
+p_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_pressure.csv', index = True, float_format = '%g')
+#p_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_pressure.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [153]: 
- :e
+ #+RESULTS: zac_l_postQC_pressure
+ : None
 
 
 ****** Boom height
 #+NAME: zac_l_postQC_boom_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- boom_hour = pd.read_csv(datapath+'preQC/zac_l_hour_boom_height.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+boom_hour = pd.read_csv(datapath+'preQC/zac_l_hour_boom_height.csv', parse_dates = True, index_col=0)
 
  #Outliers
 
- boom_hour = boom_hour.where(boom_hour['z_boom']> 0.1, np.nan)
- boom_hour = boom_hour.where(boom_hour['z_boom']< 2.75, np.nan)
+boom_hour = boom_hour.where(boom_hour['z_boom']> 0.1, np.nan)
+boom_hour = boom_hour.where(boom_hour['z_boom']< 2.75, np.nan)
 
  # Bad data
- boom_hour['2011-January-25':'2013-May-3'] = np.nan
- boom_hour['2019':'2020'] = np.nan
+boom_hour['2011-January-25':'2013-May-3'] = np.nan
+boom_hour['2019':'2020'] = np.nan
 
- count_hours = boom_hour.resample('D').count()
- boom_day = boom_hour.resample('D').median()
- boom_day[count_hours<24 ] = np.nan
+#count_hours = boom_hour.resample('D').count()
+#boom_day = boom_hour.resample('D').median()
+#boom_day[count_hours<24 ] = np.nan
 
- boom_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_boom_height.csv', index = True, float_format = '%g')
- boom_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_boom_height.csv', index = True, float_format = '%g')
+boom_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_boom_height.csv', index = True, float_format = '%g')
+#boom_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_boom_height.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_l_postQC_boom_height
+ : None
 
 **** zac_u
 
 ***** Pre QC
 #+NAME: run_all_preQC_for_zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_u_preQC_temperature>>
 <<zac_u_preQC_radiation>>
 <<zac_u_preQC_relative_humidity>>
@@ -5264,378 +4927,244 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 #+END_SRC
 ****** Temperature
 #+NAME: zac_u_preQC_temperature
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['t_1']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['t_1']].to_dataframe()
 
- count10min = df.resample('H').count()
- temp_hour = df.resample('H').mean()
- temp_hour[count10min<6] = np.nan
- count_hours = temp_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- temp_day = temp_hour.resample('D').mean()
- temp_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+temp_hour = df.resample('H').mean()
+temp_hour[count10min<6] = np.nan
+#count_hours = temp_hour.resample('D').count()
+# count_hours.plot()
+ #count10min.plot()
+# temp_day = temp_hour.resample('D').mean()
+# temp_day[count_hours<24 ] = np.nan
 
- temp_day.plot()
- temp_hour.plot()
+# temp_day.plot()
+# temp_hour.plot()
 
- temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_temperature.csv', index = True, float_format = '%g')
- temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_temperature.csv', index = True, float_format = '%g')
+temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_temperature.csv', index = True, float_format = '%g')
+# temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_temperature.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [181]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/15d0d4bc32351b1b5f34e022f1a0686e8bec6b64.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/6f0ba422f2c3a65ae4ff3332ba9589ebd86384f6.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/06b1e63607a8e431df97fdad78093e664aa1f192.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d7762ac5cd9a6509a2bf79429e3d1987c00712ee.png]]
- :end:
+ #+RESULTS: zac_u_preQC_temperature
+ : None
 
 ****** Radiation
 #+NAME: zac_u_preQC_radiation
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
     
- #fig, ax = plt.subplots(1,1,figsize = (10,5))
- with xr.open_dataset(zac_u_path) as ds:
+#fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_u_path) as ds:
      #ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
      #ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
-     ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
+    ds = ds[['dsr','usr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf', 'I']].to_dataframe()
 
-     ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
-     ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
+    ds['dsr_corr'] = ds['dsr_corr'].where(ds['dsr_corr'] != -9999.)
+    ds['usr_corr'] = ds['usr_corr'].where(ds['usr_corr'] != -9999.)
      #ds['usr'] = ds['usr'].where(ds['usr'] != -9999.)
-     ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
-     ds['ulr'] = ds['ulr'].where(ds['ulr'] != -9999.)#.to_dataframe()
-     ds['ulr'] = ds['ulr'].where(ds['ulr'] < 10000.)#.to_dataframe()
-     ds['dlr'] = ds['dlr'].where(ds['dlr'] < 10000.)#.to_dataframe()
+    ds['dlr'] = ds['dlr'].where(ds['dlr'] != -9999.)
+    ds['ulr'] = ds['ulr'].where(ds['ulr'] != -9999.)#.to_dataframe()
+    ds['ulr'] = ds['ulr'].where(ds['ulr'] < 10000.)#.to_dataframe()
+    ds['dlr'] = ds['dlr'].where(ds['dlr'] < 10000.)#.to_dataframe()
 
 
- count10min = ds.resample('H').count()
- rad_hour = ds.resample('H').mean()
- rad_hour[count10min<6] = np.nan
- count_hours = rad_hour.resample('D').count()
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
+count10min = ds.resample('H').count()
+rad_hour = ds.resample('H').mean()
+rad_hour[count10min<6] = np.nan
+# count_hours = rad_hour.resample('D').count()
+# rad_day = rad_hour.resample('D').mean()
+# rad_day[count_hours<24 ] = np.nan
  #count_hours['April-2014'].plot()
  #count10min['April-2014'].plot()
  #rad_hour['April-14-2014':'April-15-2014'].plot(ax=ax)
 
- rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_radiation.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_radiation.csv', index = True, float_format = '%g')
+rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_radiation.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_radiation.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_u_preQC_radiation
+ : None
 
 ****** Relative humidity
 #+NAME: zac_u_preQC_relative_humidity
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python 
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['rh']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    RH = ds['rh'].to_pandas()
+    T = ds['t_1'].to_pandas()
 
- count10min = df.resample('H').count()
- rh_hour = df.resample('H').mean()
- rh_hour[count10min<6] = np.nan
- count_hours = rh_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- rh_day = rh_hour.resample('D').mean()
- rh_day[count_hours<24 ] = np.nan
+count10min = RH.resample('H').count()
 
- rh_day.plot()
- rh_hour.plot()
+# To get the hourly mean we need to go to specific humidity and back
+# defining constants based on Lowe, 1972
+a0 = 6.107799961
+a1 = 4.436518521*10**(-1)
+a2 = 1.428945805*10**(-2)
+a3 = 2.650648471*10**(-4)
+a4 = 3.031240396*10**(-6)
+a5 = 2.034080948*10**(-8)
+a6 = 6.136820929*10**(-11)
 
- rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_relative_humidity.csv', index = True, float_format = '%g')
- rh_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_relative_humidity.csv', index = True, float_format = '%g')
+es = a0 + a1*T+a2*T**2 +a3*T**3+a4*T**4+a5*T**5+a6*T**6
+e = RH*es/100
+
+es_hour = es.resample('H').mean()
+e_hour = e.resample('H').mean()
+
+rh_hour = 100*e_hour/es_hour
+#rh_hour_simple =RH.resample('H').mean()
+#rh_hour_simple[count10min<6] = np.nan
+#rh_hour[count10min<6] = np.nan
+ 
+#rh_day = rh_hour.resample('D').mean()
+#rh_day[count_hours<24 ] = np.nan
+#rh_hour = rh_hour.where(rh_hour.values > 0, np.nan)
+#rh_hour = rh_hour.where(rh_hour.values <100, np.nan)
+
+#rh_hour.plot()
+#rh_hour_simple.plot()
+
+rh_hour = pd.DataFrame(rh_hour)
+rh_hour.columns = ['rh']
+rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_relative_humidity.csv', index = True, float_format = '%g')
+#rh_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_relative_humidity.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [1]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7964a7cc51edff2816693689d04e991193425782.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/711835bb17fb7065aebc81f20b68de6f78048817.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/00fad85c3fab36ce3889b0088d32f28f445d65f6.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/5503b83a5bf405cd2d05baa336f186eba11df3ec.png]]
- :end:
+ #+RESULTS: zac_u_preQC_relative_humidity
+ : None
 
 ****** Windspeed
 #+NAME: zac_u_preQC_wind_speed
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['wspd']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['wspd']].to_dataframe()
 
- count10min = df.resample('H').count()
- wspd_hour = df.resample('H').mean()
- wspd_hour[count10min<6] = np.nan
- count_hours = wspd_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- wspd_day = wspd_hour.resample('D').mean()
- wspd_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+wspd_hour = df.resample('H').mean()
+wspd_hour[count10min<6] = np.nan
+# count_hours = wspd_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# wspd_day = wspd_hour.resample('D').mean()
+# wspd_day[count_hours<24 ] = np.nan
 
- wspd_day.plot()
- wspd_hour.plot()
+# wspd_day.plot()
+# wspd_hour.plot()
 
- wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_wind_speed.csv', index = True, float_format = '%g')
- wspd_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_wind_speed.csv', index = True, float_format = '%g')
+wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_wind_speed.csv', index = True, float_format = '%g')
+# wspd_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_wind_speed.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [53]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/9d6dabe7ef19d6227c59914d59508d7744f9837d.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/dcf9b6733fd4f7334aebb57310b45d9de0f9ad13.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/554abf1af32cea2e7fdcc9b88dd8f027e2393721.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/51337ff3da6a485de6fff929c0c3a5b901ce824e.png]]
- :end:
+ #+RESULTS: zac_u_preQC_wind_speed
+ : None
 
 ****** pressure
 #+NAME: zac_u_preQC_pressure
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['p']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['p']].to_dataframe()
 
- count10min = df.resample('H').count()
- p_hour = df.resample('H').mean()
- p_hour[count10min<6] = np.nan
- count_hours = p_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- p_day = p_hour.resample('D').mean()
- p_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+p_hour = df.resample('H').mean()
+p_hour[count10min<6] = np.nan
+# count_hours = p_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# p_day = p_hour.resample('D').mean()
+# p_day[count_hours<24 ] = np.nan
 
- p_day.plot()
- p_hour.plot()
+# p_day.plot()
+# p_hour.plot()
 
- p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_pressure.csv', index = True, float_format = '%g')
- p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pressure.csv', index = True, float_format = '%g')
+p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_pressure.csv', index = True, float_format = '%g')
+#p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_pressure.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [82]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d04d48f06de022214a4bbab07c570f35e254d1e0.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/3766e8b007329965e5be46a859688501de571d78.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/9b24e13bf33c41a2d03f3e904c5a64b923e360d3.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/f5df4be4d5af534e536311d5f33a382ac3727f21.png]]
- :end:
-
-
-
-
-
+ #+RESULTS: zac_u_preQC_pressure
+ : None
 
 ****** boom height
 #+NAME: zac_u_preQC_boom_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['z_boom']].to_dataframe()
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['z_boom']].to_dataframe()
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+# count_hours = z_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# z_day = z_hour.resample('D').median()
+# z_day[count_hours<24 ] = np.nan
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+# z_day.plot()
+# z_hour.plot()
 
- z_day.plot()
- z_hour.plot()
-
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_boom_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_boom_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_boom_height.csv', index = True, float_format = '%g')
+# z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_boom_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [88]: 
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c18c7d6d725e3147399cf7cc0f39f40f9a2fb449.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/604151156190a65d669403857ef0d61c6a4504c5.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e84b7325d2ec1714944e9e7d768e8fa8e9870d19.png]]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/864922d182e50a0c49fb1d4e0411cec78981a207.png]]
- :end:
-
+ #+RESULTS: zac_u_preQC_boom_height
+ : None
 
 
 ****** SR50 on stakes
 #+NAME: zac_u_preQC_stake_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['z_stake']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['z_stake']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+# count_hours = z_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# z_day = z_hour.resample('D').median()
+# z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+# z_day.plot()
+# z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+# z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height.csv', index = True, float_format = '%g')
     
  #+END_SRC 
 
- #+RESULTS:
- :results:
- # Out [3]: 
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/aa6acbabd6701a6bdca43e9a228fa929312771d0.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/97797eacba6a507894c449ff5610433e1a57a2b4.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/df66eafe87c2e39a015d44154e71c01ce3fed7ec.png]]
-
- # text/plain
- : <Figure size 640x480 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1069e89db8322d637a0168fa902d2769a7221cc3.png]]
- :end:
-
+ #+RESULTS: zac_u_preQC_stake_height
+ : None
+ 
 
 ***** Post QC
 
 #+NAME: run_all_postQC_for_zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<zac_u_postQC_temperature>>
 <<zac_u_postQC_radiation>>
 <<zac_u_postQC_relative_humidity>>
@@ -5647,205 +5176,201 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ****** Temperature
 #+NAME: zac_u_postQC_temperature
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
-
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- temp_hour = pd.read_csv(datapath+'preQC/zac_u_hour_temperature.csv', parse_dates = True, index_col=0)
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+temp_hour = pd.read_csv(datapath+'preQC/zac_u_hour_temperature.csv', parse_dates = True, index_col=0)
 
  # Bad data deleted
- temp_hour['2020-09-15':'2021-08-01'] = np.nan
- temp_hour['2014-10-30':'2015-12-31'] = np.nan
+temp_hour['2020-09-15':'2021-08-01'] = np.nan
+temp_hour['2014-10-30':'2015-12-31'] = np.nan
 
 
- count_hours = temp_hour.resample('D').count()
- temp_day = temp_hour.resample('D').mean()
- temp_day[count_hours<24 ] = np.nan
+#count_hours = temp_hour.resample('D').count()
+#temp_day = temp_hour.resample('D').mean()
+#temp_day[count_hours<24 ] = np.nan
 
- temp_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_temperature.csv', index = True, float_format = '%g')
- temp_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_temperature.csv', index = True, float_format = '%g')
+temp_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_temperature.csv', index = True, float_format = '%g')
+#temp_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_temperature.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_u_postQC_temperature
+ : None
 
 ****** Radiation
 #+NAME: zac_u_postQC_radiation
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
- rad_hour = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
+rad_hour = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
 
- rad_hour.plot()
+rad_hour.plot()
 
- # Deliting bad data: Out of bounds
- maximum = 1000
- variable = 'dsr_corr'
- rad_hour[variable][rad_hour[variable]>maximum] = np.nan
- rad_hour[variable][rad_hour[variable]<0] = np.nan
+# Deliting bad data: Out of bounds
+maximum = 1000
+variable = 'dsr_corr'
+rad_hour[variable][rad_hour[variable]>maximum] = np.nan
+rad_hour[variable][rad_hour[variable]<0] = np.nan
 
- variable = 'usr_corr'
- albedo = rad_hour['usr_corr']/rad_hour['dsr_corr']
- rad_hour[variable][albedo>1] = np.nan
- variable = 'albedo'
- rad_hour[variable][albedo>1] = np.nan
+variable = 'usr_corr'
+albedo = rad_hour['usr_corr']/rad_hour['dsr_corr']
+rad_hour[variable][albedo>1] = np.nan
+variable = 'albedo'
+rad_hour[variable][albedo>1] = np.nan
  
- variable = 'ulr'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
- variable = 'cloud_cov'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
- variable = 't_surf'
- rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 'ulr'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 'cloud_cov'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
+variable = 't_surf'
+rad_hour[variable][rad_hour['ulr']<150] = np.nan
 
- variable = 'dlr'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan
- variable = 'cloud_cov'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan 
- variable = 't_surf'
- rad_hour[variable][rad_hour['dlr']<120] = np.nan 
+variable = 'dlr'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan
+variable = 'cloud_cov'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan 
+variable = 't_surf'
+rad_hour[variable][rad_hour['dlr']<120] = np.nan 
 
-
+cols = ['usr','dsr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']
  # Deleting bad data manually
- rad_hour['2020-08-15':'2021-08-01'] = np.nan # Station was tilted
- rad_hour['2015-01-01':'2015-12-31'] = np.nan
+rad_hour.loc['2020-08-15':'2021-08-01',cols] = np.nan # Station was tilted
+rad_hour.loc['2015-01-01':'2015-12-31',cols] = np.nan
 
- rad_hour= rad_hour['2012-05-05':]
-
- rad_hour.plot()
+rad_hour.loc[:'2012-05-05',cols] = np.nan
+#rad_hour.plot()
  # Then calculate daily averages again
- count_hours = rad_hour.resample('D').count()
+#count_hours = rad_hour.resample('D').count()
 
- rad_day = rad_hour.resample('D').mean()
- rad_day[count_hours<24 ] = np.nan
- rad_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_radiation.csv', index = True, float_format = '%g')
- rad_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_radiation.csv', index = True, float_format = '%g')
+#rad_day = rad_hour.resample('D').mean()
+#rad_day[count_hours<24 ] = np.nan
+rad_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_radiation.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_radiation.csv', index = True, float_format = '%g')
 
  #+END_SRC
 
- #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/4b76bfe842885213a5021034660d59c5dc620af7.png]]
- [[file:./.ob-jupyter/9b6efc547224302057f75fd2693dceb0aba2e60e.png]]
- :END:
+ #+RESULTS: zac_u_postQC_radiation
+ : None
 
 ****** Relative humidity
 #+NAME: zac_u_postQC_relative_humidity
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- rh_hour = pd.read_csv(datapath+'preQC/zac_u_hour_relative_humidity.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+rh_hour = pd.read_csv(datapath+'preQC/zac_u_hour_relative_humidity.csv', parse_dates = True, index_col=0)
 
 
- # Outliers
- rh_hour = rh_hour.where(rh_hour['rh']<= 100., np.nan)
- rh_hour = rh_hour.where(rh_hour['rh']>= 0., np.nan)
+# Outliers
+rh_hour = rh_hour.where(rh_hour<= 100., np.nan)
+rh_hour = rh_hour.where(rh_hour>= 0., np.nan)
 
 
  # Bad data
- rh_hour['2020-August-15':'2021-July-21'] = np.nan
- rh_hour['2014-10-30':'2015-12-31'] = np.nan
+rh_hour['2020-August-15':'2021-July-21'] = np.nan
+rh_hour['2014-10-30':'2015-12-31'] = np.nan
 
 
- count_hours = rh_hour.resample('D').count()
- rh_day = rh_hour.resample('D').mean()
- rh_day[count_hours<24 ] = np.nan
+ #count_hours = rh_hour.resample('D').count()
+ #rh_day = rh_hour.resample('D').mean()
+ #rh_day[count_hours<24 ] = np.nan
 
- rh_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_relative_humidity.csv', index = True, float_format = '%g')
- rh_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_relative_humidity.csv', index = True, float_format = '%g')
+rh_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_relative_humidity.csv', index = True, float_format = '%g')
+ #rh_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_relative_humidity.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_u_postQC_relative_humidity
+ : None
 
 
 
 ****** Wind speed
 #+NAME: zac_u_postQC_wind_speed
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- wspd_hour = pd.read_csv(datapath+'preQC/zac_u_hour_wind_speed.csv', parse_dates = True, index_col=0)
+#+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+wspd_hour = pd.read_csv(datapath+'preQC/zac_u_hour_wind_speed.csv', parse_dates = True, index_col=0)
 
 
- # Bad data
- startday = datetime.datetime(2020,8,15)
- endday = datetime.datetime(2022,4,21)
- wspd_hour['2020-August-15':'2022-July-21'] = np.nan
- #wspd_hour['2014-10-30':'2015-12-31'] = np.nan
+# Bad data
+wspd_hour['2020-August-15':'2022-July-21'] = np.nan
+wspd_hour['2014-10-30':'2015-12-31'] = np.nan
 
- count_hours = wspd_hour.resample('D').count()
- wspd_day = wspd_hour.resample('D').mean()
- wspd_day[count_hours<24 ] = np.nan
+#count_hours = wspd_hour.resample('D').count()
+#wspd_day = wspd_hour.resample('D').mean()
+#wspd_day[count_hours<24 ] = np.nan
 
- wspd_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_wind_speed.csv', index = True, float_format = '%g')
- wspd_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_wind_speed.csv', index = True, float_format = '%g')
+wspd_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_wind_speed.csv', index = True, float_format = '%g')
+#wspd_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_wind_speed.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_u_postQC_wind_speed
+ : None
 
 ****** Pressure
 #+NAME: zac_u_postQC_pressure
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- p_hour = pd.read_csv(datapath+'preQC/zac_u_hour_pressure.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+p_hour = pd.read_csv(datapath+'preQC/zac_u_hour_pressure.csv', parse_dates = True, index_col=0)
 
  #Outliers
 
- p_hour = p_hour.where(p_hour['p']> 850., np.nan)
+p_hour = p_hour.where(p_hour['p']> 850., np.nan)
 
- # Bad data
- p_hour['2014-10-30':'2015-12-31'] = np.nan
- p_hour['2016-April-4':'2016-April-18'] = np.nan
- p_hour['2017-January-23':'2017-March-2'] = np.nan
+# Bad data
+p_hour['2014-10-30':'2015-12-31'] = np.nan
+p_hour['2016-April-4':'2016-April-18'] = np.nan
+p_hour['2017-January-23':'2017-March-2'] = np.nan
 
 
- count_hours = p_hour.resample('D').count()
- p_day = p_hour.resample('D').mean()
- p_day[count_hours<24 ] = np.nan
+#count_hours = p_hour.resample('D').count()
+#p_day = p_hour.resample('D').mean()
+#p_day[count_hours<24 ] = np.nan
 
- p_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_pressure.csv', index = True, float_format = '%g')
- p_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_pressure.csv', index = True, float_format = '%g')
+p_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_pressure.csv', index = True, float_format = '%g')
+#p_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_pressure.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_u_postQC_pressure
+ : None
 
 
 
 
-
-
-
+ 
 ****** Boom height
 #+NAME: zac_u_postQC_boom_height
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
- boom_hour = pd.read_csv(datapath+'preQC/zac_u_hour_boom_height.csv', parse_dates = True, index_col=0)
+ #+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+boom_hour = pd.read_csv(datapath+'preQC/zac_u_hour_boom_height.csv', parse_dates = True, index_col=0)
 
- #Outliers
+#Outliers
 
- boom_hour = boom_hour.where(boom_hour['z_boom']> 0.1, np.nan)
- boom_hour = boom_hour.where(boom_hour['z_boom']< 2.75, np.nan)
+boom_hour = boom_hour.where(boom_hour['z_boom']> 0.1, np.nan)
+boom_hour = boom_hour.where(boom_hour['z_boom']< 2.75, np.nan)
 
- # Bad data
- boom_hour['2012-January-1':'2016-April-20'] = np.nan
- boom_hour['2019-June-20':'2021-July-26'] = np.nan
- #boom_hour['2014-10-30':'2015-12-31'] = np.nan
+# Bad data
+boom_hour['2012-January-1':'2016-April-20'] = np.nan
+boom_hour['2019-June-20':'2021-July-26'] = np.nan
+#boom_hour['2014-10-30':'2015-12-31'] = np.nan
 
 
 
- count_hours = boom_hour.resample('D').count()
- boom_day = boom_hour.resample('D').median()
- boom_day[count_hours<24 ] = np.nan
+#count_hours = boom_hour.resample('D').count()
+#boom_day = boom_hour.resample('D').median()
+#boom_day[count_hours<24 ] = np.nan
 
- boom_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_boom_height.csv', index = True, float_format = '%g')
- boom_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_boom_height.csv', index = True, float_format = '%g')
+boom_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_boom_height.csv', index = True, float_format = '%g')
+#boom_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_boom_height.csv', index = True, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
+ #+RESULTS: zac_u_postQC_boom_height
+ : None
 
 
 *** Glaciological observations
@@ -5855,32 +5380,26 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ***** raw to check when the pta was changed/redrilled
 ****** Zac_l
-#+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
 
- df['z_pt_corr'].plot()
+df['z_pt_corr'].plot()
 
  #+END_SRC
 
- #+RESULTS:
- :RESULTS:
- : <AxesSubplot: xlabel='time'>
- [[file:./.ob-jupyter/d020ca4c40f9f8c36dc17c1396dd88064ab01da2.png]]
- :END:
-
 ****** Zac_u
-#+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
 
- df['z_pt_corr'].plot()
+df['z_pt_corr'].plot()
 
  #+END_SRC
 
@@ -5893,53 +5412,53 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 ***** raw-(ish)
 ****** Zac_l
-#+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
 
 
- lowering = df['z_pt_corr'].copy()
- for year in np.arange(2008,2021+1):
-     lowering[str(year)] = df['z_pt_corr'][str(year)]-df['z_pt_corr'][str(year)+'-5-15':str(year)+'-5-30'].mean()
- #lowering['2010'] = np.nan
- #lowering['2019'] = np.nan
- lowering[lowering<-5] = np.nan
- lowering[lowering>0.5] = np.nan
- lowering.plot()
- lowering.to_csv('data_v1.0/gem_database/2022/raw/zac_l_pta.csv', index = True, float_format = '%g')
+lowering = df['z_pt_corr'].copy()
+for year in np.arange(2008,2021+1):
+    lowering[str(year)] = df['z_pt_corr'][str(year)]-df['z_pt_corr'][str(year)+'-5-15':str(year)+'-5-30'].mean()
+#lowering['2010'] = np.nan
+#lowering['2019'] = np.nan
+lowering[lowering<-5] = np.nan
+lowering[lowering>0.5] = np.nan
+lowering.plot()
+lowering.to_csv('data_v1.0/gem_database/2022/raw/zac_l_pta.csv', index = True, float_format = '%g')
  #+END_SRC
 
  #+RESULTS:
- [[file:./.ob-jupyter/e09a83a6cc57354366fde2ba6cd0c3e02d104ce7.png]]
+ : None
 
 ****** Zac_u
-#+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['z_pt_corr','z_boom', 'albedo']].to_dataframe()
 
- df['z_pt_corr'][:'2017-04-30'] = np.nan
- lowering = df['z_pt_corr'].copy()
- for year in np.arange(2017,2021+1):
-     lowering[str(year)] = df['z_pt_corr'][str(year)]-df['z_pt_corr'][str(year)+'-5-1':str(year)+'-5-15'].mean()
- lowering[lowering<-5] = np.nan
- lowering[lowering>0.5] = np.nan
- lowering.plot()
- lowering.to_csv('data_v1.0/gem_database/2022/raw/zac_u_pta.csv', index = True, float_format = '%g')
+df['z_pt_corr'][:'2017-04-30'] = np.nan
+lowering = df['z_pt_corr'].copy()
+for year in np.arange(2017,2021+1):
+    lowering[str(year)] = df['z_pt_corr'][str(year)]-df['z_pt_corr'][str(year)+'-5-1':str(year)+'-5-15'].mean()
+lowering[lowering<-5] = np.nan
+lowering[lowering>0.5] = np.nan
+lowering.plot()
+lowering.to_csv('data_v1.0/gem_database/2022/raw/zac_u_pta.csv', index = True, float_format = '%g')
  #+END_SRC
 
  #+RESULTS:
- [[file:./.ob-jupyter/26dd76089a29f5af22f1c94346eda6a348e36cea.png]]
+ : None
 
 
  
 ****** Old/random?
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
 
 
 
@@ -5977,7 +5496,7 @@ https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<get_meltrates_from_z_pt>>
 meltrates['rate'].plot()
 
@@ -5996,7 +5515,7 @@ meltrates['rate'].plot()
 [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/55813a3b8e1f170eaeb85912e452140c3313291d.png]]
 :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 meltrates = meltrates.where(meltrates.year != 2010)
 meltrates = meltrates.where(meltrates.year != 2019)
@@ -6009,7 +5528,7 @@ meltrates
 
 
   #+NAME: get_meltrates_from_z_pt
-  #+BEGIN_SRC jupyter-python
+  #+BEGIN_SRC python
   z_pt = -df['z_pt_corr'].resample('d').mean()
   z_pt_diff = z_pt.diff()
   z_pt_diff[np.abs(z_pt_diff) > 0.1] = np.nan
@@ -6032,84 +5551,85 @@ meltrates
 
 ***** Removing bad data and prepare preQC data 
 ****** zac_l
-  #+BEGIN_SRC jupyter-python
-  <<load_libs>>
-  datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
-  z_l = pd.read_csv(datapath+'raw/zac_l_pta.csv', parse_dates = True, index_col=0)
+#+BEGIN_SRC python
+<<load_libs>>
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+z_l = pd.read_csv(datapath+'raw/zac_l_pta.csv', parse_dates = True, index_col=0)
 
 
-  z_l.loc[:'2008-7-1'] = np.nan
-  z_l.loc['2008-8-23':'2008-12-31'] = np.nan
-  z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-7-2'].mean()
+z_l.loc[:'2008-7-1'] = np.nan
+z_l.loc['2008-8-23':'2008-12-31'] = np.nan
+z_l.loc['2008'] = z_l.loc['2008']-z_l.loc['2008-7-2'].mean()
 
-  z_l.loc['2009-1-1':'2009-7-4'] = np.nan
-  z_l.loc['2009-8-16':'2009-12-31'] = np.nan
-  z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-7-5'].mean()
+z_l.loc['2009-1-1':'2009-7-4'] = np.nan
+z_l.loc['2009-8-16':'2009-12-31'] = np.nan
+z_l.loc['2009'] = z_l.loc['2009']-z_l.loc['2009-7-5'].mean()
 
-  z_l.loc['2010-1-1':'2010-6-22'] = np.nan
-  z_l.loc['2010-8-2':'2010-12-31'] = np.nan
-  z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-6-23'].mean()
+z_l.loc['2010-1-1':'2010-6-22'] = np.nan
+z_l.loc['2010-8-2':'2010-12-31'] = np.nan
+z_l.loc['2010'] = z_l.loc['2010']-z_l.loc['2010-6-23'].mean()
 
-  z_l.loc['2011-1-1':'2011-6-19'] = np.nan
-  z_l.loc['2011-8-24':'2011-12-31'] = np.nan
-  z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
+z_l.loc['2011-1-1':'2011-6-19'] = np.nan
+z_l.loc['2011-8-24':'2011-12-31'] = np.nan
+z_l.loc['2011'] = z_l.loc['2011']-z_l.loc['2011-6-20'].mean()
 
-  z_l.loc['2012-1-1':'2012-6-29'] = np.nan
-  z_l.loc['2012-8-24':'2012-12-31'] = np.nan
-  z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-30'].mean()
+z_l.loc['2012-1-1':'2012-6-29'] = np.nan
+z_l.loc['2012-8-24':'2012-12-31'] = np.nan
+z_l.loc['2012'] = z_l.loc['2012']-z_l.loc['2012-6-30'].mean()
 
-  z_l.loc['2013-1-1':'2013-6-3'] = np.nan
-  z_l.loc['2013-8-29':'2013-12-31'] = np.nan
-  z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-4'].mean()
+z_l.loc['2013-1-1':'2013-6-3'] = np.nan
+z_l.loc['2013-8-29':'2013-12-31'] = np.nan
+z_l.loc['2013'] = z_l.loc['2013']-z_l.loc['2013-6-4'].mean()
 
-  z_l.loc['2014-1-1':'2014-7-8'] = np.nan
-  z_l.loc['2014-8-23':'2014-12-31'] = np.nan
-  z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-8'].mean()
+z_l.loc['2014-1-1':'2014-7-8'] = np.nan
+z_l.loc['2014-8-23':'2014-12-31'] = np.nan
+z_l.loc['2014'] = z_l.loc['2014']-z_l.loc['2014-7-8'].mean()
 
-  z_l.loc['2015-1-1':'2015-7-3'] = np.nan
-  z_l.loc['2015-8-21':'2015-12-31'] = np.nan
-  z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-4'].mean()
+z_l.loc['2015-1-1':'2015-7-3'] = np.nan
+z_l.loc['2015-8-21':'2015-12-31'] = np.nan
+z_l.loc['2015'] = z_l.loc['2015']-z_l.loc['2015-7-4'].mean()
   
-  z_l.loc['2016-1-1':'2016-6-25'] = np.nan
-  z_l.loc['2016-8-29':'2016-12-31'] = np.nan
-  z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-26'].mean()
+z_l.loc['2016-1-1':'2016-6-25'] = np.nan
+z_l.loc['2016-8-29':'2016-12-31'] = np.nan
+z_l.loc['2016'] = z_l.loc['2016']-z_l.loc['2016-6-26'].mean()
 
-  z_l.loc['2017-1-1':'2017-6-27'] = np.nan
-  z_l.loc['2017-8-31':'2017-12-31'] = np.nan
-  z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-28'].mean()
+z_l.loc['2017-1-1':'2017-6-27'] = np.nan
+z_l.loc['2017-8-31':'2017-12-31'] = np.nan
+z_l.loc['2017'] = z_l.loc['2017']-z_l.loc['2017-6-28'].mean()
 
-  z_l.loc['2018-1-1':'2018-7-30'] = np.nan
-  z_l.loc['2018-8-24':'2018-12-31'] = np.nan
-  z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean()
+z_l.loc['2018-1-1':'2018-7-30'] = np.nan
+z_l.loc['2018-8-24':'2018-12-31'] = np.nan
+z_l.loc['2018'] = z_l.loc['2018']-z_l.loc['2018-7-31'].mean()
 
-  z_l.loc['2019'] = np.nan
+z_l.loc['2019'] = np.nan
 
-  z_l.loc['2020-1-1':'2020-6-19'] = np.nan
-  z_l.loc['2020-8-28':'2020-12-31'] = np.nan
-  z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-6-20'].mean()
+z_l.loc['2020-1-1':'2020-6-19'] = np.nan
+z_l.loc['2020-8-28':'2020-12-31'] = np.nan
+z_l.loc['2020'] = z_l.loc['2020']-z_l.loc['2020-6-20'].mean()
 
-  z_l.loc['2021-1-1':'2021-6-16'] = np.nan
-  z_l.loc['2021-8-17':'2021-12-31'] = np.nan
-  z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-6-17'].mean()
-
-
+z_l.loc['2021-1-1':'2021-6-16'] = np.nan
+z_l.loc['2021-8-17':'2021-12-31'] = np.nan
+z_l.loc['2021'] = z_l.loc['2021']-z_l.loc['2021-6-17'].mean()
 
 
-  month = z_l.index.month
-  z_l[month<4] = np.nan
-  z_l[month>9] = np.nan
 
-  z_l_hour = z_l.resample('H').mean()
-  z_l_day = z_l.resample('D').mean() 
-  z_l_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_pta.csv', index = True, float_format = '%g')
-  z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_pta.csv', index = True, float_format = '%g')
+
+month = z_l.index.month
+z_l[month<4] = np.nan
+z_l[month>9] = np.nan
+
+z_l_hour = z_l.resample('H').mean()
+z_l_day = z_l.resample('D').mean() 
+z_l_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_pta.csv', index = True, float_format = '%g')
+z_l_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_pta.csv', index = True, float_format = '%g')
   #+END_SRC
 
   #+RESULTS:
+  : None
 
 
 ******* 2008
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'preQC/zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6141,7 +5661,7 @@ meltrates
 
 
 ******* 2009
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6175,7 +5695,7 @@ meltrates
 
 
 ******* 2010
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6211,7 +5731,7 @@ meltrates
 
 
 ******* 2011
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6249,7 +5769,7 @@ meltrates
 
 
 ******* 2012
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6285,7 +5805,7 @@ meltrates
 
 ******* 2013
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6320,7 +5840,7 @@ meltrates
 
 ******* 2014
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6355,7 +5875,7 @@ meltrates
 
 ******* 2015
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6391,7 +5911,7 @@ meltrates
 
 ******* 2016
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6428,7 +5948,7 @@ meltrates
 
 ******* 2017
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6465,7 +5985,7 @@ meltrates
 
 ******* 2018
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6502,7 +6022,7 @@ meltrates
 
 ******* 2019
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6539,7 +6059,7 @@ meltrates
 
 ******* 2020
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6576,7 +6096,7 @@ meltrates
 
 ******* 2021
 
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_l = pd.read_csv(datapath+'zac_l_lowering.csv', parse_dates = True, index_col=0)
@@ -6610,7 +6130,7 @@ meltrates
    :end:
 
 ****** zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_u = pd.read_csv(datapath+'raw/zac_u_pta.csv', parse_dates = True, index_col=0)
@@ -6643,13 +6163,10 @@ z_u_hour.plot()
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/8a328ad4d89692e07ed9db763c2d98bf42cdd0ba.png]]
-:END:
+: Axes(0.125,0.11;0.775x0.77)
 
 ******* 2017
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
@@ -6679,7 +6196,7 @@ z_u_hour.plot()
    :END:
 
 ******* 2020
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
@@ -6710,7 +6227,7 @@ z_u_hour.plot()
 
 
 ******* 2021
-   #+BEGIN_SRC jupyter-python
+   #+BEGIN_SRC python
    <<load_libs>>
    datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
    z_u = pd.read_csv(datapath+'zac_u_hour_lowering.csv', parse_dates = True, index_col=0)
@@ -6754,76 +6271,67 @@ z_u_hour.plot()
 **** SR50 on stakes
 ***** preQC
 ****** zac_l
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+ #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['z_stake']].to_dataframe()
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['z_stake']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+#count_hours = z_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# z_day = z_hour.resample('D').median()
+# z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+# z_day.plot()
+# z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+# z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_SR50_stake_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
  #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/6fc7a35ccb35ca925f247d1599554aa24adbfeaa.png]]
- [[file:./.ob-jupyter/a53258f286b8c99517c0dae8fbbf8dac6437bd9d.png]]
- [[file:./.ob-jupyter/037b3574dfa13a1709cd3f483b68996d51f2a141.png]]
- [[file:./.ob-jupyter/48b0d60f32c3261e7bf38a2cbbe1ef948a849fb3.png]]
- :END:
+ : None
+
 
 ****** zac_u
- #+BEGIN_SRC jupyter-python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['z_stake']].to_dataframe()
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['z_stake']].to_dataframe()
 
- count10min = df.resample('H').count()
- z_hour = df.resample('H').median()
- z_hour[count10min<6] = np.nan
- count_hours = z_hour.resample('D').count()
- count_hours.plot()
- count10min.plot()
- z_day = z_hour.resample('D').median()
- z_day[count_hours<24 ] = np.nan
+count10min = df.resample('H').count()
+z_hour = df.resample('H').median()
+z_hour[count10min<6] = np.nan
+# count_hours = z_hour.resample('D').count()
+# count_hours.plot()
+# count10min.plot()
+# z_day = z_hour.resample('D').median()
+# z_day[count_hours<24 ] = np.nan
 
- z_day.plot()
- z_hour.plot()
+# z_day.plot()
+# z_hour.plot()
 
- z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height.csv', index = True, float_format = '%g')
- z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height.csv', index = True, float_format = '%g')
+z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height.csv', index = True, float_format = '%g')
+# z_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height.csv', index = True, float_format = '%g')
     
  #+END_SRC
 
  #+RESULTS:
- :RESULTS:
- [[file:./.ob-jupyter/aa6acbabd6701a6bdca43e9a228fa929312771d0.png]]
- [[file:./.ob-jupyter/97797eacba6a507894c449ff5610433e1a57a2b4.png]]
- [[file:./.ob-jupyter/df66eafe87c2e39a015d44154e71c01ce3fed7ec.png]]
- [[file:./.ob-jupyter/1069e89db8322d637a0168fa902d2769a7221cc3.png]]
- :END:
+ : None
  
 
 ***** Prepare preQC data for comparison with ice ablation, setting to zero at ice melt start)
 
 ****** zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_l = pd.read_csv(datapath+'preQC/zac_l_hour_SR50_stake_height.csv', parse_dates = True, index_col=0)
@@ -6912,13 +6420,13 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_SR50_stake_height_ice.csv'
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/65c7e8c24419d9abd9c242d65bf01348d9d51bce.png]]
+: None
 
 ****** zac_u
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_u = pd.read_csv(datapath+'preQC/zac_u_hour_SR50_stake_height.csv', parse_dates = True, index_col=0)
@@ -6954,7 +6462,8 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_SR50_stake_height_ic
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/cecad3f35a38c9422bba7b6461cd385d8e514443.png]]
+: None
+
 
 
 **** Compare PTA and SR50 and create an ice ablation dataseries
@@ -6962,7 +6471,7 @@ The QC process is iterative - I check PTA against SR50, but I also see if I am a
 
 
 ***** zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index_col=0)
@@ -7021,16 +6530,13 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_day_ice_ablation.cs
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-[[file:./.ob-jupyter/ae1bac728566fafd45235e8ea5a7913ed5f9a049.png]]
-[[file:./.ob-jupyter/6ff466e5d9c24f1a77ddc4cdb996ca954ac39aef.png]]
-:END:
+: None
 
 
 
 
 ***** zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 pta = pd.read_csv(datapath+'preQC/zac_u_hour_pta.csv', parse_dates = True, index_col=0)
@@ -7087,15 +6593,12 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_ice_ablation.cs
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-[[file:./.ob-jupyter/ac6cc6bf9b95171b5b01d0e61bc76486a8ce042a.png]]
-[[file:./.ob-jupyter/0c419218a07ee1a7bf9ca55c335e146a2fd4ea79.png]]
-:END:
+: None
 
 **** Final filtering of ice ablation
 ****** zac_l
 This is just a plot
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 import matplotlib.dates as mdates
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -7145,9 +6648,9 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig11.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/1cc7db42c0b12157b7f278775ad46eebf6d5c738.png]]
+: None
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -7163,12 +6666,9 @@ z_l.loc[str(year)].plot(ax=ax)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/0812aa62f77aa4c9c892415b2b6d7b4602c7c7e0.png]]
-:END:
+: Axes(0.125,0.11;0.775x0.77)
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -7186,7 +6686,7 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_ice_ablation.csv', index =
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/6ff466e5d9c24f1a77ddc4cdb996ca954ac39aef.png]]
+: None
 
 
 
@@ -7194,7 +6694,7 @@ z_l_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_ice_ablation.csv', index =
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 z_u = pd.read_csv(datapath+'preQC/zac_u_hour_ice_ablation.csv', parse_dates = True, index_col=0)
@@ -7207,12 +6707,9 @@ z_u.loc[str(year)].plot(ax=ax)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/cc8672cb3528a86399e03628bd3b06c0215db081.png]]
-:END:
+: Axes(0.125,0.11;0.775x0.77)
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
@@ -7244,7 +6741,7 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_ice_ablation.csv', index =
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/325431f6e2b4dc83aa82a79ffca2094173b462d8.png]]
+: None
 
 
 ** QC
@@ -7254,7 +6751,7 @@ z_u_day.to_csv('data_v1.0/gem_database/2022/zac_u_day_ice_ablation.csv', index =
 
 Plotting all preQC values against all postQC values
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -7286,7 +6783,7 @@ plt.show()
 #+RESULTS:
 [[file:./.ob-jupyter/1c8af2ebf73506ae6a94ecfb4848a1c32d387de3.png]]
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7354,7 +6851,7 @@ plt.tight_layout()
 [[file:./.ob-jupyter/abc2a94d1a2546004a078bed1ea90033a95f066f.png]]
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 
 
@@ -7385,7 +6882,7 @@ plt.show()
 *** temperature
 **** Utilities
 #+NAME: plot_gradients_full_period
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig,ax = plt.subplots(5,1,figsize = (7.5,7), sharex=True)
 panel1 = ax[0]
 panel2 = ax[1]
@@ -7445,7 +6942,7 @@ fig.tight_layout()
 [[file:./.ob-jupyter/9773108045260fe2f5ff01766896c651ee152732.png]]
 
 #+NAME: plot_the_timeperiod
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 # The year with the problem
 fig,ax = plt.subplots(4,2,figsize = (12,10))
 temp_l[variable].plot(ax = ax[0,1], label = 'zac_l')
@@ -7518,7 +7015,7 @@ ax[0,0].set_ylim(-40,20)
 
 **** post QC check
 ***** data only
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 #rcParams.update({'font.size': 8})
@@ -7578,7 +7075,7 @@ ax[2].legend()
 [[file:./.ob-jupyter/d9005a5b31fda77e08df1cee03d63752d437cc34.png]]
 
 ***** Drift 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -7622,7 +7119,7 @@ fig.savefig('QCfigs/temperature_drift.png')
 
 ***** Gradients
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -7668,7 +7165,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig04.png', dpi = 300)
 **** QC
 Gradients
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 # meta data
 
@@ -7726,7 +7223,7 @@ There are issues with zac_u in winter 2014/2015 and likely with zac_l in winter 
 
 I will remove both data from zac_u between 2010-10-01 and 2021-07-01
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 # meta data
@@ -7791,7 +7288,7 @@ d_l_a = (temp_l-temp_a)/(zac_l_elev-zac_a_elev)
 
 The data from zac_a between 2015-01-05 to 2015-05-01 looks strange and will be removed
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
@@ -7850,7 +7347,7 @@ d_l_a = (temp_l-temp_a)/(zac_l_elev-zac_a_elev)
 
 
 #+NAME: plot_the_2015_issue_at_zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 # The year with the problem
 fig,ax = plt.subplots(4,2,figsize = (12,10))
 temp_l['Air temperature, C'].plot(ax = ax[0,1], label = 'zac_l')
@@ -7909,7 +7406,7 @@ ax[0,0].set_ylim(-40,20)
 #+END_SRC
 **** The issue at zac_a beginning of record
 We remove data from before 2009-08-08 21:00
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 
@@ -7955,7 +7452,7 @@ date_of_interest2=datetime.datetime(2015,5,1)
 The conclusion from the below investigation is that we will discard the zac_u data from 2015, the fan must have stopped running
 The excat period that can be discarded at zac_u: 2014-10-30 to 2015-12-31
 Hourly
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 # meta data
@@ -8005,7 +7502,7 @@ d_l_a = (temp_l-temp_a)/(zac_l_elev-zac_a_elev)
 :end:
 
 #+NAME: plot_the_2015_issue_at_zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 # The year with the problem
 fig,ax = plt.subplots(4,2,figsize = (12,10))
 temp_l[variable].plot(ax = ax[0,1], label = 'zac_l')
@@ -8135,7 +7632,7 @@ KeyError: 'Air temperature, C'
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 temp_l = pd.read_csv(datapath+'preQC/zac_l_day_temperature.csv', parse_dates = True, index_col=0)
@@ -8178,7 +7675,7 @@ ax[3].legend()
 
 *** Tilt
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
  <<load_libs>>
  <<data_file_paths>>
 
@@ -8240,7 +7737,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig06.png', dpi = 300)
 *** Radiation
 **** Utilities
 #+NAME: read_in_hourly_preQC_radiation
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 rad_l = pd.read_csv(datapath+'preQC/zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
 rad_u = pd.read_csv(datapath+'preQC/zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
 rad_a = pd.read_csv(datapath+'preQC/zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
@@ -8259,7 +7756,7 @@ rad_a[variable][rad_a[variable]<0] = np.nan
 #+END_SRC
 
 #+NAME: read_in_hourly_radiation_postQC
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
 rad_u = pd.read_csv(datapath+'zac_u_hour_radiation.csv', parse_dates = True, index_col=0)
 rad_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, index_col=0)
@@ -8267,7 +7764,7 @@ rad_a = pd.read_csv(datapath+'zac_a_hour_radiation.csv', parse_dates = True, ind
 #+END_SRC
 
 #+NAME: read_in_daily_preQC_radiation
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 rad_l = pd.read_csv(datapath+'preQC/zac_l_day_radiation.csv', parse_dates = True, index_col=0)
 rad_u = pd.read_csv(datapath+'preQC/zac_u_day_radiation.csv', parse_dates = True, index_col=0)
 rad_a = pd.read_csv(datapath+'preQC/zac_a_day_radiation.csv', parse_dates = True, index_col=0)
@@ -8287,7 +7784,7 @@ rad_a[variable][rad_a[variable]<0] = np.nan
 
 
 #+NAME: plot_rad_gradients_full_period
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig,ax = plt.subplots(4,1,figsize = (10,10), sharex=True)
 rad_l[variable].plot(ax = ax[0], label = 'zac_l')
 rad_u[variable].plot(ax = ax[0], label = 'zac_u')
@@ -8320,7 +7817,7 @@ ax[3].legend()
 :end:
 
 #+NAME: plot_rad_gradients_selected_period
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<plot_rad_gradients_full_period>>
 ax[3].set_xlim(startdate,enddate)
 #+END_SRC
@@ -8329,7 +7826,7 @@ ax[3].set_xlim(startdate,enddate)
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
   <<load_libs>>
   datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
   variable = 'dsr_corr'
@@ -8353,7 +7850,7 @@ ax[3].set_xlim(startdate,enddate)
 ***** SRin
 ****** Final
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 
 # meta data
@@ -8420,7 +7917,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig07.png', dpi = 300)
 
 ****** Gradients
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -8471,7 +7968,7 @@ fig.savefig('QCfigs/SRin_final.png')
 :END:
 
 ****** Checking for shifts in maximum 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -8653,7 +8150,7 @@ grass -e -c EPSG:3413 G
 
 ****** Comparing potential global radiation to observations at zac_l
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 from matplotlib import rcParams
 # meta data
@@ -8744,7 +8241,7 @@ for year in range(2009,2019+1):
 [[file:./.ob-jupyter/ba4ae1b85d628c7bec9fec2e4a2a1672a951d30a.png]]
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 #mast_swin = pd.read_csv('/home/shl@geus.dk/data/gem/climatebasis/climate_mast/View_ClimateBasis_Zackenberg_Data_Radiation_Short_wave_incoming_radiation_@_200_cm__5min_average_W_m2270920221347180965.csv', sep = '\t', index_col = 0, parse_dates = {'date':['Date','Time']}, na_values = -9999)
 
 
@@ -8787,7 +8284,7 @@ top = savgol_filter(y_max, 101, 3)  # window size 51, polynomial order 3
 dsr_corr_sum['max'] = top
 #+END_SRC
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 SRin = pd.DataFrame(dsr_corr_sum['max'])
 mask = (SRin.index.year != 2015) & (SRin.index.year != 2020) & (SRin.index.year != 2021) & (SRin.index.year != 2022)
 SRin = SRin[mask]
@@ -8826,7 +8323,7 @@ fig.savefig('QCfigs/SRin_stats.png', dpi = 300)
   #+RESULTS:
   [[file:./.ob-jupyter/1deace5ed9ed00c349386024267e5eaf772be845.png]]
 
-  #+BEGIN_SRC jupyter-python
+  #+BEGIN_SRC python
 #years = []
 fig, ax = plt.subplots(1,1, figsize = (12,3))
 
@@ -8846,7 +8343,7 @@ ax.legend(legend)
 #+RESULTS:
 [[file:./.ob-jupyter/5662a75ac6701360dc0a926160379af0d3006b1d.png]]
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 for year in np.arange(2008,2021):
     #ax.plot(day_max.loc[str(year)].index.dayofyear,day_max.loc[str(year)])
@@ -8886,7 +8383,7 @@ for year in np.arange(2008,2021):
 :END:
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
@@ -8917,7 +8414,7 @@ plt.show()
 ****** Comparing potential global radiation to observations at climate mast to compare
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -8982,7 +8479,7 @@ for year in np.arange(2012,2021):
 
 ***** SRout
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -9049,7 +8546,7 @@ fig.savefig('QCfigs/SRout_final.png')
 
 ****** Final
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 #rcParams.update({'font.size': 8})
@@ -9135,7 +8632,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig10.png', dpi = 300)
 
 
 ****** gradients
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -9200,7 +8697,7 @@ fig.savefig('QCfigs/LRin_final.png')
 
 ***** LWout
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -9268,7 +8765,7 @@ fig.savefig('QCfigs/LRout_final.png')
 ***** Net LW
 Comparing with KPC data
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 kpc_l = pd.read_csv('~/Downloads/KPC_L_hour.csv', index_col = 0, parse_dates = True)
 
@@ -9301,7 +8798,7 @@ ax[0].legend()
 
 
 ***** Albedo
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 from sklearn.metrics import mean_squared_error,r2_score
 import matplotlib.colors as mcolors
@@ -9403,7 +8900,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig09.png', dpi = 300)
 [[file:./.ob-jupyter/b5ca8d9df2baa68bae324deca2f7b815e064755f.png]]
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 for year in range(2008,2022):
     fig,ax = plt.subplots(1,1, figsize = (10,5))
@@ -9433,7 +8930,7 @@ for year in range(2008,2022):
 
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 
 
@@ -9456,7 +8953,7 @@ ax.legend(legend)
 
 **** QC
 ***** paper plot
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 from matplotlib import rcParams
 # meta data
@@ -9520,7 +9017,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig08.png',dpi = 300)
 
 ***** Comparing potential global radiation to observations at zac_l
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 from matplotlib import rcParams
 # meta data
@@ -9605,7 +9102,7 @@ station_name = 'zac_a'
 :END:
 
 #+NAME: Plot_all_SR_in_max_min_along_with_I
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 station['I'] = station['I'].where(station['I']>=0,0)
 fig1, ax1 = plt.subplots(1,1, figsize = (10,3))
 fig2, ax2 = plt.subplots(1,1,figsize =(10,3))
@@ -9636,7 +9133,7 @@ fig2.savefig('QCfigs/'+station_name+'_SRin_corr_max_all_years.png')
 
 ***** Outliers
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 rad_l = pd.read_csv(datapath+'preQC/zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
@@ -9668,7 +9165,7 @@ rad_a[['dlr','ulr']].plot(ax = ax[1])
 
 
 ***** Annual mean
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<import_libraries>>
 
 #+END_SRC
@@ -9677,7 +9174,7 @@ rad_a[['dlr','ulr']].plot(ax = ax[1])
 I have a suspicion that the radiometers calibration is not really good enough
 But it looks like that dsr was just higher during 2016-2019 or something like that?
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 rad_l = pd.read_csv(datapath+'zac_l_hour_radiation.csv', parse_dates = True, index_col=0)
@@ -9752,7 +9249,7 @@ mast_dsr.resample('Y').mean().plot(ax=ax)
 
 
 ***** Drift
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -9794,7 +9291,7 @@ fig.savefig('QCfigs/SRin_drift.png')
 
 
 ***** Gradients
-     #+BEGIN_SRC jupyter-python
+     #+BEGIN_SRC python
 <<import_libraries>>
 # meta data
 
@@ -9871,7 +9368,7 @@ for year in range(2008, 2022+1):
 
 **** The issue from setting up zac_a
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<read_in_hourly_radiation>>
 startdate=datetime.datetime(2009,8,5)
 enddate= datetime.datetime(2009,8,6)
@@ -9895,7 +9392,7 @@ enddate= datetime.datetime(2009,8,6)
 
 
 **** The visit in 2010
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<read_in_hourly_radiation>>
 startdate=datetime.datetime(2010,5,10)
 enddate= datetime.datetime(2010,5,17)
@@ -9917,7 +9414,7 @@ enddate= datetime.datetime(2010,5,17)
 
 
 **** The several issues at zac_a in early 2011
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<read_in_hourly_radiation>>
 startdate=datetime.datetime(2011,3,14)
 enddate= datetime.datetime(2011,3,17)
@@ -9938,7 +9435,7 @@ enddate= datetime.datetime(2011,3,17)
 [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0f573b6bb5939ca316b05244438a76481c0b79cb.png]]
 :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<read_in_hourly_radiation>>
 #<<read_in_hourly_radiation_postQC>>
 startdate=datetime.datetime(2011,5,4)
@@ -9960,7 +9457,7 @@ enddate= datetime.datetime(2011,5,6)
 [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/8e563233c1094ed78915f3288c4dd30548c86d6b.png]]
 :end:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<read_in_hourly_radiation>>
 #<<read_in_hourly_radiation_postQC>>
 startdate=datetime.datetime(2011,1,1)
@@ -9986,7 +9483,7 @@ enddate= datetime.datetime(2011,11,1)
 **** The missing values in 2015
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 T_air = pd.read_csv(datapath+'zac_l_hour_temperature.csv', parse_dates = True, index_col=0)
@@ -10048,7 +9545,7 @@ ax[1].legend()
 the dsr values look suspecious, maybe the station has been too tilted or the instrument has problems. I will in any case remove the data up until the visit i July
 Have a look at the annual figures in QCfigs
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 #<<read_in_hourly_radiation_postQC>>
@@ -10090,7 +9587,7 @@ fig.savefig('QCfigs/LR.png', dpi = 100)
 
 
 Load in the data
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 rh_l = pd.read_csv(datapath+'zac_l_hour_relative_humidity.csv', parse_dates = True, index_col=0)
@@ -10106,7 +9603,7 @@ rh_a = pd.read_csv(datapath+'zac_a_hour_relative_humidity.csv', parse_dates = Tr
 
 **** Post QC check
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10184,7 +9681,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig05.png', dpi = 300)
 #+RESULTS:
 [[file:./.ob-jupyter/72db4d0315dab3adbc7fe5b7618fcccdc2ce40e3.png]]
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10237,7 +9734,7 @@ fig.savefig('QCfigs/RH_final.png')
 
 Just checking that the RH errors at ZAC_A is not related to the correction - it is not.
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 # RH raw
 <<load_libs>>
 import glob
@@ -10259,7 +9756,7 @@ for infile in filelist:
 :END:
 
 **** Checking for outliers
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(3,1,figsize=(10,10))
 rh_l.plot(ax= ax[0])
 rh_u.plot(ax= ax[1])
@@ -10282,7 +9779,7 @@ rh_a.plot(ax= ax[2])
 :end:
 
 **** Gradients
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (rh_l-rh_u)
@@ -10315,7 +9812,7 @@ d_l_a.plot(ax = ax[3])
 
 ***** The issue at zac_u in 2020-2021
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (rh_l-rh_u)
@@ -10355,7 +9852,7 @@ ax[1].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 ***** zac_a data appears to be a bit more unstable - but maybe its real
 
 We will take a look at 2013-2014
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (rh_l-rh_u)
@@ -10396,7 +9893,7 @@ ax[1].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 **** post QC check
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 rcParams.update({'font.size': 8})
@@ -10456,7 +9953,7 @@ fig.savefig('QCfigs/WindSpeed_compare.png')
 [[file:./.ob-jupyter/1a1111da4821d2ce8e9c922574ec5db4bdcd3757.png]]
 
 ***** Drift 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10500,7 +9997,7 @@ fig.savefig('QCfigs/wind_speed_drift.png')
 
 ***** Gradients
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10543,7 +10040,7 @@ fig.savefig('QCfigs/Wind_Speed_final.png')
 :END:
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 wspd_l = pd.read_csv(datapath+'zac_l_hour_wind_speed.csv', parse_dates = True, index_col=0)
@@ -10561,7 +10058,7 @@ wspd_a = pd.read_csv(datapath+'zac_a_hour_wind_speed.csv', parse_dates = True, i
 **** Checking for outliers
 
 It seems like windspeed is pretty solid
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(3,1,figsize=(10,10))
 wspd_l.plot(ax= ax[0])
 wspd_u.plot(ax= ax[1])
@@ -10586,7 +10083,7 @@ wspd_a.plot(ax= ax[2])
 
 
 ***** Drift
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10628,7 +10125,7 @@ fig.savefig('QCfigs/wind_speed_drift.png')
 
 
 ***** Gradients
-     #+BEGIN_SRC jupyter-python
+     #+BEGIN_SRC python
 <<import_libraries>>
 # meta data
 
@@ -10704,7 +10201,7 @@ for year in range(2008, 2022+1):
 
 
 **** Gradients old
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (wspd_l-wspd_u)
@@ -10737,7 +10234,7 @@ d_l_a.plot(ax = ax[3])
 
 ***** The issue at zac_u in 2020 (station tilting)
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (wspd_l-wspd_u)
@@ -10777,7 +10274,7 @@ ax[1].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 *** Pressure
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 p_l = pd.read_csv(datapath+'zac_l_hour_pressure.csv', parse_dates = True, index_col=0)
@@ -10794,7 +10291,7 @@ p_a = pd.read_csv(datapath+'zac_a_hour_pressure.csv', parse_dates = True, index_
 **** Post QC check
 
 ***** Drift 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10835,7 +10332,7 @@ fig.savefig('QCfigs/Pressure_drift.png')
 
 
 ***** Gradient
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -10894,7 +10391,7 @@ fig.savefig('QCfigs/pressure_final.png')
 **** Checking for outliers
 
 It seems like windspeed is pretty solid
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(3,1,figsize=(10,10))
 p_l.plot(ax= ax[0])
 p_u.plot(ax= ax[1])
@@ -10917,7 +10414,7 @@ p_a.plot(ax= ax[2])
 :end:
 
 **** Gradients
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (p_l-p_u)
@@ -10949,7 +10446,7 @@ d_l_a.plot(ax = ax[3])
 :end:
 
 ***** The issue in 2016 at zac_l
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (p_l-p_u)
@@ -10994,7 +10491,7 @@ ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 ***** The issue in 2016 at zac_u
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (p_l-p_u)
@@ -11040,7 +10537,7 @@ ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 ***** The issue at zac_l in 2016-2017
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (p_l-p_u)
@@ -11081,7 +10578,7 @@ ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 :end:
 
 ***** The issue at zac_u in 2016-2017
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (p_l-p_u)
@@ -11123,7 +10620,7 @@ ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 ***** The issue at zac_l in 2018
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(4,1,figsize=(15,10), sharex = True)
 
 d_l_u = (p_l-p_u)
@@ -11169,7 +10666,7 @@ ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 **** post QC check
 Gradients
 boom_a.rolling(24,center=True).median().plot()
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 variable = 'z_boom'
@@ -11194,7 +10691,7 @@ ax[2].set_xlim(datetime.datetime(2008,1,1),datetime.datetime(2022,12,31))
 [[file:./.ob-jupyter/bcd36ee3d30f9763450e8db3ba8b636d6984d84f.png]]
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 variable = 'z_boom'
@@ -11223,7 +10720,7 @@ ax[2].set_xlim(datetime.datetime(2008,1,1),datetime.datetime(2022,12,31))
 **** QC
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<load_libs>>
 # meta data
 
@@ -11258,7 +10755,7 @@ boom_l.plot()
 :end:
 
 **** The issue at zac_l from 2010 to 2011
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_l['2009':'2012']['z_boom'].plot(ax= ax, label = 'zac_l')
@@ -11286,7 +10783,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 **** The issue at zac_u from 2019 to 2021
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_u['2018':'2022']['z_boom'].plot(ax= ax, label = 'zac_u')
@@ -11313,7 +10810,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 :end:
 
 **** The issue at zac_u from 2012 to 2016
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_u['2012':'2020']['z_boom'].plot(ax= ax, label = 'zac_u')
@@ -11341,7 +10838,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 **** The issue at zac_a in 2012 and 2013
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_a['2012':'2013']['z_boom'].plot(ax= ax, label = 'zac_a')
@@ -11369,7 +10866,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 **** The issue at zac_a in dec 2013 to April 2014
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_a['December-2013':'April-2014']['z_boom'].plot(ax= ax, label = 'zac_a')
@@ -11397,7 +10894,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 **** The issue at zac_a in Jan 2015 to April 2016
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_a['December-2014':'April-2016']['z_boom'].plot(ax= ax, label = 'zac_a')
@@ -11424,7 +10921,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 :end:
 
 **** The issue at zac_a in April 2018 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
 
 boom_a['April-2018':'May-2018']['z_boom'].plot(ax= ax, label = 'zac_a')
@@ -11458,7 +10955,7 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 #+NAME: data_file_paths
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python :session
 station = 'zac_l'
 filename = 'zac_l-2008-2022.nc'
 datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/'+station+'/'
@@ -11476,7 +10973,7 @@ zac_a_path = datapath+filename
 #+END_SRC
 
 #+NAME: Load_transmitted_data
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 datadir = '/home/shl@geus.dk/OneDrive/projects/glaciobasis/data/aws_transmitted/'
 station = 'zac_a'
 filename = 'AWS_300234061218540.txt'
@@ -11493,7 +10990,7 @@ diag = pd.read_csv(datadir+station+'/'+diagnostic,header=0,skiprows=[1],sep=',',
 #+END_SRC
 
 #+NAME: load_transmitted_trusted
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 <<Load_transmitted_data>>
 transmitted = transmitted[:'2019-August-30'].astype(float)
 
@@ -11633,7 +11130,7 @@ transmitted_day = transmitted[0:-1][(timestep_day==1).values]
 :end:
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 fig, ax = plt.subplots(2,1,figsize=(10,5))
 ax[0].plot(transmitted.index[1:], timestep_hour )
 ax[0].plot(transmitted.index[1:], timestep_day )
@@ -11668,7 +11165,7 @@ ax[1].plot(transmitted_day['temperature'])
 
 *** Near surface climate
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
  import xarray as xr
 
  destdir = '/home/shl@geus.dk/OneDrive/projects/glaciobasis/gem_database/data/2022/'
@@ -11697,7 +11194,7 @@ ax[1].plot(transmitted_day['temperature'])
 
 
  #+NAME: extract_the_near_surface_climate_columns
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
  with xr.open_dataset(filename) as ds:
      data_ds = ds[['p','t_1','rh','wspd','wdir','dsr_corr','usr_corr','dlr','ulr','t_rad','tilt_x','tilt_y']]
 
@@ -11721,7 +11218,7 @@ ax[1].plot(transmitted_day['temperature'])
  z_boom
  z_boom_q
 
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
  import xarray as xr
  import pandas as pd
 
@@ -11771,7 +11268,7 @@ ax[1].plot(transmitted_day['temperature'])
 
 
  #+NAME: extract_the_SR50_snow_height
- #+BEGIN_SRC jupyter-python
+ #+BEGIN_SRC python
  with xr.open_dataset(filename) as ds:
      data_ds = ds[['z_boom','z_boom_q']]
 
@@ -11788,9 +11285,11 @@ ax[1].plot(transmitted_day['temperature'])
  
 * Assemble variables in one netcdf and one csv per site
 
+During the QC the nead headers and metadata got a bit messed up, so I re-add it here. This should be fixed. 
+
 ** Pre QC (supplementary)
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -11818,18 +11317,17 @@ merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr'
 #merged.plot(subplots = True, figsize = (12,12))
 
 cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
-<<drop_head_and_tail_nans_fast>>
-merged_slim = drop_nan_rows(merged)
 
-ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
+# Identify where all columns (except the timestamp) are NaN
+first_valid_index = merged[cols].dropna(how='all').index[0]
+# Filter the dataframe from that point onwards
+merged_slim = merged[merged.index >= first_valid_index]
+# Identify where all columns (except the timestamp) are NaN at the tail
+last_valid_index = merged[cols].dropna(how='all').index[-1]
+# Filter the dataframe to end at that point
+merged_slim = merged_slim[merged_slim.index <= last_valid_index]
 
-merged.index = pd.to_datetime(merged.index)
-years = range(merged.index.year.min(), merged.index.year.max() + 1)
-
-#ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
-
-#ax[0].set_xticklabels(years)
-
+ax = merged_slim[cols].plot(subplots = True, figsize = (6.5,5))
 
 ax[0].set_ylabel('$\circ$C')
 ax[1].set_ylabel('%')
@@ -11859,10 +11357,10 @@ merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/3627e560f67f1f519357021894d2fd356b85da14.png]]
+: None
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -11887,14 +11385,19 @@ merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr'
 
 cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
 
-<<drop_head_and_tail_nans_fast>>
+# Identify where all columns (except the timestamp) are NaN
+first_valid_index = merged[cols].dropna(how='all').index[0]
+# Filter the dataframe from that point onwards
+merged_slim = merged[merged.index >= first_valid_index]
+# Identify where all columns (except the timestamp) are NaN at the tail
+last_valid_index = merged[cols].dropna(how='all').index[-1]
+# Filter the dataframe to end at that point
+merged_slim = merged_slim[merged_slim.index <= last_valid_index]
 
-merged_slim = drop_nan_rows(merged)
+ax = merged_slim[cols].plot(subplots = True, figsize = (6.5,5))
 
-ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
-
-merged.index = pd.to_datetime(merged.index)
-years = range(merged.index.year.min(), merged.index.year.max() + 1)
+#merged_slim.index = pd.to_datetime(merged_slim.index)
+#years = range(merged_slim.index.year.min(), merged_slim.index.year.max() + 1)
 
 #ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
 
@@ -11931,9 +11434,9 @@ merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/087a1c067b6448ddbd3d753c4ccc390f9ec4d63a.png]]
+: None
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 workingfolder = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/preQC/'
 #zac_a
 site = 'zac_a'
@@ -11952,17 +11455,19 @@ merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr'
 
 cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom']
 
-<<drop_head_and_tail_nans_fast>>
-merged_slim = drop_nan_rows(merged)
+# Identify where all columns (except the timestamp) are NaN
+first_valid_index = merged[cols].dropna(how='all').index[0]
+# Filter the dataframe from that point onwards
+merged_slim = merged[merged.index >= first_valid_index]
+# Identify where all columns (except the timestamp) are NaN at the tail
+last_valid_index = merged[cols].dropna(how='all').index[-1]
+# Filter the dataframe to end at that point
+merged_slim = merged_slim[merged_slim.index <= last_valid_index]
 
-ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
+#merged_slim = drop_nan_rows(merged)
 
-merged.index = pd.to_datetime(merged.index)
-years = range(merged.index.year.min(), merged.index.year.max() + 1)
+ax = merged_slim[cols].plot(subplots = True, figsize = (6.5,5))
 
-#ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
-
-#ax[0].set_xticklabels(years)
 
 
 ax[0].set_ylabel('$\circ$C')
@@ -11998,42 +11503,14 @@ merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/25f29905363ddca983fc78c0c7933614dc93a842.png]]
-
-
-#+NAME: drop_head_and_tail_nans_fast
-#+BEGIN_SRC jupyter-python
-
-def drop_nan_rows(df):
-    # Create mask of rows where all columns are NaN
-    mask = df[cols].isna().all(axis=1)
-
-    # Get the indices where mask is True (all NaN)
-    true_indices = np.where(mask)[0]
-
-    # If there are no all-NaN rows, just return the original DataFrame
-    if len(true_indices) == 0:
-        return df
-
-    # Find the first and last True value in the mask
-    first_true = true_indices[0]
-    last_true = true_indices[-1]
-
-    # Drop the rows from the start to the first non-NaN row
-    # and from the last non-NaN row to the end
-    df = df.iloc[first_true+1:last_true]
-
-    return df
-
-
-
-#+END_SRC
+: None
 
 
 
 ** Post QC
 
-#+BEGIN_SRC jupyter-python
+
+#+BEGIN_SRC python
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -12102,10 +11579,10 @@ merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/02073ee68a3cd38487918e64dcc4fe59cbb442ea.png]]
+: None
 
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -12174,18 +11651,20 @@ merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/7af423e309624bc1990d2afa0f255af133530ca2.png]]
+: None
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
+import pandas as pd
+import matplotlib.pyplot as plt
 workingfolder = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
 #zac_a
 site = 'zac_a'
-temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0)
-rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
-p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
-rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
-ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
-height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
+temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0, parse_dates = True)
+rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0, parse_dates = True)
+p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0, parse_dates = True)
+rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0, parse_dates = True)
+ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0, parse_dates = True)
+height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0, parse_dates = True)
 
 
 merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer')
@@ -12195,18 +11674,16 @@ merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr'
 
 cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom']
 
-<<drop_head_and_tail_nans_fast>>
-merged_slim = drop_nan_rows(merged)
+# Identify where all columns (except the timestamp) are NaN
+first_valid_index = merged[cols].dropna(how='all').index[0]
+# Filter the dataframe from that point onwards
+merged_slim = merged[merged.index >= first_valid_index]
+# Identify where all columns (except the timestamp) are NaN at the tail
+last_valid_index = merged[cols].dropna(how='all').index[-1]
+# Filter the dataframe to end at that point
+merged_slim = merged_slim[merged_slim.index <= last_valid_index]
 
-ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
-
-merged.index = pd.to_datetime(merged.index)
-years = range(merged.index.year.min(), merged.index.year.max() + 1)
-
-#ax[0].set_xticks([pd.to_datetime(str(year) + '-01-01') for year in years])
-
-#ax[0].set_xticklabels(years)
-
+ax = merged_slim[cols].plot(subplots = True, figsize = (6.5,5))
 
 ax[0].set_ylabel('$\circ$C')
 ax[1].set_ylabel('%')
@@ -12241,6 +11718,123 @@ merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/8c922b511c864247818b2907b40f46ee7c1b324d.png]]
+: None
+
+
+** Add nead headers
+
+
+Write out the headers from the csv file
+#+BEGIN_SRC python :session :results output
+import pandas as pd
+import nead
+import matplotlib.pyplot as plt
+site = 'zac_l'
+df = pd.read_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv')
+print(df.keys())
+#+END_SRC
+
+#+RESULTS:
+: Index(['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr',
+:        'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom',
+:        'ice_ablation'],
+:       dtype='object')
+
+
+Manually create NEAD header files and add them here:
+
+#+BEGIN_SRC sh :session
+filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_2008_2022_QC_final
+filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
+neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_nead.csv
+
+cp $filename.csv ${filename}_tmp.csv
+sed -i '1d' ${filename}_tmp.csv
+cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_L.csv
+rm ${filename}_tmp.csv
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC sh :session
+filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_2008_2022_QC_final
+filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
+neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_nead.csv
+
+cp $filename.csv ${filename}_tmp.csv
+sed -i '1d' ${filename}_tmp.csv
+cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_U.csv
+rm ${filename}_tmp.csv
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC sh :session
+filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_2008_2022_QC_final
+filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
+neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_nead.csv
+
+cp $filename.csv ${filename}_tmp.csv
+sed -i '1d' ${filename}_tmp.csv
+cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_A.csv
+rm ${filename}_tmp.csv
+
+
+
+
+#+END_SRC
+
+#+RESULTS:
+
+Example for dataverse - using nead
+#+BEGIN_SRC python 
+import nead
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A.csv'
+
+ds = nead.read(filename, index_col=0)
+# Ignoring all metadata and plotting
+df = ds.to_pandas()
+df.plot(subplots = True)
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+: None
+
+
+Examples for dataverse - using pandas
+
+#+BEGIN_SRC python 
+import pandas as pd
+import matplotlib.pyplot as plt
+
+filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L.csv'
+columns = ['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr', 'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom', 'ice_ablation']
+df = pd.read_csv(filename, skiprows=16, names = columns, index_col = 0, parse_dates = True)
+df.plot(subplots=True)
+plt.show()
+
+
+filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U.csv'
+columns = ['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr', 'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom', 'ice_ablation']
+df = pd.read_csv(filename, skiprows=16, names = columns, index_col = 0, parse_dates = True)
+df.plot(subplots=True)
+plt.show()
+
+filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A.csv'
+columns = ['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr', 'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom']
+df = pd.read_csv(filename, skiprows=16, names = columns, index_col = 0, parse_dates = True)
+df.plot(subplots=True)
+plt.show()
+
+#+END_SRC
+
+#+RESULTS:
+: None
+
 
 
