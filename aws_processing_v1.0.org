@@ -42,16 +42,24 @@ Updates done in the raw data, then everything needs to be done again.
 <<make_L0M_zac_a>>
 #+END_SRC
 
+#+RESULTS:
+: ZAC_L data now has nead headers
+: ZAC_U data now has nead headers
+: ZAC_A data now has nead headers
+
 
 TODO print success lines in a better way in make L0M
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 # L0M to L1
 <<convert_to_physical_values_workflow>>
 
 # L1 to QC + databases
 <<run_all_QC_filtering_steps_for_meterological_observations>>
 #+END_SRC
+
+#+RESULTS:
+: None
 
 TODO
 - Clear out figures created in the QC process
@@ -3432,30 +3440,30 @@ ax.legend()
 
 **** Make one single netcdf per station
 
- #+NAME: Make_a_single_netcdf_per_station
- #+BEGIN_SRC python
+#+NAME: Make_a_single_netcdf_per_station
+#+BEGIN_SRC python
 
- import pandas as pd
- import xarray as xr
- from glob import glob
- import matplotlib.pyplot as plt
- import os
+import pandas as pd
+import xarray as xr
+from glob import glob
+import matplotlib.pyplot as plt
+import os
 
- datadir = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/'
- outfile = datadir+'zac_l/zac_l-2008-2022.nc'
- with xr.open_mfdataset(datadir+'zac_l/zac_l-20??.nc') as ds:
-     ds.to_netcdf(outfile)
-     ds.to_dataframe().to_csv(datadir+'zac_l/zac_l-2008-2022.txt')
+datadir = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/'
+outfile = datadir+'zac_l/zac_l-2008-2022.nc'
+with xr.open_mfdataset(datadir+'zac_l/zac_l-20??.nc') as ds:
+    ds.to_netcdf(outfile)
+    ds.to_dataframe().to_csv(datadir+'zac_l/zac_l-2008-2022.txt')
 
- outfile = datadir+'zac_u/zac_u-2008-2022.nc'
- with xr.open_mfdataset(datadir+'zac_u/zac_u-20??.nc') as ds:
-     ds.to_netcdf(outfile)
-     ds.to_dataframe().to_csv(datadir+'zac_u/zac_u-2008-2022.txt')
+outfile = datadir+'zac_u/zac_u-2008-2022.nc'
+with xr.open_mfdataset(datadir+'zac_u/zac_u-20??.nc') as ds:
+    ds.to_netcdf(outfile)
+    ds.to_dataframe().to_csv(datadir+'zac_u/zac_u-2008-2022.txt')
 
- outfile = datadir+'zac_a/zac_a-2009-2020.nc'
- with xr.open_mfdataset(datadir+'zac_a/zac_a-20??.nc') as ds:
-     ds.to_netcdf(outfile)
-     ds.to_dataframe().to_csv(datadir+'zac_a/zac_a-2009-2020.txt')
+outfile = datadir+'zac_a/zac_a-2009-2020.nc'
+with xr.open_mfdataset(datadir+'zac_a/zac_a-20??.nc') as ds:
+    ds.to_netcdf(outfile)
+    ds.to_dataframe().to_csv(datadir+'zac_a/zac_a-2009-2020.txt')
 
 
  #+END_SRC
@@ -4793,9 +4801,9 @@ rad_hour[variable][rad_hour['dlr']<120] = np.nan
 
 # Deleting bad data manually
 
-rad_hour['usr_corr']['2021-01-01':'2021-07-21'] = np.nan
-cols = ['usr','dsr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']
-rad_hour.loc['2020-07-01':'2021-07-22',cols] = np.nan
+#rad_hour['usr_corr']['2021-01-01':'2021-07-21'] = np.nan
+#cols = ['usr','dsr','dsr_corr','usr_corr','dlr','ulr','albedo','cloud_cov','t_surf']
+#rad_hour.loc['2020-07-01':'2021-07-22',cols] = np.nan
 
 rad_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_radiation.csv', index = True, float_format = '%g')
 # rad_day.to_csv('data_v1.0/gem_database/2022/zac_l_day_radiation.csv', index = True, float_format = '%g')
@@ -7675,49 +7683,52 @@ ax[3].legend()
 
 *** Tilt
 
-#+BEGIN_SRC python
- <<load_libs>>
- <<data_file_paths>>
+#+BEGIN_SRC python :session
+<<load_libs>>
+<<data_file_paths>>
 
 fig, ax = plt.subplots(3,1,figsize = (7.5,5), sharex = True)
- with xr.open_dataset(zac_l_path) as ds:
-     df = ds[['tilt_x','tilt_y']].to_dataframe()
-     df = df.where(df<22, np.nan)
-     df = df.where(df>-20, np.nan)
-     df = df.where(df!=0, np.nan)
+with xr.open_dataset(zac_l_path) as ds:
+    df = ds[['tilt_x','tilt_y']].to_dataframe()
+    df = df.where(df<22, np.nan)
+    df = df.where(df>-20, np.nan)
+    df = df.where(df!=0, np.nan)
 
- df['tilt_x'].plot(ax = ax[0], color = 'tab:blue', label = '$ZAC\_L$: $Tilt_x$')
- df['tilt_y'].loc[:'2020-Jan'].plot(ax = ax[0], color = 'deepskyblue', label = '$ZAC\_L$: $Tilt_y$')
- df['tilt_y'].loc['2020-Jan':].plot(ax = ax[0], color = 'gray', alpha = 0.3, label = '$ZAC\_L$: $Tilt_y$ discarded')
+df['tilt_x'].plot(ax = ax[0], color = 'tab:blue', label = '$ZAC\_L$: $Tilt_x$')
+df['tilt_y'].plot(ax = ax[0], color = 'deepskyblue', label = '$ZAC\_L$: $Tilt_y$')
+
 
 
 # ZAC_L Tilt_y looks wrong in 2020-2022
 
- with xr.open_dataset(zac_u_path) as ds:
-     df = ds[['tilt_x','tilt_y']].to_dataframe()
-     df = df.where(df<22, np.nan)
-     df = df.where(df>-20, np.nan)
-     df = df.where(df!=0, np.nan)
- df['tilt_y'].plot(ax= ax[1], color = 'tab:orange', label = '$ZAC\_U$: $Tilt_x$')
- df['tilt_x'].plot(ax= ax[1], color = 'darkgoldenrod', label = '$ZAC\_U$: $Tilt_y$')
- #df['tilt_y'].plot(ax= ax[1], color = 'tab:orange')
- #df['tilt_x'].plot(ax= ax[1], color = 'tab:blue')
+with xr.open_dataset(zac_u_path) as ds:
+    df = ds[['tilt_x','tilt_y']].to_dataframe()
+    df = df.where(df<22, np.nan)
+    df = df.where(df>-20, np.nan)
+    df = df.where(df!=0, np.nan)
+df['tilt_y'].plot(ax= ax[1], color = 'tab:orange', label = '$ZAC\_U$: $Tilt_x$')
+df['tilt_x'].plot(ax= ax[1], color = 'darkgoldenrod', label = '$ZAC\_U$: $Tilt_y$')
+#df['tilt_y'].plot(ax= ax[1], color = 'tab:orange')
+#df['tilt_x'].plot(ax= ax[1], color = 'tab:blue')
 
 # ZAC_A and ZAC_U, it looks like the data is a factor 10 off, but I don't really understand how that error could be made? 
- with xr.open_dataset(zac_a_path) as ds:
-     df = ds[['tilt_x','tilt_y']].to_dataframe()
-     df = df.where(df<22, np.nan)
-     df = df.where(df>-20, np.nan)
-     df = df.where(df!=0, np.nan)
- df['tilt_y'].plot(ax= ax[2], color = 'tab:green', label = '$ZAC\_A$: $Tilt_x$')
- df['tilt_x'].plot(ax= ax[2], color = 'limegreen', label = '$ZAC\_A$: $Tilt_y$')
+with xr.open_dataset(zac_a_path) as ds:
+    df = ds[['tilt_x','tilt_y']].to_dataframe()
+    df = df.where(df<22, np.nan)
+    df = df.where(df>-20, np.nan)
+    df = df.where(df!=0, np.nan)
+df['tilt_y'].plot(ax= ax[2], color = 'tab:green', label = '$ZAC\_A$: $Tilt_x$')
+df['tilt_x'].plot(ax= ax[2], color = 'limegreen', label = '$ZAC\_A$: $Tilt_y$')
 
 ax[0].set_ylabel('Degree')
 ax[1].set_ylabel('Degree')
 ax[2].set_ylabel('Degree')
-ax[0].legend(loc=3)
-ax[1].legend(loc=3)
-ax[2].legend(loc=3)
+ax[0].set_ylim(-22,20)
+ax[1].set_ylim(-22,20)
+ax[2].set_ylim(-22,20)
+ax[0].legend(loc=9, ncols =2)
+ax[1].legend(loc=3, ncols =2)
+ax[2].legend(loc=1, ncols =2)
 
 
 for i, ax in enumerate(ax, start=1):
@@ -7731,7 +7742,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig06.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/86b300d922e7c0ed85a3a3f34f06f4e3fd07d4b6.png]]
+: None
 
 
 *** Radiation
@@ -7839,12 +7850,6 @@ ax[3].set_xlim(startdate,enddate)
 <<plot_rad_gradients_full_period>>
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f1479b48880>
-[[file:./.ob-jupyter/0a0c648be9a6b8d4d9726ed21cdfb68a1e030f26.png]]
-:END:
-
 
 
 ***** SRin
@@ -7886,7 +7891,7 @@ zac_l[variable].plot(ax = ax[0], label = 'ZAC_L', color = 'tab:blue')
 zac_u[variable].plot(ax = ax[1], label = 'ZAC_U', color = 'tab:orange')
 zac_a[variable].plot(ax = ax[2], label = 'ZAC_A', color = 'tab:green')
 
-#zac_l_pre[variable].plot(ax = ax[0], label = 'Discarded', color = 'tab:blue', alpha = 0.3)
+zac_l_pre[variable].plot(ax = ax[0], label = 'Discarded', color = 'tab:blue', alpha = 0.3)
 zac_u_pre[variable].plot(ax = ax[1], label = 'Discarded', color = 'tab:orange', alpha = 0.3)
 zac_a_pre[variable].plot(ax = ax[2], label = 'Discarded', color = 'tab:green', alpha = 0.3)
 
@@ -7903,7 +7908,7 @@ ax[0].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
 ax[1].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
 ax[2].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
 
-ax[0].legend()
+ax[0].legend(loc=3)
 ax[1].legend()
 ax[2].legend()
 #fig.savefig('QCfigs/SRin_compare.png')
@@ -7911,7 +7916,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig07.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/e0a0aae8b274bcb7af99cd0d15723dcb4c9ecaa9.png]]
+: None
 
 
 
@@ -11575,7 +11580,8 @@ ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 #plt.tight_layout()
 plt.savefig('ZAC_L_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
+#merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L', index = True)
 #+END_SRC
 
 #+RESULTS:
@@ -11647,7 +11653,8 @@ ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
 plt.savefig('ZAC_U_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
 
 #merged.plot(subplots = True, figsize = (12,12))
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
+#merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U.csv', index = True)
 #+END_SRC
 
 #+RESULTS:
@@ -11712,8 +11719,8 @@ plt.savefig('ZAC_A_Measurement_success_rate.png', dpi = 300, bbox_inches='tight'
 
 
 #merged.plot(subplots = True, figsize = (12,12))
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final', index = True)
-
+#merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A', index = True)
 
 #+END_SRC
 
@@ -11746,11 +11753,11 @@ Manually create NEAD header files and add them here:
 #+BEGIN_SRC sh :session
 filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_2008_2022_QC_final
 filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
-neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_nead.csv
+neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_nead_header.csv
 
 cp $filename.csv ${filename}_tmp.csv
 sed -i '1d' ${filename}_tmp.csv
-cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_L.csv
+cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_L_nead.csv
 rm ${filename}_tmp.csv
 #+END_SRC
 
@@ -11759,11 +11766,11 @@ rm ${filename}_tmp.csv
 #+BEGIN_SRC sh :session
 filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_2008_2022_QC_final
 filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
-neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_nead.csv
+neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_nead_header.csv
 
 cp $filename.csv ${filename}_tmp.csv
 sed -i '1d' ${filename}_tmp.csv
-cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_U.csv
+cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_U_nead.csv
 rm ${filename}_tmp.csv
 
 #+END_SRC
@@ -11773,11 +11780,11 @@ rm ${filename}_tmp.csv
 #+BEGIN_SRC sh :session
 filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_2008_2022_QC_final
 filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
-neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_nead.csv
+neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_nead_header.csv
 
 cp $filename.csv ${filename}_tmp.csv
 sed -i '1d' ${filename}_tmp.csv
-cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_A.csv
+cat $neadfile ${filename}_tmp.csv > ${filestorage}ZAC_A_nead.csv
 rm ${filename}_tmp.csv
 
 
