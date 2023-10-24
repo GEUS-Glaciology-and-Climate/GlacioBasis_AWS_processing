@@ -48,7 +48,7 @@ Updates done in the raw data, then everything needs to be done again.
 : ZAC_A data now has nead headers
 
 
-TODO print success lines in a better way in make L0M
+
 
 #+BEGIN_SRC python 
 # L0M to L1
@@ -85,6 +85,7 @@ Reading in raw files and writing them out as L0 files with nice headers and spec
 :        'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
 :        'fan_dc'],
 :       dtype='object'
+
 *** Libraries
 #+NAME: load_libraries
 #+BEGIN_SRC python
@@ -140,32 +141,12 @@ for f in filelist:
     df.index.name = 'time'
     df.sort_index(inplace=True)
     df = df.replace('NAN',np.NaN)
-    print(f)
-    print(df['AS_T_Avg'])
+    #print(f)
+    #print(df['AS_T_Avg'])
     #df['AS_T_Avg'].plot()
     
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [83]: 
-# output
-/home/shl@geus.dk/OneDrive/projects/glaciobasis/data/aws_raw/zac_l/2017-2018/TOA5_13745.TableMem.dat
-time
-2017-04-24 16:30:00    -2.714936
-2017-04-24 16:40:00    -13.24721
-2017-04-24 16:50:00    -13.14341
-2017-04-24 17:00:00      -13.461
-2017-04-24 17:10:00    -13.51251
-                         ...    
-2018-04-14 14:00:00    -3.442842
-2018-04-14 14:10:00    -2.958845
-2018-04-14 14:20:00    -2.451514
-2018-04-14 14:30:00    -2.114108
-2018-04-14 14:40:00    -2.296419
-Name: AS_T_Avg, Length: 35461, dtype: object
-
-:end:
 
 
 **** zac_l
@@ -185,26 +166,6 @@ Name: AS_T_Avg, Length: 35461, dtype: object
 <<zac_l_2021_2022>>
 #+END_SRC
 
-#+RESULTS: run_all_L0_zac_l
-:results:
-# Out [1]: 
-# output
-Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
-       'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
-       'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
-       't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
-       'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
-       'fan_dc'],
-      dtype='object')
-Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
-       'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
-       'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
-       't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
-       'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
-       'fan_dc'],
-      dtype='object')
-
-:end:
 
 ***** zac_l_2008_2010
 
@@ -244,11 +205,6 @@ df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
 
-#+RESULTS: zac_l_2008_2010
-:results:
-# Out [69]: 
-:end:
-
 Read in and concatenate the raw files
 
 ***** zac_l_2010_2011
@@ -287,10 +243,6 @@ df[variables] = df[variables]/100
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2010_2011
-:results:
-# Out [72]: 
-:end:
 
 ***** zac_l_2011_2014
 
@@ -344,10 +296,6 @@ df.to_csv(outfilename2,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_l_2011_2014
-:results:
-# Out [74]: 
-:end:
 
 ***** zac_l_2012_2013
 
@@ -379,10 +327,6 @@ df['p'] = df['p']*mmHg2hPa
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2012_2013
-:results:
-# Out [76]: 
-:end:
 
 ***** zac_l_2014_2015
 
@@ -414,10 +358,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)/10
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2014_2015
-:results:
-# Out [78]: 
-:end:
 
 ***** zac_l_2015_2016
 
@@ -448,10 +388,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)/10
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2015_2016
-:results:
-# Out [80]: 
-:end:
 
 ***** zac_l_2016_2017
 
@@ -482,10 +418,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)/10
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2016_2017
-:results:
-# Out [82]: 
-:end:
 
 ***** zac_l_2017_2018
 
@@ -516,10 +448,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)/10
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2017_2018
-:results:
-# Out [84]: 
-:end:
 
 ***** zac_l_2018_2020
 
@@ -611,23 +539,10 @@ df['tilt_x'] = df['tilt_x'].astype(float)/10
 df['tilt_y'] = df['tilt_y'].astype(float)/10 
 df['p'] = df['p']*mmHg2hPa
 
-print(df.keys())
+#print(df.keys())
 df.to_csv(outfilename,sep=',', index=True)
 #+END_SRC
 
-#+RESULTS: zac_l_2021_2022
-:results:
-# Out [3]: 
-# output
-Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
-       'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
-       'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
-       't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
-       'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
-       'fan_dc'],
-      dtype='object')
-
-:end:
 
 
 **** zac_u
@@ -646,11 +561,6 @@ Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
 <<zac_u_2020_2021>>
 <<zac_u_2021_2022>>
 #+END_SRC
-
-#+RESULTS: run_all_L0_zac_u
-:results:
-# Out [2]: 
-:end:
 
 ***** zac_u_2008_2010
 #+NAME: zac_u_2008_2010
@@ -682,10 +592,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2008_2010
-:results:
-# Out [153]: 
-:end:
 
 ***** zac_u_2010_2011
 #+NAME: zac_u_2010_2011
@@ -717,10 +623,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2010_2011
-:results:
-# Out [154]: 
-:end:
 
 ***** zac_u_2011_2012
 #+NAME: zac_u_2011_2012
@@ -758,10 +660,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2011_2012
-:results:
-# Out [107]: 
-:end:
 
 ***** zac_u_2012_2013
 #+NAME: zac_u_2012_2013
@@ -797,10 +695,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2012_2013
-:results:
-# Out [158]: 
-:end:
 
 ***** zac_u_2013_2014
 #+NAME: zac_u_2013_2014
@@ -837,10 +731,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2013_2014
-:results:
-# Out [159]: 
-:end:
 
 ***** zac_u_2014_2015
 #+NAME: zac_u_2014_2015
@@ -876,10 +766,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2014_2015
-:results:
-# Out [160]: 
-:end:
 
 
 ***** zac_u_2015_2016
@@ -917,10 +803,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2015_2016
-:results:
-# Out [1]: 
-:end:
 
 ***** zac_u_2016_2017
 #+NAME: zac_u_2016_2017
@@ -955,10 +837,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2016_2017
-:results:
-# Out [163]: 
-:end:
 
 
 ***** zac_u_2017_2019
@@ -994,10 +872,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2017_2019
-:results:
-# Out [164]: 
-:end:
 
 ***** zac_u_2019_2020
 #+NAME: zac_u_2019_2020
@@ -1032,10 +906,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2019_2020
-:results:
-# Out [165]: 
-:end:
 
 ***** zac_u_2020_2021
 #+NAME: zac_u_2020_2021
@@ -1073,10 +943,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2020_2021
-:results:
-# Out [2]: 
-:end:
 
 ***** zac_u_2021_2022
 #+NAME: zac_u_2021_2022
@@ -1115,10 +981,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_u_2021_2022
-:results:
-# Out [93]: 
-:end:
 
 
 
@@ -1137,19 +999,6 @@ df.to_csv(outfilename,sep=',', index=True)
 <<zac_a_2018_2019>>
 #+END_SRC
 
-#+RESULTS: run_all_L0_zac_a
-:results:
-# Out [3]: 
-# output
-Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
-       'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
-       'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
-       't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
-       'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
-       'fan_dc'],
-      dtype='object')
-
-:end:
 
 
 ***** zac_a_2009_2010
@@ -1185,10 +1034,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_a_2009_2010
-:results:
-# Out [13]: 
-:end:
 
 ***** zac_a_2010_2011
 #+NAME: zac_a_2010_2011
@@ -1224,10 +1069,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_a_2010_2011
-:results:
-# Out [2]: 
-:end:
 
 ***** zac_a_2011_2012
 #+NAME: zac_a_2011_2012
@@ -1262,11 +1103,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)*10
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
-
-#+RESULTS: zac_a_2011_2012
-:results:
-# Out [3]: 
-:end:
 
 
 ***** zac_a_2012_2013
@@ -1336,11 +1172,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_a_2013_2014
-:results:
-# Out [5]: 
-:end:
-
 
 ***** zac_a_2014_2015
 #+NAME: zac_a_2014_2015
@@ -1375,11 +1206,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_a_2014_2015
-:results:
-# Out [6]: 
-:end:
-
 ***** zac_a_2015_2016
 #+NAME: zac_a_2015_2016
 #+BEGIN_SRC python
@@ -1413,10 +1239,7 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_a_2015_2016
-:results:
-# Out [7]: 
-:end:
+
 ***** zac_a_2016_2017
 #+NAME: zac_a_2016_2017
 #+BEGIN_SRC python
@@ -1449,11 +1272,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)*10
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
-
-#+RESULTS: zac_a_2016_2017
-:results:
-# Out [8]: 
-:end:
 
 ***** zac_a_2017_2018
 #+NAME: zac_a_2017_2018
@@ -1488,20 +1306,6 @@ df['tilt_y'] = df['tilt_y'].astype(float)*10
 df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
-
-#+RESULTS: zac_a_2017_2018
-:results:
-# Out [10]: 
-# output
-Index(['rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr',
-       'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'z_stake', 'z_stake_q',
-       'z_pt', 't_i_1', 't_i_2', 't_i_3', 't_i_4', 't_i_5', 't_i_6', 't_i_7',
-       't_i_8', 'tilt_x', 'tilt_y', 'gps_time', 'gps_lat', 'gps_lon',
-       'gps_alt', 'gps_geoid', 'gps_q', 'gps_numsat', 'gps_hdop', 't_log',
-       'fan_dc'],
-      dtype='object')
-
-:end:
 
 
 
@@ -1539,11 +1343,6 @@ df.to_csv(outfilename,sep=',', index=True)
 
 #+END_SRC
 
-#+RESULTS: zac_a_2018_2019
-:results:
-# Out [13]: 
-:end:
-
 
 
 
@@ -1572,8 +1371,6 @@ df.index.name = 'time'
 df.sort_index(inplace=True)
 df = df.replace('NAN',np.NaN)
 #+END_SRC
-
-#+RESULTS: read_named_TableMem_file
 
 
 #+NAME: fix_headers_type0_SR50_switched
@@ -1633,16 +1430,6 @@ for index,key in enumerate(variables):
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [6]: 
-# text/plain
-: <Figure size 720x720 with 3 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/fad2afd5dad1e1c83bd3179e4f2c678aa6ca2331.png]]
-:end:
-
 
 
 **** zac_u
@@ -1671,16 +1458,6 @@ for index,key in enumerate(variables):
     
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [7]: 
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ea3f8f206569b1f87534f4d70e73774649c4c228.png]]
-:end:
 
 
 ** Create L0M files: add nead header
@@ -1749,7 +1526,6 @@ endyear=2022
 echo "ZAC_L data now has nead headers"
 #+END_SRC
 
-#+RESULTS: make_L0M_zac_l
 
 #+NAME: concat_nead_and_data
 #+BEGIN_SRC bash :eval yes
@@ -1759,8 +1535,6 @@ cat $destdir/01_nead_$station_id-$years.csv $destdir/$station_id-${years}.csv > 
 rm $destdir/$station_id-${years}.csv
 
 #+END_SRC
-
-#+RESULTS: concat_nead_and_data
 
 
 *** zac_u
@@ -1827,21 +1601,6 @@ echo "ZAC_U data now has nead headers"
 
 #+END_SRC
 
-#+RESULTS: make_L0M_zac_u
-
-
-#+BEGIN_SRC bash :eval yes
-ls $destdir
-#+END_SRC
-
-#+RESULTS:
-| 01_nead_zac_u-2008-2010.csv | 01_nead_zac_u-2015-2016.csv | zac_u-2010.csv | zac_u-2016.csv |
-| 01_nead_zac_u-2010-2011.csv | 01_nead_zac_u-2016-2017.csv | zac_u-2011.csv | zac_u-2017.csv |
-| 01_nead_zac_u-2011-2012.csv | 01_nead_zac_u-2017-2019.csv | zac_u-2012.csv | zac_u-2019.csv |
-| 01_nead_zac_u-2012-2013.csv | 01_nead_zac_u-2019-2020.csv | zac_u-2013.csv | zac_u-2020.csv |
-| 01_nead_zac_u-2013-2014.csv | 01_nead_zac_u-2020-2021.csv | zac_u-2014.csv | zac_u-2021.csv |
-| 01_nead_zac_u-2014-2015.csv | 01_nead_zac_u-2021-2022.csv | zac_u-2015.csv | zac_u-2022.csv |
-
 
 
 
@@ -1901,8 +1660,6 @@ echo "ZAC_A data now has nead headers"
 
 #+END_SRC
 
-#+RESULTS: make_L0M_zac_a
-
 
 
 
@@ -1954,15 +1711,6 @@ ax.legend()
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: /tmp/ipykernel_17954/3764014050.py:390: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-: Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-:   if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-: <matplotlib.legend.Legend at 0x7f5288253f40>
-[[file:./.ob-jupyter/b53fcc194c67a174a1c544785a2c61cc077547af.png]]
-[[file:./.ob-jupyter/37a55ccc8ba3ca07fff1d6cb88d82a36e441de98.png]]
-:END:
 
 #+BEGIN_SRC python
 
@@ -1997,29 +1745,6 @@ ax.legend()
 
 #ds['z_stake'].plot(ax = ax)
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-: /tmp/ipykernel_17954/3207614599.py:27: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-: Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-:   if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-: <matplotlib.legend.Legend at 0x7f52b6670fa0>
-[[file:./.ob-jupyter/a064ae78c03452973e2a323c412c9d2347db672b.png]]
-[[file:./.ob-jupyter/ecee1a9cce7626c13bda9c1727a3c74632ef7a14.png]]
-:END:
-
-#+BEGIN_SRC python
-print(ds.time)
-#+END_SRC
-
-#+RESULTS:
-: <xarray.DataArray 'time' (time: 50865)>
-: array(['2015-05-04T13:00:00.000000000', '2015-05-04T13:10:00.000000000',
-:        '2015-05-04T13:20:00.000000000', ..., '2016-04-21T18:00:00.000000000',
-:        '2016-04-21T18:10:00.000000000', '2016-04-21T18:20:00.000000000'],
-:       dtype='datetime64[ns]')
-: Coordinates:
-:   * time     (time) datetime64[ns] 2015-05-04T13:00:00 ... 2016-04-21T18:20:00
 
 
 ** Create L1 files: convert to physical values 
@@ -2074,150 +1799,6 @@ for infile in filelist:
 ds_raw[['tilt_x','tilt_y']].to_dataframe().plot(ax = ax[2])
 
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-#+begin_example
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2017.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2020.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2015.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2016.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2012.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2014.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2018.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2021.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2013.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2022.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2011.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_l/zac_l-2010.csv
-  /tmp/ipykernel_34786/2429569575.py:39: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2017.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2016.csv
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2019.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2020.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2010.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2021.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2013.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2012.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2011.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2014.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2015.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_u/zac_u-2022.csv
-  /tmp/ipykernel_34786/2429569575.py:78: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2011.csv
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2016.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2012.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2018.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2014.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2017.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2013.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2015.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2010.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-  /home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L0M/zac_a/zac_a-2019.csv
-  /tmp/ipykernel_34786/2429569575.py:116: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
-  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
-    if isinstance(df[c][v], np.float) and np.isnan(df[c][v]): continue
-#+end_example
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/1a8e951a303c73b82f0a680c1c1ee96b06728cd8.png]]
-:END:
 
 
 *** Workflow
@@ -2298,26 +1879,6 @@ ds = add_variable_metadata(ds)
 
 #+END_SRC
 
-#+RESULTS: Debugging
-:results:
-# Out [8]: 
-# output
----------------------------------------------------------------------------
-AssertionError                            Traceback (most recent call last)
-/tmp/ipykernel_13278/2143753574.py in <module>
-      7 
-      8 
-----> 9 ds = nead.read(infile)
-
-~/miniconda3/envs/py38/lib/python3.8/site-packages/nead/nead.py in read(neadfile, MKS, multi_index, index_col)
-     54             key_eq_val = line.split("#")[1].strip()
-     55             if key_eq_val == '' or key_eq_val == None: continue  # Line is just "#" or "# " or "#   #"...
----> 56             assert("=" in key_eq_val), print(line, key_eq_val)
-     57             key = key_eq_val.split("=")[0].strip()
-     58             val = key_eq_val.split("=")[1].strip()
-
-AssertionError: None
-:end:
 
 #+BEGIN_SRC python
 
@@ -2348,13 +1909,6 @@ liste = list(ds.keys())
 print(liste)
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [33]: 
-# output
-['time', 'rec', 'p', 't_1', 't_2', 'rh', 'wspd', 'wdir', 'wd_std', 'dsr', 'usr', 'dlr', 'ulr', 't_rad', 'z_boom', 'z_boom_q', 'tilt_x', 'tilt_y', 't_log', 'fan_dc']
-
-:end:
 
 #+NAME: plot_ds_all_variab
 #+BEGIN_SRC python
@@ -2373,61 +1927,6 @@ data_df.plot(subplots=True, layout=(6,7), figsize=(30,30))
 #print(ds['z_pt'].dtype)
 #ds['z_pt_corr'].plot()
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [34]: 
-# text/plain
-: array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7fe08bbd4bb0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0ab0e1e50>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a81c80d0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a7225d30>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a71d9310>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a72038b0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a720f850>],
-:        [<matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a71bae20>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a718d9a0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a7139f40>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a70ee520>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a7099ac0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a70cf0a0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a7079640>],
-:        [<matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a7024be0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6fdc1c0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a7004760>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6f2fd00>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6ee52e0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6d9c760>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6dc6040>],
-:        [<matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6d6e790>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6cd7f10>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a6d0c6d0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a079be50>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a038f610>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a033ad90>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a036d550>],
-:        [<matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a0317cd0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a02cc490>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a02f6c10>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a02ac3d0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a0253b50>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a020a310>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a0231a90>],
-:        [<matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a01e7250>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a01909d0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a0147190>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a016e910>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a01260d0>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a00ce850>,
-:         <matplotlib.axes._subplots.AxesSubplot object at 0x7fe0a0046040>]],
-:       dtype=object)
-
-# text/plain
-: <Figure size 2160x2160 with 42 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/e83682bc5d7086478aec9ea5649bfef18eb458c9.png]]
-:end:
 
 
 
@@ -2631,18 +2130,6 @@ plt.plot(dates.index.values[sel],ds['tilt_x'][sel])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [53]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f1021f8e6d0>]
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/9331103c48eebae828ac3eb2a391dcbe0fb7c304.png]]
-:end:
 
 
 ***** Correct rh and rad
@@ -2656,11 +2143,6 @@ if 'dsr' in ds:
     
 
  #+END_SRC
-
- #+RESULTS: correct_rh_and_rad
- :results:
- # Out [2]: 
- :end:
 
 
 ****** Correct RH water to be relative to ice when T_air is freezing :noexport:
@@ -2688,45 +2170,6 @@ ds['rh_corr'].attrs['long_name'] = ds['rh'].long_name + " corrected"
 
   #+END_SRC
 
-  #+RESULTS: correct_RH
-  :results:
-  # Out [35]: 
-  :end:
-
- #+BEGIN_SRC python
-ds['rh'].plot()
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [67]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f5bac7e1f70>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/bdf2167b88409bfb17ca4dde11cfeee2cdca87b5.png]]
- :end:
-
- #+BEGIN_SRC python
-ds['rh_corr'].plot()
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [47]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f5bac66e850>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/3dfff018b48d608bcaaf993d9a28cbb5df998eff.png]]
- :end:
-
 
 ****** calc_t_surf                                                 :noexport:
 
@@ -2740,12 +2183,6 @@ Tsurf = ((ds['ulr']-(1-epsilon)*ds['dlr'])/(epsilon*sigma))**0.25 -T_0
 ds = ds.assign({'t_surf':Tsurf})
 
  #+END_SRC
-
- #+RESULTS: calc_t_surf
- :RESULTS:
- | <matplotlib.lines.Line2D | at | 0x7f2fa0b49d00> |
- [[file:./.ob-jupyter/49dbfd12fda62324324525f008cc43de8c3b4c28.png]]
- :END:
 
 
 ****** Correct short wave radiation for tilt                       :noexport:
@@ -2791,29 +2228,11 @@ DifFrac = 0.2+0.8*CloudCov
 
  #+END_SRC
 
- #+RESULTS: cloud_cover_tsurf
- :results:
- # Out [32]: 
- :end:
-
 
 
 #+BEGIN_SRC python
 plt.plot(CloudCov)
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [34]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f160554b310>]
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/91f647bcc404b549585361d9618b3381c35ea7ea.png]]
-:end:
 
  Calculating the tilt angle and direction of senson and rotating to a north-south aligned coordinate system
 
@@ -2842,34 +2261,6 @@ theta_sensor_deg = theta_sensor_rad*180/np.pi # radians to degrees
 
  #+END_SRC
 
- #+RESULTS: tilt_angle_rotate
- :results:
- # Out [35]: 
- # output
- <ipython-input-35-807541dbfffd>:8: RuntimeWarning: divide by zero encountered in true_divide
-   phi_sensor_rad = -np.pi/2-np.arctan(Y/X) # spherical coordinate
-
- :end:
-#+BEGIN_SRC python
-
-plt.plot(theta_sensor_deg)
-#plt.plot(X)
-#ds['dlr_corr'].plot()
-#+END_SRC
-
-#+RESULTS:
-:results:
-# Out [50]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f16053c5790>]
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/db35d548c9db588cbf02bf7929edf49622f02527.png]]
-:end:
-
 
 
  #+BEGIN_SRC python 
@@ -2880,19 +2271,6 @@ sel = (dates.index.year==2009) & (dayofyear > 200) & (dayofyear < 203)
 plt.plot(dates.index.values,ds['tilt_x'])
 
  #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [38]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f1023055d60>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/c9fb39dc3f980d2cb9cb3f629ba7328bb89b7cf1.png]]
- :end:
 
  Calculating zenith and hour angle of the sun
  #+NAME: zenith_and_hour_angle
@@ -2925,25 +2303,6 @@ SRtoa[sundown] = 0
 
  #+END_SRC
 
- #+RESULTS: zenith_and_hour_angle
- :results:
- # Out [51]: 
- :end:
-
-
- #+BEGIN_SRC python
-#import matplotlib.pyplot as plt
-#sel = (dates.index > pd.to_datetime('2009-05-01', format = '%Y-%m-%d')) & (dates.index < pd.to_datetime('2009-05-04', format = '%Y-%m-%d'))
-plt.plot(ZenithAngle_rad)
-
- #+END_SRC
-
- #+RESULTS:
- :RESULTS:
- : (51397,)
- : (51397,)
- [[file:./.ob-jupyter/e1b3ff0c7f3f9db16b7ee26e11fdaab46c6c37a9.png]]
- :END:
 
 
 
@@ -2975,28 +2334,6 @@ no_correction = (CorFac <= 0) | ( ZenithAngle_deg > 90) # sun out of field of vi
 CorFac[no_correction] = 1
   #+END_SRC
 
- #+RESULTS: correction_factor_for_direct_beam_radiation
- :results:
- # Out [33]: 
- :end:
-
- #+BEGIN_SRC python
-plt.plot(CorFac)
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [57]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f16052278e0>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/01b726a9adda83cfb8e06d570738da3b2988f3b1.png]]
- :end:
-
 
  Calculating SRin over a horizontal surface corrected for station/sensor tilt
  #+NAME: corr_srin_for_tilt
@@ -3007,28 +2344,6 @@ SRin_cor = ds['dsr']*CorFac_all
 #srin_tilt_cor = SRin_cor.copy() # Debuggin
  #+END_SRC
 
- #+RESULTS: corr_srin_for_tilt
- :results:
- # Out [58]: 
- :end:
-
- #+BEGIN_SRC python
-plt.plot(SRin_cor)
-#plt.ylim([0,1000])
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [59]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f160517eaf0>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/c289450a32d53aef4d0a34439312cae89f91754c.png]]
- :end:
 
 
 
@@ -3054,41 +2369,7 @@ albedo = albedo.ffill('time')
 
  #+END_SRC
 
- #+RESULTS: ok_albedos
 
-#+BEGIN_SRC python
-print(OKalbedos)
-#+END_SRC
-
-#+RESULTS:
-:results:
-# Out [62]: 
-# output
-<xarray.DataArray (time: 52852)>
-array([False, False, False, ...,  True, False,  True])
-Coordinates:
-  * time     (time) datetime64[ns] 2016-04-21T17:00:00 ... 2017-04-26T15:40:00
-
-:end:
-
-
- #+BEGIN_SRC python
-plt.plot(OKalbedos)
-#plt.ylim([0,1000])
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [63]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f1605127340>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/0db119809caeda1c79694d1444edce09c974fbf3.png]]
- :end:
 
  Correcting SR using SRin when sun is in field of view of lower sensor assuming sensor measures only diffuse radiation
 
@@ -3104,28 +2385,6 @@ SRout_cor[sunonlowerdome] = albedo[sunonlowerdome]*ds['dsr'][sunonlowerdome].val
 #srin_cor_dome = SRin_cor.copy() # debugging
  #+END_SRC
 
- #+RESULTS: corr_sr_diffuse_radiation
- :results:
- # Out [64]: 
- :end:
-
-#+BEGIN_SRC python
-plt.plot(SRout_cor)
-#+END_SRC
-
-#+RESULTS:
-:results:
-# Out [67]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f1605648220>]
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/426e37f59fff783f18cd28f42d2c4dfc023f4b7a.png]]
-:end:
-
  Setting SRin and SRout to zero for solar zenith angles larger than 95 deg or either SRin or SRout are (less than) zero
 
  #+NAME: corr_large_zenith_angles
@@ -3137,27 +2396,6 @@ SRin_cor[no_SR] = 0
 SRout_cor[no_SR] = 0
 
  #+END_SRC
-
- #+RESULTS: corr_large_zenith_angles
- :results:
- # Out [68]: 
- :end:
- #+BEGIN_SRC python
-plt.plot(SRin_cor)
-#+END_SRC
-
-#+RESULTS:
-:results:
-# Out [69]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f160511a820>]
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/b9b8276bdd74614b4c886175a5fe2e1bdfd58f05.png]]
-:end:
 
 
  % Correcting SRin using more reliable SRout when sun not in sight of upper sensor
@@ -3176,27 +2414,6 @@ SRin_cor[~notOKalbedos] = SRout_cor[~notOKalbedos]/albedo[~notOKalbedos]
 #albedo[notOKalbedos] = -999
  #+END_SRC
 
- #+RESULTS: corr_srin_upper_sensor_not_in_sight
- :results:
- # Out [70]: 
- :end:
-
-#+BEGIN_SRC python
-plt.plot(SRin_cor)
-#+END_SRC
-
-#+RESULTS:
-:results:
-# Out [71]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f1604fa7a60>]
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/b9b8276bdd74614b4c886175a5fe2e1bdfd58f05.png]]
-:end:
 
 
  % Removing spikes by interpolation based on a simple top-of-the-atmosphere limitation
@@ -3215,28 +2432,6 @@ SRout_cor[TOA_crit_nopass] = np.nan
 SRin_cor_final = SRin_cor.copy()
 
  #+END_SRC
-
- #+RESULTS: removing_spikes
- :results:
- # Out [72]: 
- :end:
-
- #+BEGIN_SRC python
-plt.plot(SRin_cor)
- #+END_SRC
-
- #+RESULTS:
- :results:
- # Out [76]: 
- # text/plain
- : [<matplotlib.lines.Line2D at 0x7f1604dfc760>]
-
- # text/plain
- : <Figure size 432x288 with 1 Axes>
-
- # image/png
- [[file:obipy-resources/74b0a6dcc827939bc64aedc2433f1db30154c8fb/8947f12e7cf13df68082ba45b0e87225e9807a99.png]]
- :end:
 
 
  #+NAME: adding_columns
@@ -3258,46 +2453,6 @@ ds['usr_corr'].attrs['long_name'] = ds['usr'].long_name + " corrected"
 #ds['cloud_cover']=CloudCov.copy()
  #+END_SRC
 
- #+RESULTS: adding_columns
- #+begin_example
-   <xarray.Dataset>
-   Dimensions:             (time: 51397, solar_zenith_angle: 51397, I: 51397,
-			    Inew: 51397)
-   Coordinates:
-     ,* time                (time) datetime64[ns] 2018-04-21T14:00:00 ... 2019-04...
-     ,* solar_zenith_angle  (solar_zenith_angle) float64 65.0 65.36 ... 65.69 65.67
-     ,* I                   (I) float64 575.3 567.3 558.8 ... 559.2 560.2 560.6
-     ,* Inew                (Inew) float64 575.3 567.3 558.8 ... 559.2 560.2 560.6
-   Data variables: (12/48)
-       rec                 (time) float64 31.0 32.0 33.0 ... 5.139e+04 5.139e+04
-       p                   (time) float64 840.6 841.0 840.5 ... 843.2 843.5 843.5
-       t_1                 (time) float64 -6.473 -7.911 -8.084 ... -1.182 -1.074
-       t_2                 (time) float64 -6.394 -7.808 -8.084 ... -0.9944 -0.9998
-       rh                  (time) float64 37.28 43.3 45.01 ... 56.74 57.52 57.49
-       wspd                (time) float64 0.0 2.974 2.396 ... 5.427 5.403 5.885
-       ...                  ...
-       rh_corr             (time) float64 39.68 46.73 48.66 ... 57.49 58.14 58.05
-       t_surf              (time) float64 -2.871 -2.712 -2.126 ... -5.391 -5.735
-       albedo              (time) float64 0.4947 0.4882 0.4847 ... 0.7878 0.7824
-       dsr_corr            (time) float64 656.2 658.3 653.0 ... 553.7 628.1 569.8
-       usr_corr            (time) float64 324.6 321.4 316.5 ... 425.6 494.8 445.8
-       cloud_cov           (time) float64 0.0 0.0 0.0 nan ... 0.3615 0.3472 0.317
-   Attributes: (12/16)
-       station_id:       zac_a
-       field_delimiter:  ,
-       nodata:           -9999
-       srid:             EPSG:4326
-       geometry:         POINT(-21.65, 74.65)
-       timezone:         0
-       ...               ...
-       ulr_eng_coef:     8.26
-       pt_z_coef:        0
-       pt_z_p_coef:      0
-       pt_z_factor:      0
-       pt_antifreeze:    50
-       boom_azimuth:     50
- #+end_example
-
 
 **** Write out L1 files
  #+NAME: write_out_L1_nc
@@ -3316,74 +2471,6 @@ ds.to_netcdf(outpathfile, mode='w', format='NETCDF4', compute=True)
 
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [89]: 
- # output
- ---------------------------------------------------------------------------
- ValueError                                Traceback (most recent call last)
- /tmp/ipykernel_13278/2713352631.py in <module>
-       1 new_index = pd.date_range(start = ds.time.data[0], end =ds.time.data[-1], freq = '10min')
- ----> 2 ds.reindex(time=new_index, fill_value=np.nan, inplace = True)
-       3 print(ds)
-       4 #ds = ds.dropna(dim='time', how = 'all')
-       5 
-
- ~/miniconda3/envs/py38/lib/python3.8/site-packages/xarray/core/dataset.py in reindex(self, indexers, method, tolerance, copy, fill_value, **indexers_kwargs)
-    2941 
-    2942         """
- -> 2943         return self._reindex(
-    2944             indexers,
-    2945             method,
-
- ~/miniconda3/envs/py38/lib/python3.8/site-packages/xarray/core/dataset.py in _reindex(self, indexers, method, tolerance, copy, fill_value, sparse, **indexers_kwargs)
-    2968         bad_dims = [d for d in indexers if d not in self.dims]
-    2969         if bad_dims:
- -> 2970             raise ValueError(f"invalid reindex dimensions: {bad_dims}")
-    2971 
-    2972         variables, indexes = alignment.reindex_variables(
-
- ValueError: invalid reindex dimensions: ['inplace']
- :end:
-
- #+RESULTS: write_out_L1_nc
- :results:
- # Out [87]: 
- # output
- <xarray.Dataset>
- Dimensions:     (time: 51501)
- Coordinates:
-   * time        (time) datetime64[ns] 2010-05-13T03:10:00 ... 2011-05-05T18:4...
- Data variables: (12/47)
-     rec         (time) float64 ...
-     p           (time) float64 ...
-     t_1         (time) float64 ...
-     t_2         (time) float64 ...
-     rh          (time) float64 ...
-     wspd        (time) float64 ...
-     ...          ...
-     wspd_y      (time) float64 ...
-     rh_corr     (time) float64 ...
-     albedo      (time) float64 ...
-     dsr_corr    (time) float64 ...
-     usr_corr    (time) float64 ...
-     cloud_cov   (time) float64 ...
- Attributes: (12/16)
-     station_id:       zac_u
-     field_delimiter:  ,
-     nodata:           -9999
-     srid:             EPSG:4326
-     geometry:         POINT(-21.47, 74.64)
-     timezone:         0
-     ...               ...
-     ulr_eng_coef:     0
-     pt_z_coef:        0
-     pt_z_p_coef:      0
-     pt_z_factor:      0
-     pt_antifreeze:    50
-     boom_azimuth:     240
-
- :end:
 
 #+BEGIN_SRC python
 print(ds.time[0].data)
@@ -3432,11 +2519,6 @@ ax.legend()
 
  #+END_SRC
 
- #+RESULTS:
- :RESULTS:
- : <matplotlib.legend.Legend at 0x7f2b9f734400>
- [[file:./.ob-jupyter/5848d238d5f44f6f3bce22c9be01412bc6f82b4b.png]]
- :END:
 
 **** Make one single netcdf per station
 
@@ -3510,14 +2592,6 @@ with xr.open_mfdataset(datadir+'zac_a/zac_a-20??.nc') as ds:
 
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [12]: 
- # output
- ['/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2013.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2016.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2011.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2015.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2014.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2017.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2010.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2021.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2022.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2020.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2012.nc', '/home/shl/OneDrive/projects/aws_processing_v1.0/data_v1.0/L1/zac_u/zac_u-2019.nc']
-
- :end:
-
 
 
 *** Quality check plots
@@ -3556,18 +2630,6 @@ ds_filtered['t_2'].plot(ax=ax[3])
 ds['rh_corr'].plot(ax=ax[4])
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [11]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7fdb14a999a0>]
-
-# text/plain
-: <Figure size 1440x1440 with 7 Axes>
-
-# image/png
-[[file:obipy-resources/9a75e1f66bb62abb9073492c1adee0276ae958cd/cb3c704b3b9fccc4606e0ffb16ce77414f383691.png]]
-:end:
 
 
 #+BEGIN_SRC python 
@@ -3600,19 +2662,6 @@ ds_filtered['t_1'].plot(ax=ax[3])
 ds['rh_corr'].plot(ax=ax[4])
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [7]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f0ff9809940>]
-
-# text/plain
-: <Figure size 1440x720 with 5 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c08b04ec46e73a8101c21f2d1fd06752ba5e7fae.png]]
-:end:
 
 
 **** Get positions for all three stations
@@ -3716,18 +2765,6 @@ zac_a['p'].plot(ax = ax[1])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [21]: 
-# text/plain
-: [<matplotlib.lines.Line2D at 0x7f2a2f6224f0>]
-
-# text/plain
-: <Figure size 720x720 with 2 Axes>
-
-# image/png
-[[file:obipy-resources/a20e1397f28347830bf5429083571472c40cf69b/f5351ace8090705aff1c663bec9fa140aed502f0.png]]
-:end:
 
 
 
@@ -3744,11 +2781,6 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import datetime
 #+END_SRC
-
-#+RESULTS: load_libs
-:results:
-# Out [68]: 
-:end:
 
 
 ** Loading raw data and filtering data based on QC below
@@ -3769,6 +2801,7 @@ Workflow
 <<run_all_postQC_for_zac_u>>
 #+END_SRC
 
+
 **** zac_a
 
 ***** Pre QC
@@ -3776,6 +2809,7 @@ Workflow
 #+BEGIN_SRC python
 <<zac_a_preQC_temperature>>
 <<zac_a_preQC_radiation>>
+<<zac_a_preQC_tilt>>
 <<zac_a_preQC_relative_humidity>>
 <<zac_a_preQC_wind_speed>>
 <<zac_a_preQC_pressure>>
@@ -3822,17 +2856,6 @@ Workflow
 
    #+END_SRC
 
-   #+RESULTS:
-   :results:
-   # Out [31]: 
-
-
-   # text/plain
-   : <Figure size 720x720 with 6 Axes>
-
-   # image/png
-   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c1d4097c9472cc09bd92af6ce1e0fda68d5b8938.png]]
-   :end:
 
 
 ****** Transmitted data what is actually usable (when was the station buried)
@@ -3860,17 +2883,6 @@ Workflow
 
   #+END_SRC
 
-  #+RESULTS:
-  :results:
-  # Out [3]: 
-
-
-  # text/plain
-  : <Figure size 720x360 with 1 Axes>
-
-  # image/png
-  [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/998d2f2f707a85173574e02e892be356c447cf86.png]]
-  :end:
 
 ****** Temperature
 #+NAME: zac_a_preQC_temperature
@@ -3902,8 +2914,6 @@ temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_temperature.csv',
 
   #+END_SRC
 
-  #+RESULTS: zac_a_preQC_temperature
-  : None
 
 
 ******* Adding the transmitted data 
@@ -3933,15 +2943,6 @@ temp_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_temperature.csv',
  temp_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_temperature.csv', index = True, float_format = '%g')
     #+END_SRC
 
-    #+RESULTS:
-    :results:
-    # Out [34]: 
-    # text/plain
-    : <Figure size 432x288 with 1 Axes>
-
-    # image/png
-    [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/433a9db40cc02596fd4b6ef66dfc1ae6ff4cfedf.png]]
-    :end:
 
 
 ****** Radiation 
@@ -3979,11 +2980,98 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_radiation.csv', in
 
  #+END_SRC
 
- #+RESULTS: zac_a_preQC_radiation
- : None
 
- #+RESULTS:
- [[file:./.ob-jupyter/9a496215b8df3344e37c6157acd2573a5cf43944.png]]
+******* Looking into the possibilities of merging with transmitted data
+ First load in libraries and data
+   #+BEGIN_SRC python
+ <<load_libs>>
+ <<data_file_paths>>
+ <<load_transmitted_trusted>>
+ # Converting transmitted radiation to physical units
+ # From the nead header 
+ dsr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ usr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ #dlr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ #ulr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+
+ dsr_trans = (transmitted['shortwaveradiationin']*10) / dsr_eng_coef #* 100
+ usr_trans= (transmitted['shortwaveradiationout']*10) / usr_eng_coef #* 100
+ #ds['dlr'] = ((ds['dlr']*1000) / dlr_eng_coef) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4 
+ #    ds['ulr'] = ((ds['ulr']*1000) / ulr_eng_coef) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4
+
+
+    
+ fig, ax = plt.subplots(1,1,figsize = (10,5))
+ with xr.open_dataset(zac_a_path) as ds:
+
+     dsr = ds['dsr'].where(ds['dsr'] != -9999.).to_dataframe()
+     usr = ds['usr'].where(ds['usr'] !=  -9999.).to_dataframe()
+     dlr = ds['dlr'].where(ds['dlr'] != -9999.).to_dataframe()
+     ulr = ds['ulr'].where(ds['ulr'] !=  -9999.).to_dataframe()
+     #print(t_1)
+
+
+    
+
+
+ new_index = pd.date_range(dsr.index[0],t_1.index[-1], freq = '10min')
+
+ #dsr = dsr.reindex(new_index)
+ #usr = usr.reindex(new_index)
+ #dlr = dlr.reindex(new_index)
+ #ulr = ulr.reindex(new_index)
+
+
+
+ #fig,ax = plt.subplots(1,1,figsize = (10,5))
+ dsr.plot(ax= ax)
+ usr.plot(ax=ax)
+
+ #+END_SRC
+
+
+ #+BEGIN_SRC python
+ dsr_hour = dsr.resample('H').mean()
+ dsr_hour_full = pd.concat((dsr_hour['dsr'], dsr_trans), axis = 1)
+ dsr_hour_full['dsr'].plot(ax=ax)
+ dsr_hour_full['shortwaveradiationin'].plot(ax=ax)
+ #print(dsr_hour_full)
+ dsr_hour_full.plot()
+ #+END_SRC
+
+****** Tilt 
+ So we only use the downloaded data:
+#+NAME: zac_a_preQC_tilt
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+    
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_a_path) as ds:
+ #    ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
+ #    ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
+ #    ds['usr'] = ds['usr'].where(ds['usr'] != -9999.)
+    ds = ds[['tilt_x','tilt_y']].to_dataframe()
+    ds['tilt_x'] = ds['tilt_x'].where(ds['tilt_x'] != -9999.)
+    ds['tilt_y'] = ds['tilt_y'].where(ds['tilt_y'] != -9999.)
+    
+
+count10min = ds.resample('H').count()
+tilt_hour = ds.resample('H').mean()
+tilt_hour[count10min<6] = np.nan
+#count_hours = rad_hour.resample('D').count()
+# rad_day = rad_hour.resample('D').mean()
+# rad_day[count_hours<24 ] = np.nan
+
+#rad_day.plot(ax=ax)
+
+tilt_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_tilt.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+
+
+ #+END_SRC
+
+
 
 ******* Looking into the possibilities of merging with transmitted data
  First load in libraries and data
@@ -4073,6 +3161,7 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_radiation.csv', in
 
 
 
+
 ****** Relative humidity
 #+NAME: zac_a_preQC_relative_humidity
 #+BEGIN_SRC python :session
@@ -4122,8 +3211,6 @@ rh_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_relative_humidity.c
 
  #+END_SRC
 
- #+RESULTS: zac_a_preQC_relative_humidity
- : None
 
 
 
@@ -4153,8 +3240,6 @@ wspd_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_wind_speed.csv', 
     
  #+END_SRC
 
- #+RESULTS: zac_a_preQC_wind_speed
- : None
 
 ****** pressure
 #+NAME: zac_a_preQC_pressure
@@ -4181,9 +3266,6 @@ p_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_pressure.csv', index
 #p_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_pressure.csv', index = True, float_format = '%g')
     
  #+END_SRC
-
- #+RESULTS: zac_a_preQC_pressure
- : None
 
 
 ****** boom height
@@ -4212,8 +3294,6 @@ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_boom_height.csv', in
     
  #+END_SRC
 
- #+RESULTS: zac_a_preQC_boom_height
- : None
 
 
 ****** SR50 on stakes
@@ -4242,9 +3322,6 @@ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_SR50_stake_height.cs
     
  #+END_SRC
 
- #+RESULTS: zac_a_preQC_stake_height
- : None
-
 
 
 ***** Post QC
@@ -4252,6 +3329,7 @@ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_hour_SR50_stake_height.cs
 #+BEGIN_SRC python
 <<zac_a_postQC_temperature>>
 <<zac_a_postQC_radiation>>
+<<zac_a_postQC_tilt>>
 <<zac_a_postQC_relative_humidity>>
 <<zac_a_postQC_wind_speed>>
 <<zac_a_postQC_pressure>>
@@ -4280,8 +3358,7 @@ temp_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_temperature.csv', index
 
  #+END_SRC
 
- #+RESULTS: zac_a_postQC_temperature
- : None
+
 
 ****** Radiation
 #+NAME: zac_a_postQC_radiation
@@ -4332,11 +3409,22 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_radiation.csv', index = 
 
  #+END_SRC
 
- #+RESULTS: zac_a_postQC_radiation
- : None
+****** Tilt
 
- #+RESULTS:
+#+NAME: zac_a_postQC_tilt
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
 
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+tilt_hour = pd.read_csv(datapath+'preQC/zac_a_hour_tilt.csv', parse_dates = True, index_col=0)
+tilt_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_tilt.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+
+
+ #+END_SRC
+ 
 ****** Relative humidity
 #+NAME: zac_a_postQC_relative_humidity
  #+BEGIN_SRC python
@@ -4456,6 +3544,7 @@ boom_hour.to_csv('data_v1.0/gem_database/2022/zac_a_hour_boom_height.csv', index
 
 <<zac_l_preQC_temperature>>
 <<zac_l_preQC_radiation>>
+<<zac_l_preQC_tilt>>
 <<zac_l_preQC_relative_humidity>>
 <<zac_l_preQC_wind_speed>>
 <<zac_l_preQC_pressure>>
@@ -4530,6 +3619,130 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_radiation.csv', in
 
  #+RESULTS: zac_l_preQC_radiation
  : None
+
+
+****** Tilt 
+ So we only use the downloaded data:
+#+NAME: zac_l_preQC_tilt
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+    
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_l_path) as ds:
+ #    ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
+ #    ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
+ #    ds['usr'] = ds['usr'].where(ds['usr'] != -9999.)
+    ds = ds[['tilt_x','tilt_y']].to_dataframe()
+    ds['tilt_x'] = ds['tilt_x'].where(ds['tilt_x'] != -9999.)
+    ds['tilt_y'] = ds['tilt_y'].where(ds['tilt_y'] != -9999.)
+    
+
+count10min = ds.resample('H').count()
+tilt_hour = ds.resample('H').mean()
+tilt_hour[count10min<6] = np.nan
+#count_hours = rad_hour.resample('D').count()
+# rad_day = rad_hour.resample('D').mean()
+# rad_day[count_hours<24 ] = np.nan
+
+#rad_day.plot(ax=ax)
+
+tilt_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_tilt.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+
+
+ #+END_SRC
+
+
+******* Looking into the possibilities of merging with transmitted data
+ First load in libraries and data
+   #+BEGIN_SRC python
+ <<load_libs>>
+ <<data_file_paths>>
+ <<load_transmitted_trusted>>
+ # Converting transmitted radiation to physical units
+ # From the nead header 
+ dsr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ usr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ #dlr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ #ulr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+
+ dsr_trans = (transmitted['shortwaveradiationin']*10) / dsr_eng_coef #* 100
+ usr_trans= (transmitted['shortwaveradiationout']*10) / usr_eng_coef #* 100
+ #ds['dlr'] = ((ds['dlr']*1000) / dlr_eng_coef) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4 
+ #    ds['ulr'] = ((ds['ulr']*1000) / ulr_eng_coef) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4
+
+
+    
+ fig, ax = plt.subplots(1,1,figsize = (10,5))
+ with xr.open_dataset(zac_a_path) as ds:
+
+     dsr = ds['dsr'].where(ds['dsr'] != -9999.).to_dataframe()
+     usr = ds['usr'].where(ds['usr'] !=  -9999.).to_dataframe()
+     dlr = ds['dlr'].where(ds['dlr'] != -9999.).to_dataframe()
+     ulr = ds['ulr'].where(ds['ulr'] !=  -9999.).to_dataframe()
+     #print(t_1)
+
+
+    
+
+
+ new_index = pd.date_range(dsr.index[0],t_1.index[-1], freq = '10min')
+
+ #dsr = dsr.reindex(new_index)
+ #usr = usr.reindex(new_index)
+ #dlr = dlr.reindex(new_index)
+ #ulr = ulr.reindex(new_index)
+
+
+
+ #fig,ax = plt.subplots(1,1,figsize = (10,5))
+ dsr.plot(ax= ax)
+ usr.plot(ax=ax)
+
+ #+END_SRC
+
+ #+RESULTS:
+ :results:
+ # Out [48]: 
+ # text/plain
+ : <AxesSubplot:xlabel='time'>
+
+ # text/plain
+ : <Figure size 720x360 with 1 Axes>
+
+ # image/png
+ [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/63eed35ae21f8ca75549ff6a8fac58cad7d70027.png]]
+ :end:
+
+ #+BEGIN_SRC python
+ dsr_hour = dsr.resample('H').mean()
+ dsr_hour_full = pd.concat((dsr_hour['dsr'], dsr_trans), axis = 1)
+ dsr_hour_full['dsr'].plot(ax=ax)
+ dsr_hour_full['shortwaveradiationin'].plot(ax=ax)
+ #print(dsr_hour_full)
+ dsr_hour_full.plot()
+ #+END_SRC
+
+ #+RESULTS:
+ :results:
+ # Out [49]: 
+ # text/plain
+ : <AxesSubplot:>
+
+ # text/plain
+ : <Figure size 432x288 with 1 Axes>
+
+ # image/png
+ [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d6a163229cb70f4dd527f578424b340331c0636d.png]]
+ :end:
+
+
+
+
+
+
+
 
 
 ****** Relative humidity
@@ -4734,6 +3947,7 @@ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_l_hour_SR50_stake_height.cs
 #+BEGIN_SRC python
 <<zac_l_postQC_temperature>>
 <<zac_l_postQC_radiation>>
+<<zac_l_postQC_tilt>>
 <<zac_l_postQC_relative_humidity>>
 <<zac_l_postQC_wind_speed>>
 <<zac_l_postQC_pressure>>
@@ -4814,6 +4028,21 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_radiation.csv', index = 
  : None
 
 
+****** Tilt
+
+#+NAME: zac_l_postQC_tilt
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+tilt_hour = pd.read_csv(datapath+'preQC/zac_l_hour_tilt.csv', parse_dates = True, index_col=0)
+tilt_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_tilt.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+
+
+ #+END_SRC
 
 ****** Relative humidity
 #+NAME: zac_l_postQC_relative_humidity
@@ -4927,6 +4156,7 @@ boom_hour.to_csv('data_v1.0/gem_database/2022/zac_l_hour_boom_height.csv', index
 #+BEGIN_SRC python
 <<zac_u_preQC_temperature>>
 <<zac_u_preQC_radiation>>
+<<zac_u_preQC_tilt>>
 <<zac_u_preQC_relative_humidity>>
 <<zac_u_preQC_wind_speed>>
 <<zac_u_preQC_pressure>>
@@ -5000,6 +4230,130 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_radiation.csv', in
 
  #+RESULTS: zac_u_preQC_radiation
  : None
+
+
+****** Tilt 
+ So we only use the downloaded data:
+#+NAME: zac_u_preQC_tilt
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+    
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+with xr.open_dataset(zac_u_path) as ds:
+ #    ds = ds[['dsr','usr','dlr','ulr']].to_dataframe()
+ #    ds['dsr'] = ds['dsr'].where(ds['dsr'] != -9999.)
+ #    ds['usr'] = ds['usr'].where(ds['usr'] != -9999.)
+    ds = ds[['tilt_x','tilt_y']].to_dataframe()
+    ds['tilt_x'] = ds['tilt_x'].where(ds['tilt_x'] != -9999.)
+    ds['tilt_y'] = ds['tilt_y'].where(ds['tilt_y'] != -9999.)
+    
+
+count10min = ds.resample('H').count()
+tilt_hour = ds.resample('H').mean()
+tilt_hour[count10min<6] = np.nan
+#count_hours = rad_hour.resample('D').count()
+# rad_day = rad_hour.resample('D').mean()
+# rad_day[count_hours<24 ] = np.nan
+
+#rad_day.plot(ax=ax)
+
+tilt_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_tilt.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+
+
+ #+END_SRC
+
+
+******* Looking into the possibilities of merging with transmitted data
+ First load in libraries and data
+   #+BEGIN_SRC python
+ <<load_libs>>
+ <<data_file_paths>>
+ <<load_transmitted_trusted>>
+ # Converting transmitted radiation to physical units
+ # From the nead header 
+ dsr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ usr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ #dlr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+ #ulr_eng_coef       = 8.26   # from manufacturer to convert from eng units (1E-5 V) to  physical units (W m-2)
+
+ dsr_trans = (transmitted['shortwaveradiationin']*10) / dsr_eng_coef #* 100
+ usr_trans= (transmitted['shortwaveradiationout']*10) / usr_eng_coef #* 100
+ #ds['dlr'] = ((ds['dlr']*1000) / dlr_eng_coef) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4 
+ #    ds['ulr'] = ((ds['ulr']*1000) / ulr_eng_coef) + 5.67*10**(-8)*(ds['t_rad'] + T_0)**4
+
+
+    
+ fig, ax = plt.subplots(1,1,figsize = (10,5))
+ with xr.open_dataset(zac_a_path) as ds:
+
+     dsr = ds['dsr'].where(ds['dsr'] != -9999.).to_dataframe()
+     usr = ds['usr'].where(ds['usr'] !=  -9999.).to_dataframe()
+     dlr = ds['dlr'].where(ds['dlr'] != -9999.).to_dataframe()
+     ulr = ds['ulr'].where(ds['ulr'] !=  -9999.).to_dataframe()
+     #print(t_1)
+
+
+    
+
+
+ new_index = pd.date_range(dsr.index[0],t_1.index[-1], freq = '10min')
+
+ #dsr = dsr.reindex(new_index)
+ #usr = usr.reindex(new_index)
+ #dlr = dlr.reindex(new_index)
+ #ulr = ulr.reindex(new_index)
+
+
+
+ #fig,ax = plt.subplots(1,1,figsize = (10,5))
+ dsr.plot(ax= ax)
+ usr.plot(ax=ax)
+
+ #+END_SRC
+
+ #+RESULTS:
+ :results:
+ # Out [48]: 
+ # text/plain
+ : <AxesSubplot:xlabel='time'>
+
+ # text/plain
+ : <Figure size 720x360 with 1 Axes>
+
+ # image/png
+ [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/63eed35ae21f8ca75549ff6a8fac58cad7d70027.png]]
+ :end:
+
+ #+BEGIN_SRC python
+ dsr_hour = dsr.resample('H').mean()
+ dsr_hour_full = pd.concat((dsr_hour['dsr'], dsr_trans), axis = 1)
+ dsr_hour_full['dsr'].plot(ax=ax)
+ dsr_hour_full['shortwaveradiationin'].plot(ax=ax)
+ #print(dsr_hour_full)
+ dsr_hour_full.plot()
+ #+END_SRC
+
+ #+RESULTS:
+ :results:
+ # Out [49]: 
+ # text/plain
+ : <AxesSubplot:>
+
+ # text/plain
+ : <Figure size 432x288 with 1 Axes>
+
+ # image/png
+ [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d6a163229cb70f4dd527f578424b340331c0636d.png]]
+ :end:
+
+
+
+
+
+
+
 
 ****** Relative humidity
 #+NAME: zac_u_preQC_relative_humidity
@@ -5175,6 +4529,7 @@ z_hour.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_hour_SR50_stake_height.cs
 #+BEGIN_SRC python
 <<zac_u_postQC_temperature>>
 <<zac_u_postQC_radiation>>
+<<zac_u_postQC_tilt>>
 <<zac_u_postQC_relative_humidity>>
 <<zac_u_postQC_wind_speed>>
 <<zac_u_postQC_pressure>>
@@ -5263,6 +4618,22 @@ rad_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_radiation.csv', index = 
 
  #+RESULTS: zac_u_postQC_radiation
  : None
+
+****** Tilt
+
+#+NAME: zac_u_postQC_tilt
+  #+BEGIN_SRC python
+<<load_libs>>
+<<data_file_paths>>
+
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+
+tilt_hour = pd.read_csv(datapath+'preQC/zac_u_hour_tilt.csv', parse_dates = True, index_col=0)
+tilt_hour.to_csv('data_v1.0/gem_database/2022/zac_u_hour_tilt.csv', index = True, float_format = '%g')
+# rad_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_a_day_radiation.csv', index = True, float_format = '%g')
+
+
+ #+END_SRC
 
 ****** Relative humidity
 #+NAME: zac_u_postQC_relative_humidity
@@ -7687,38 +7058,54 @@ ax[3].legend()
 <<load_libs>>
 <<data_file_paths>>
 
-fig, ax = plt.subplots(3,1,figsize = (7.5,5), sharex = True)
+fig, ax = plt.subplots(3,1,figsize = (7.5,5))
 with xr.open_dataset(zac_l_path) as ds:
     df = ds[['tilt_x','tilt_y']].to_dataframe()
     df = df.where(df<22, np.nan)
     df = df.where(df>-20, np.nan)
     df = df.where(df!=0, np.nan)
 
-df['tilt_x'].plot(ax = ax[0], color = 'tab:blue', label = '$ZAC\_L$: $Tilt_x$')
-df['tilt_y'].plot(ax = ax[0], color = 'deepskyblue', label = '$ZAC\_L$: $Tilt_y$')
+
+count10min = df.resample('H').count()
+tilt_hour = df.resample('H').mean()
+#tilt_hour[count10min<6] = np.nan
+
+tilt_hour['tilt_x'].plot(ax = ax[0], color = 'tab:blue', label = '$ZAC\_L$: $Tilt_x$')
+tilt_hour['tilt_y'].plot(ax = ax[0], color = 'deepskyblue', label = '$ZAC\_L$: $Tilt_y$')
+tilt_hour_ref = tilt_hour.copy()
+ax[0].set_xlim(tilt_hour_ref.index[0],tilt_hour_ref.index[-1] )
 
 
-
-# ZAC_L Tilt_y looks wrong in 2020-2022
 
 with xr.open_dataset(zac_u_path) as ds:
     df = ds[['tilt_x','tilt_y']].to_dataframe()
     df = df.where(df<22, np.nan)
     df = df.where(df>-20, np.nan)
     df = df.where(df!=0, np.nan)
-df['tilt_y'].plot(ax= ax[1], color = 'tab:orange', label = '$ZAC\_U$: $Tilt_x$')
-df['tilt_x'].plot(ax= ax[1], color = 'darkgoldenrod', label = '$ZAC\_U$: $Tilt_y$')
+
+count10min = df.resample('H').count()
+tilt_hour = df.resample('H').mean()
+tilt_hour[count10min<6] = np.nan
+
+tilt_hour['tilt_y'].plot(ax= ax[1], color = 'tab:orange', label = '$ZAC\_U$: $Tilt_x$')
+tilt_hour['tilt_x'].plot(ax= ax[1], color = 'darkgoldenrod', label = '$ZAC\_U$: $Tilt_y$')
 #df['tilt_y'].plot(ax= ax[1], color = 'tab:orange')
 #df['tilt_x'].plot(ax= ax[1], color = 'tab:blue')
 
-# ZAC_A and ZAC_U, it looks like the data is a factor 10 off, but I don't really understand how that error could be made? 
+ax[1].set_xlim(tilt_hour_ref.index[0],tilt_hour_ref.index[-1] )
+
 with xr.open_dataset(zac_a_path) as ds:
     df = ds[['tilt_x','tilt_y']].to_dataframe()
     df = df.where(df<22, np.nan)
     df = df.where(df>-20, np.nan)
     df = df.where(df!=0, np.nan)
-df['tilt_y'].plot(ax= ax[2], color = 'tab:green', label = '$ZAC\_A$: $Tilt_x$')
-df['tilt_x'].plot(ax= ax[2], color = 'limegreen', label = '$ZAC\_A$: $Tilt_y$')
+count10min = df.resample('H').count()
+tilt_hour = df.resample('H').mean()
+tilt_hour[count10min<6] = np.nan
+tilt_hour['tilt_y'].plot(ax= ax[2], color = 'tab:green', label = '$ZAC\_A$: $Tilt_x$')
+tilt_hour['tilt_x'].plot(ax= ax[2], color = 'limegreen', label = '$ZAC\_A$: $Tilt_y$')
+
+ax[2].set_xlim(tilt_hour_ref.index[0],tilt_hour_ref.index[-1] )
 
 ax[0].set_ylabel('Degree')
 ax[1].set_ylabel('Degree')
@@ -11311,17 +10698,18 @@ temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0
 rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
 p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
+tilt = pd.read_csv(workingfolder + site + '_hour_tilt.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
 #surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
 ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(tilt, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
 merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom', 'ice_ablation':'ice_ablation' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation','tilt_x','tilt_y']
 
 # Identify where all columns (except the timestamp) are NaN
 first_valid_index = merged[cols].dropna(how='all').index[0]
@@ -11378,17 +10766,18 @@ temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0
 rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
 p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
+tilt = pd.read_csv(workingfolder + site + '_hour_tilt.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
 #surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
 ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(tilt, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
 merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom', 'ice_ablation':'ice_ablation' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd','tilt_x','tilt_y', 'z_boom','ice_ablation']
 
 # Identify where all columns (except the timestamp) are NaN
 first_valid_index = merged[cols].dropna(how='all').index[0]
@@ -11449,16 +10838,17 @@ temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0
 rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
 p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
+tilt = pd.read_csv(workingfolder + site + '_hour_tilt.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
 
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(tilt, how='outer').join(ws, how='outer').join(height, how='outer')
 
 merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','tilt_x','tilt_y']
 
 # Identify where all columns (except the timestamp) are NaN
 first_valid_index = merged[cols].dropna(how='all').index[0]
@@ -11532,19 +10922,27 @@ temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0
 rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
 p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
+tilt = pd.read_csv(workingfolder + site + '_hour_tilt.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
 #surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
 ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(tilt, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
 merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom', 'ice_ablation':'ice_ablation' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
-<<drop_head_and_tail_nans_fast>>
-merged_slim = drop_nan_rows(merged)
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation','tilt_x','tilt_y']
+
+# Identify where all columns (except the timestamp) are NaN
+first_valid_index = merged[cols].dropna(how='all').index[0]
+# Filter the dataframe from that point onwards
+merged_slim = merged[merged.index >= first_valid_index]
+# Identify where all columns (except the timestamp) are NaN at the tail
+last_valid_index = merged[cols].dropna(how='all').index[-1]
+# Filter the dataframe to end at that point
+merged_slim = merged_slim[merged_slim.index <= last_valid_index]
 
 ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
 
@@ -11581,7 +10979,7 @@ ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
 #plt.tight_layout()
 plt.savefig('ZAC_L_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
 #merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv', index = True)
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L.csv', index = True)
 #+END_SRC
 
 #+RESULTS:
@@ -11601,21 +10999,27 @@ temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0
 rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0)
 p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0)
+tilt = pd.read_csv(workingfolder + site + '_hour_tilt.csv', index_col = 0)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0)
 #surf = pd.read_csv(workingfolder + site + '_hour_lowering.csv', index_col = 0)
 ablation = pd.read_csv(workingfolder + site + '_hour_ice_ablation.csv', index_col = 0)
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(tilt, how='outer').join(ws, how='outer').join(height, how='outer').join(ablation, how='outer')
 
 merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom', 'ice_ablation':'ice_ablation' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','ice_ablation','tilt_x','tilt_y']
 
-<<drop_head_and_tail_nans_fast>>
-
-merged_slim = drop_nan_rows(merged)
+# Identify where all columns (except the timestamp) are NaN
+first_valid_index = merged[cols].dropna(how='all').index[0]
+# Filter the dataframe from that point onwards
+merged_slim = merged[merged.index >= first_valid_index]
+# Identify where all columns (except the timestamp) are NaN at the tail
+last_valid_index = merged[cols].dropna(how='all').index[-1]
+# Filter the dataframe to end at that point
+merged_slim = merged_slim[merged_slim.index <= last_valid_index]
 
 ax = merged[cols].plot(subplots = True, figsize = (6.5,5))
 
@@ -11670,16 +11074,17 @@ temp = pd.read_csv(workingfolder + site + '_hour_temperature.csv', index_col = 0
 rh = pd.read_csv(workingfolder + site + '_hour_relative_humidity.csv', index_col = 0, parse_dates = True)
 p = pd.read_csv(workingfolder + site + '_hour_pressure.csv', index_col = 0, parse_dates = True)
 rad = pd.read_csv(workingfolder + site + '_hour_radiation.csv', index_col = 0, parse_dates = True)
+tilt = pd.read_csv(workingfolder + site + '_hour_tilt.csv', index_col = 0, parse_dates = True)
 ws = pd.read_csv(workingfolder + site + '_hour_wind_speed.csv', index_col = 0, parse_dates = True)
 height = pd.read_csv(workingfolder + site + '_hour_boom_height.csv', index_col = 0, parse_dates = True)
 
 
-merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(ws, how='outer').join(height, how='outer')
+merged = temp.join(rh, how='outer').join(p, how='outer').join(rad, how='outer').join(tilt, how='outer').join(ws, how='outer').join(height, how='outer')
 
 merged.rename(columns = {'t_1':'t_u', 'rh': 'rh_u_corr', 'p': 'p_u', 'dsr':'dsr', 'usr':'usr','dsr_corr':'dsr_corr', 'usr_corr':'usr_corr', 'dlr':'dlr', 'ulr':'ulr','cloud_cov':'cloud_cover','t_surf':'t_surf', 'wspd':'wspd', 'z_boom':'z_boom' }, inplace = True)
 #merged.plot(subplots = True, figsize = (12,12))
 
-cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom']
+cols = ['t_u', 'rh_u_corr', 'p_u', 'dsr_corr', 'usr_corr', 'dlr','ulr', 'wspd', 'z_boom','tilt_x','tilt_y']
 
 # Identify where all columns (except the timestamp) are NaN
 first_valid_index = merged[cols].dropna(how='all').index[0]
@@ -11701,6 +11106,8 @@ ax[5].set_ylabel('W/m²')
 ax[6].set_ylabel('W/m²')
 ax[7].set_ylabel('m/s')
 ax[8].set_ylabel('m')
+ax[8].set_ylabel('degree')
+ax[8].set_ylabel('degree')
 #ax[9].set_ylabel('m')
 
 ax[0].legend(loc='upper left', bbox_to_anchor=(1, 1))
@@ -11712,6 +11119,8 @@ ax[5].legend(loc='upper left', bbox_to_anchor=(1, 1))
 ax[6].legend(loc='upper left', bbox_to_anchor=(1, 1))
 ax[7].legend(loc='upper left', bbox_to_anchor=(1, 1))
 ax[8].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax[10].legend(loc='upper left', bbox_to_anchor=(1, 1))
 #ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 
@@ -11720,7 +11129,7 @@ plt.savefig('ZAC_A_Measurement_success_rate.png', dpi = 300, bbox_inches='tight'
 
 #merged.plot(subplots = True, figsize = (12,12))
 #merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final', index = True)
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A.csv', index = True)
 
 #+END_SRC
 
@@ -11737,21 +11146,21 @@ import pandas as pd
 import nead
 import matplotlib.pyplot as plt
 site = 'zac_l'
-df = pd.read_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_QC_final.csv')
+df = pd.read_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L.csv')
 print(df.keys())
 #+END_SRC
 
 #+RESULTS:
 : Index(['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr',
-:        'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom',
-:        'ice_ablation'],
+:        'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'tilt_x',
+:        'tilt_y', 'wspd', 'z_boom', 'ice_ablation'],
 :       dtype='object')
 
 
 Manually create NEAD header files and add them here:
 
 #+BEGIN_SRC sh :session
-filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_2008_2022_QC_final
+filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L
 filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
 neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_l_nead_header.csv
 
@@ -11764,7 +11173,7 @@ rm ${filename}_tmp.csv
 #+RESULTS:
 
 #+BEGIN_SRC sh :session
-filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_2008_2022_QC_final
+filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U
 filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
 neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_u_nead_header.csv
 
@@ -11778,7 +11187,7 @@ rm ${filename}_tmp.csv
 #+RESULTS:
 
 #+BEGIN_SRC sh :session
-filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_2008_2022_QC_final
+filename=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A
 filestorage=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/
 neadfile=/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/zac_a_nead_header.csv
 
@@ -11800,7 +11209,7 @@ import nead
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A.csv'
+filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U_nead.csv'
 
 ds = nead.read(filename, index_col=0)
 # Ignoring all metadata and plotting
@@ -11820,21 +11229,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L.csv'
-columns = ['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr', 'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom', 'ice_ablation']
-df = pd.read_csv(filename, skiprows=16, names = columns, index_col = 0, parse_dates = True)
+df = pd.read_csv(filename, index_col = 0, parse_dates = True)
 df.plot(subplots=True)
 plt.show()
 
 
 filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U.csv'
-columns = ['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr', 'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom', 'ice_ablation']
-df = pd.read_csv(filename, skiprows=16, names = columns, index_col = 0, parse_dates = True)
+df = pd.read_csv(filename, index_col = 0, parse_dates = True)
 df.plot(subplots=True)
 plt.show()
 
 filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A.csv'
-columns = ['time', 't_u', 'rh_u_corr', 'p_u', 'dsr', 'usr', 'dsr_corr', 'usr_corr', 'dlr', 'ulr', 'albedo', 'cloud_cover', 't_surf', 'I', 'wspd', 'z_boom']
-df = pd.read_csv(filename, skiprows=16, names = columns, index_col = 0, parse_dates = True)
+df = pd.read_csv(filename, index_col = 0, parse_dates = True)
 df.plot(subplots=True)
 plt.show()
 
