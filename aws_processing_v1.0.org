@@ -5977,6 +5977,64 @@ ablation_day.to_csv('data_v1.0/gem_database/2022/preQC/zac_u_day_ice_ablation.cs
 **** Final filtering of ice ablation
 ****** zac_l
 This is just a plot
+#+BEGIN_SRC python :results output
+<<load_libs>>
+import matplotlib.dates as mdates
+datapath = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'
+pta = pd.read_csv(datapath+'preQC/zac_l_hour_pta.csv', parse_dates = True, index_col=0)
+sr50 = pd.read_csv(datapath+'zac_l_hour_SR50_stake_height_ice.csv', parse_dates = True, index_col=0)
+z_l = pd.read_csv(datapath+'preQC/zac_l_hour_ice_ablation.csv', parse_dates = True, index_col=0)
+pta = -pta
+
+pta = pta.resample('D').mean()
+sr50 = sr50.resample('D').mean()
+
+pta_filtered = pta[pta.index.month.isin([6, 7, 8])]
+sr50_filtered = sr50[sr50.index.month.isin([6,7, 8])]
+# Convert dates to strings
+pta_filtered['date_str'] = pta_filtered.index.strftime('%Y-%m-%d')
+sr50_filtered['date_str'] = sr50_filtered.index.strftime('%Y-%m-%d')
+# Plot
+
+# generate annual ticks and labels
+july_ticks = pd.date_range(start=pta_filtered.index.min(), end=pta_filtered.index.max(), freq='AS-JUL')
+july_xticks = july_ticks.strftime('%Y-%m-%d')
+july_labels = july_ticks.strftime('%Y')
+
+plt.figure(figsize=(8, 3))
+plt.plot(pta_filtered['date_str'], pta_filtered['z_pt_corr'], label = '$Z_{pta}$')
+plt.plot(sr50_filtered['date_str'], sr50_filtered['z_stake'], label = '$Z_{stake}$')
+plt.xticks(july_xticks,july_labels, rotation=90)
+plt.ylabel('m ice')
+plt.ylim(0,3.8)
+plt.legend()
+
+plt.tight_layout()
+
+
+#fig.savefig('QCfigs/PTA_vs_SR50.png', dpi = 300)
+plt.savefig('../glaciobasis/essd/manuscript/figures/fig11.png', dpi = 300)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+/tmp/babel-UnOTLq/python-gjz9l1:19: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  pta_filtered['date_str'] = pta_filtered.index.strftime('%Y-%m-%d')
+/tmp/babel-UnOTLq/python-gjz9l1:20: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  sr50_filtered['date_str'] = sr50_filtered.index.strftime('%Y-%m-%d')
+#+end_example
+
+
+This is just a plot
+
 #+BEGIN_SRC python
 <<load_libs>>
 import matplotlib.dates as mdates
@@ -6023,7 +6081,7 @@ ax[1,0].set_ylabel('m ice')
 fig.tight_layout()
 
 #fig.savefig('QCfigs/PTA_vs_SR50.png', dpi = 300)
-fig.savefig('../glaciobasis/essd/manuscript/figures/fig11.png', dpi = 300)
+#fig.savefig('../glaciobasis/essd/manuscript/figures/fig11.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
@@ -6159,8 +6217,6 @@ plt.show()
 
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/1c8af2ebf73506ae6a94ecfb4848a1c32d387de3.png]]
 
 #+BEGIN_SRC python
 import pandas as pd
@@ -6210,25 +6266,6 @@ plt.tight_layout()
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-  [0;31m---------------------------------------------------------------------------[0m
-  [0;31mAttributeError[0m                            Traceback (most recent call last)
-  Cell [0;32mIn[2], line 64[0m
-  [1;32m     57[0m fig [38;5;241m=[39m data[cols][38;5;241m.[39mplot(subplots [38;5;241m=[39m [38;5;28;01mTrue[39;00m, figsize [38;5;241m=[39m ([38;5;241m10[39m,[38;5;241m8[39m))
-  [1;32m     60[0m [38;5;66;03m# Set x-ticks to the beginning of each year[39;00m
-  [1;32m     61[0m [38;5;66;03m#years = [datetime.date(year, 1, 1) for year in range(2008, 2023)][39;00m
-  [1;32m     62[0m [38;5;66;03m#axes[-1].set_xticks(years)[39;00m
-  [1;32m     63[0m [38;5;66;03m#axes[-1].set_xlabel("Year")[39;00m
-  [0;32m---> 64[0m [43mfig[49m[38;5;241;43m.[39;49m[43mautofmt_xdate[49m()  [38;5;66;03m# Better formatting for dates[39;00m
-  [1;32m     66[0m plt[38;5;241m.[39mtight_layout()
-
-  [0;31mAttributeError[0m: 'numpy.ndarray' object has no attribute 'autofmt_xdate'
-#+end_example
-[[file:./.ob-jupyter/abc2a94d1a2546004a078bed1ea90033a95f066f.png]]
-:END:
 
 #+BEGIN_SRC python
 
@@ -6252,17 +6289,13 @@ plt.show()
 
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/49c3eb82a1aa85831107e17eafb7b74b32bf7ac1.png]]
-
-
 
 
 *** temperature
 **** Utilities
 #+NAME: plot_gradients_full_period
 #+BEGIN_SRC python
-fig,ax = plt.subplots(5,1,figsize = (7.5,7), sharex=True)
+fig,ax = plt.subplots(5,1,figsize = (8,6), sharex=True)
 panel1 = ax[0]
 panel2 = ax[1]
 panel3 = ax[2]
@@ -6273,18 +6306,19 @@ panel5 = ax[4]
 zac_l_pre[variable].plot(ax = panel1, label = 'zac_l', color = 'tab:blue')
 zac_u_pre[variable].plot(ax = panel1, label = 'zac_u', color = 'tab:orange')
 zac_a_pre[variable].plot(ax = panel1, label = 'zac_a', color = 'tab:green')
-panel1.legend(ncol = 1)
-panel1.set_title('Pre QC')
+panel1.legend(loc= 3,ncol = 3)
+#panel1.set_title('Pre QC')
 panel1.set_ylabel(ylabel)
 #panel1.text(datetime.datetime(2008,7,1),15,'A')
 
-zac_l[variable].plot(ax = panel2, label = '', color = 'tab:blue')
-zac_u[variable].plot(ax = panel2, label = '', color = 'tab:orange')
-zac_a[variable].plot(ax = panel2, label = '', color = 'tab:green')
+zac_l[variable].plot(ax = panel2, label = 'zac_l', color = 'tab:blue')
+zac_u[variable].plot(ax = panel2, label = 'zac_u', color = 'tab:orange')
+zac_a[variable].plot(ax = panel2, label = 'zac_a', color = 'tab:green')
 
 #panel2.legend(ncol = 3)
-panel2.set_title('Post QC')
+#panel2.set_title('Post QC')
 panel2.set_ylabel(ylabel)
+panel2.legend(loc= 3,ncol = 3)
 
 d_l_u = (zac_l-zac_u)/(zac_l_elev-zac_u_elev)*100
 d_u_a = (zac_u-zac_a)/(zac_u_elev-zac_a_elev)*100
@@ -6301,7 +6335,7 @@ d_l_a_pre[variable].plot(ax=panel5, label = 'Flagged in QC', color = 'tab:red', 
 d_l_u[variable].plot(ax=panel3, label = 'zac_l minus zac_u', color = 'gray')
 d_u_a[variable].plot(ax=panel4, label = 'zac_u minus zac_a', color = 'gray')
 d_l_a[variable].plot(ax=panel5, label = 'zac_l minus zac_a', color = 'gray')
-panel3.set_title('Gradients')
+#panel3.set_title('Gradients')
 panel3.legend(ncol = 2)
 panel3.set_ylabel(ylabel + '/100m')
 panel4.legend(ncol = 2)
@@ -6310,15 +6344,16 @@ panel5.legend(ncol = 2)
 panel5.set_ylabel(ylabel + '/100m')
 # Label each subplot
 for i, ax in enumerate(ax, start=1):
-    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
-            fontsize=16, fontweight='bold', va='top')
+    ax.text(0.01, 0.95, '('+chr(96 + i)+')', transform=ax.transAxes, 
+            fontsize=12, fontweight='normal', va='top')
 
 fig.tight_layout()
-
+plt.show()
 #+END_SRC
 
 #+RESULTS: plot_gradients_full_period
-[[file:./.ob-jupyter/9773108045260fe2f5ff01766896c651ee152732.png]]
+: None
+
 
 #+NAME: plot_the_timeperiod
 #+BEGIN_SRC python
@@ -6450,8 +6485,7 @@ ax[2].legend()
 
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/d9005a5b31fda77e08df1cee03d63752d437cc34.png]]
+
 
 ***** Drift 
 #+BEGIN_SRC python
@@ -6489,9 +6523,6 @@ ax[2].legend()
 fig.savefig('QCfigs/temperature_drift.png')
 
 #+END_SRC
-
-#+RESULTS:
-[[file:./.ob-jupyter/3dcb625d876342232d260d51a9ec61a452de3acc.png]]
 
 
 
@@ -6532,13 +6563,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig04.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 0.0
-: zac_u is 8.88088248376479
-: zac_a is 3.625990251766395
-[[file:./.ob-jupyter/9773108045260fe2f5ff01766896c651ee152732.png]]
-:END:
+: None
 
 
 **** QC
@@ -6567,25 +6592,6 @@ temp_a = pd.read_csv(datapath+'preQC/zac_a_day_temperature.csv', parse_dates = T
 <<plot_gradients_full_period>>
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [186]: 
-
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1888e82c18c583a9ca4794893cf44b28feac7802.png]]
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/76b53e9854be00a5f6d1087ab34f7546b6d328e3.png]]
-:end:
-
 
 
 
@@ -6641,26 +6647,6 @@ d_l_a = (temp_l-temp_a)/(zac_l_elev-zac_a_elev)
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [217]: 
-# text/plain
-: (-40.0, 20.0)
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/f0efb8e1eac0183e6579cc4f965279a8a203ffe8.png]]
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/cf4d5635c652e282d85448d4756162a2c0c874f3.png]]
-:end:
-
-
 
 
 **** The issue at zac_a in 2015
@@ -6704,25 +6690,6 @@ d_l_a = (temp_l-temp_a)/(zac_l_elev-zac_a_elev)
 <<plot_the_timeperiod>>
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [197]: 
-# text/plain
-: (-40.0, 20.0)
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/f815913459035854589ede4a846461cc22813b42.png]]
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/6258f58b61585fe481916e0c2d6a901680037bdc.png]]
-:end:
 
 
 #+NAME: plot_the_2015_issue_at_zac_l
@@ -6813,18 +6780,6 @@ date_of_interest2=datetime.datetime(2015,5,1)
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [204]: 
-# text/plain
-: (-40.0, 20.0)
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/52fcca926023e03aeafeff972491057f21667832.png]]
-:end:
 
 **** The issue at zac_u in 2015
 
@@ -6861,24 +6816,6 @@ d_l_a = (temp_l-temp_a)/(zac_l_elev-zac_a_elev)
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [210]: 
-# text/plain
-: (-40.0, 20.0)
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/bdf68acbc5ed059722c0bc40d9f930c298347c5d.png]]
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7a308c6d85ebcf64b1e75fd9fd3a9b2b0280ab30.png]]
-:end:
 
 #+NAME: plot_the_2015_issue_at_zac_u
 #+BEGIN_SRC python
@@ -6938,74 +6875,6 @@ ax[0,0].set_ylim(-40,20)
 
 #+END_SRC
 
-#+RESULTS: plot_the_2015_issue_at_zac_u
-:results:
-# Out [208]: 
-# output
----------------------------------------------------------------------------
-KeyError                                  Traceback (most recent call last)
-~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/core/indexes/base.py in get_loc(self, key, method, tolerance)
-   2888             try:
--> 2889                 return self._engine.get_loc(casted_key)
-   2890             except KeyError as err:
-
-pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
-
-pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
-
-pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
-
-pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
-
-KeyError: 'Air temperature, C'
-
-The above exception was the direct cause of the following exception:
-
-KeyError                                  Traceback (most recent call last)
-/tmp/ipykernel_8873/1461341412.py in <module>
-     26 
-     27 # The previous year for reference
----> 28 temp_l['Air temperature, C'].plot(ax = ax[0,0], label = 'zac_l')
-     29 temp_u['Air temperature, C'].plot(ax = ax[0,0], label = 'zac_u')
-     30 temp_a['Air temperature, C'].plot(ax = ax[0,0], label = 'zac_a')
-
-~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/core/frame.py in __getitem__(self, key)
-   2897             if self.columns.nlevels > 1:
-   2898                 return self._getitem_multilevel(key)
--> 2899             indexer = self.columns.get_loc(key)
-   2900             if is_integer(indexer):
-   2901                 indexer = [indexer]
-
-~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/core/indexes/base.py in get_loc(self, key, method, tolerance)
-   2889                 return self._engine.get_loc(casted_key)
-   2890             except KeyError as err:
--> 2891                 raise KeyError(key) from err
-   2892 
-   2893         if tolerance is not None:
-
-KeyError: 'Air temperature, C'
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/022b1522d44b039d915d6f19c1c15a943c40a4e1.png]]
-:end:
-
-#+RESULTS:
-:results:
-# Out [74]: 
-# text/plain
-: (-0.05, 0.05)
-
-# text/plain
-: <Figure size 864x720 with 8 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/3de00a68d27b0ae967820a612e0cd6baf7ee3997.png]]
-:end:
-
-
-
 
 
 
@@ -7039,15 +6908,6 @@ ax[3].legend()
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [23]: 
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/8fba46d9acf993b9adae626bcb97605b84e58093/eda6a101171a844b87facea93bd9b6a9cbc6467b.png]]
-:end:
 
 
 
@@ -7088,7 +6948,7 @@ tilt_hour = df.resample('H').mean()
 tilt_hour[count10min<6] = np.nan
 
 tilt_hour['tilt_y'].plot(ax= ax[1], color = 'tab:orange', label = '$ZAC\_U$: $Tilt_x$')
-tilt_hour['tilt_x'].plot(ax= ax[1], color = 'darkgoldenrod', label = '$ZAC\_U$: $Tilt_y$')
+tilt_hour['tilt_x'].plot(ax= ax[1], color = 'gold', label = '$ZAC\_U$: $Tilt_y$')
 #df['tilt_y'].plot(ax= ax[1], color = 'tab:orange')
 #df['tilt_x'].plot(ax= ax[1], color = 'tab:blue')
 
@@ -7119,8 +6979,8 @@ ax[2].legend(loc=1, ncols =2)
 
 
 for i, ax in enumerate(ax, start=1):
-    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
-            fontsize=16, fontweight='bold', va='top')
+    ax.text(0.01, 0.95, '('+chr(96 + i)+')', transform=ax.transAxes, 
+            fontsize=12, fontweight='normal', va='top')
 
 fig.tight_layout()
 
@@ -7130,6 +6990,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig06.png', dpi = 300)
 
 #+RESULTS:
 : None
+
 
 
 *** Radiation
@@ -7202,17 +7063,6 @@ ax[3].legend()
 
 #+END_SRC
 
-#+RESULTS: plot_rad_gradients_full_period
-:results:
-# Out [88]: 
-
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/253f13095695a2517675fd67e52fe2676781336a.png]]
-:end:
 
 #+NAME: plot_rad_gradients_selected_period
 #+BEGIN_SRC python
@@ -7296,9 +7146,12 @@ ax[1].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
 ax[2].set_xlim(datetime.datetime(2008,4,1),datetime.datetime(2022,5,1))
 
 ax[0].legend(loc=3)
-ax[1].legend()
-ax[2].legend()
+ax[1].legend(loc=3)
+ax[2].legend(loc=1)
 #fig.savefig('QCfigs/SRin_compare.png')
+for i, ax in enumerate(ax, start=1):
+    ax.text(0.01, 0.95, '('+chr(96 + i)+')', transform=ax.transAxes, 
+            fontsize=12, fontweight='normal', va='top')
 fig.savefig('../glaciobasis/essd/manuscript/figures/fig07.png', dpi = 300)
 #+END_SRC
 
@@ -7350,14 +7203,6 @@ fig.savefig('QCfigs/SRin_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 8.429268292682927
-: zac_u is 8.400696081733468
-: zac_a is 0.7916920414115837
-[[file:./.ob-jupyter/13814d16c643366bd27a57f9a83e3539806989a9.png]]
-:END:
 
 ****** Checking for shifts in maximum 
 #+BEGIN_SRC python
@@ -7384,11 +7229,7 @@ zac_l['cloud_cov'].resample('Y').median().plot()
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/8d1f0f022937bb842013db3fef639790d587bb21.png]]
-:END:
+
 ****** Calculating potential incoming solar radiation for zac_l
 
 
@@ -7590,48 +7431,7 @@ for year in range(2009,2019+1):
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: /tmp/ipykernel_11697/2881825465.py:34: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`). Consider using `matplotlib.pyplot.close()`.
-:   fig, ax = plt.subplots(1,1, figsize = (3,2))
-[[file:./.ob-jupyter/40f8136395de506179f733219868211f05ddd1e3.png]]
-[[file:./.ob-jupyter/7351cc073c0eff82807d2fcee054dd1ae897a808.png]]
-[[file:./.ob-jupyter/76119b39a0017f6b80210fba54b6f00cc62401b5.png]]
-[[file:./.ob-jupyter/0818ef3b9c1ef439c85115e07eb0803d4c0ed8d1.png]]
-[[file:./.ob-jupyter/f2bb225da03eb5e7567e4108bc03fd935c255371.png]]
-[[file:./.ob-jupyter/ff3a1a3d3a4b05cf4f0ff10d7ac2543f63ed93b9.png]]
-[[file:./.ob-jupyter/8dbf7c24f3388916eaaf9a2f184e8343075c84c6.png]]
-[[file:./.ob-jupyter/d90a5d87e6cc8086ae246068cd109fdfa3bd59cf.png]]
-[[file:./.ob-jupyter/f546029ccdb3dcaea0b53025d8586834a67d86b7.png]]
-[[file:./.ob-jupyter/fb28d97dc880e6ec9354b0c4125aa11f04f3c738.png]]
-[[file:./.ob-jupyter/13c55a7e9d551e258183a3e59236fdeceef3942a.png]]
-[[file:./.ob-jupyter/5ee37afc979a60c50439b1aae41d09ad044044a0.png]]
-[[file:./.ob-jupyter/6163b8b9614f8cf75e6e358809d65a6ddb6c9fc0.png]]
-[[file:./.ob-jupyter/dd66aa5370f92c3b8da38d72e601e76ceebe2049.png]]
-[[file:./.ob-jupyter/70d10aabcda0c2363a3144a1e875c2ce64894a94.png]]
-[[file:./.ob-jupyter/e7b53fda55ac64e0c12838ee77e6a5ca16dff7ef.png]]
-[[file:./.ob-jupyter/f967a2b2c99b15ab4fe0f234b328cae17eb2a3d7.png]]
-[[file:./.ob-jupyter/12728fbc0b80ff13aaaad5311a0622922a42c182.png]]
-[[file:./.ob-jupyter/e5108d07b291e3fd5f67db31f8a5fe3af24c86e7.png]]
-[[file:./.ob-jupyter/e479a334383c4d3d5e6f59daf2c37a6d505e1c88.png]]
-[[file:./.ob-jupyter/067059b8b66a8faf3f15963496d81155862800ab.png]]
-[[file:./.ob-jupyter/e77951de0579fa5c734fbfeacf5f53c8111a35a0.png]]
-[[file:./.ob-jupyter/92e433424c1d066f3220a0bf0c917fb92517e811.png]]
-[[file:./.ob-jupyter/61ba5ba123919d5d96c42af57afe43aa11a02c8b.png]]
-[[file:./.ob-jupyter/f017cd88965dde7c31f41020a3e8e666dbbeb4d8.png]]
-[[file:./.ob-jupyter/969940acf77f2bc94641ab9eda07d505a2e79046.png]]
-[[file:./.ob-jupyter/953c018af9ae2010ffb4a3b7d8680eed56df4fde.png]]
-[[file:./.ob-jupyter/3e6a069aafc3451f27de3d839aeff7a543c02c88.png]]
-[[file:./.ob-jupyter/5f5acd82977c08995a5afe7b8cf39e6e86acf204.png]]
-[[file:./.ob-jupyter/4e4b42a9d1b3aae486a34602ff1879989f1db8f1.png]]
-[[file:./.ob-jupyter/67f57fd2ffdee611b1b8fd2833b9dd855f871735.png]]
-[[file:./.ob-jupyter/756b0acaefff4a70762bc4ef86a9873677d7a137.png]]
-[[file:./.ob-jupyter/fa11fac4943994ac45bcc6e502bd14ed222dda39.png]]
-[[file:./.ob-jupyter/7b555c0f2920eaa05e40d714e1a0b4f94dd086f6.png]]
-[[file:./.ob-jupyter/4c695345546b32fba559717c4533998ddd71f567.png]]
-[[file:./.ob-jupyter/11718c4b54fcf1b8d61b4fe9937a0912f0b24169.png]]
-[[file:./.ob-jupyter/ba4ae1b85d628c7bec9fec2e4a2a1672a951d30a.png]]
-:END:
+
 
 #+BEGIN_SRC python
 #mast_swin = pd.read_csv('/home/shl@geus.dk/data/gem/climatebasis/climate_mast/View_ClimateBasis_Zackenberg_Data_Radiation_Short_wave_incoming_radiation_@_200_cm__5min_average_W_m2270920221347180965.csv', sep = '\t', index_col = 0, parse_dates = {'date':['Date','Time']}, na_values = -9999)
@@ -7712,8 +7512,7 @@ ax.set_ylabel('Wh/day')
 fig.savefig('QCfigs/SRin_stats.png', dpi = 300)
   #+END_SRC
 
-  #+RESULTS:
-  [[file:./.ob-jupyter/1deace5ed9ed00c349386024267e5eaf772be845.png]]
+
 
   #+BEGIN_SRC python
 #years = []
@@ -7757,22 +7556,6 @@ for year in np.arange(2008,2021):
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-[[file:./.ob-jupyter/d9e527af1243a8db3a5808029046b1b2d602db9e.png]]
-[[file:./.ob-jupyter/1bafd650487ff7589190bd6c6f30c681eb76bcee.png]]
-[[file:./.ob-jupyter/3fcb43957a9f7247765802943d8da2fed0b449a7.png]]
-[[file:./.ob-jupyter/57e8adccb668bdae4fe65f099e7fcae432f95da7.png]]
-[[file:./.ob-jupyter/8a74fef2c4f05b51c73b923f2a28bdc3c0adb090.png]]
-[[file:./.ob-jupyter/4e8da959f5085036d9468557aa6786c643e836c9.png]]
-[[file:./.ob-jupyter/5bc88ac1ee7b0b73bdc9f5b2048bb1a10020927f.png]]
-[[file:./.ob-jupyter/ffe633b961345ba421cb832348708494948aefba.png]]
-[[file:./.ob-jupyter/a729ff184f5b0f9ec2dea38196717e68d516ade7.png]]
-[[file:./.ob-jupyter/307d3bb1b004cf220bab92755a5fb7bb13d3c8f8.png]]
-[[file:./.ob-jupyter/94524784f7680c6eec0fcf24c1dab1b577c105da.png]]
-[[file:./.ob-jupyter/6a45aa586e2c66578e5623b08e803ff6e7bea897.png]]
-[[file:./.ob-jupyter/3fde2a7f5c28c561fad41b86de07ef7efa821341.png]]
-:END:
 
 
 #+BEGIN_SRC python
@@ -7797,8 +7580,7 @@ plt.plot(yhat, color='red')
 plt.show()
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/aecda041b449bbc2b26efcc7d48851c533bf98f1.png]]
+
 
 
 
@@ -7853,18 +7635,7 @@ for year in np.arange(2012,2021):
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-[[file:./.ob-jupyter/eb0dee2d88b15bf8e736529bd0a234ec9f2e42b8.png]]
-[[file:./.ob-jupyter/a316bc7362571c7590f9b2157ac0b99fc71c64d4.png]]
-[[file:./.ob-jupyter/2c9d593b6a3531d4b353bbede81d092a2b361d84.png]]
-[[file:./.ob-jupyter/c9c9c87d892a8863c72ceea716b99d80c625ac41.png]]
-[[file:./.ob-jupyter/ca3495bf4c66ff66eef1e2b0c5e60b5912a59aea.png]]
-[[file:./.ob-jupyter/8b54b37a6da9138fcfc478c1e0b4794b36dccf39.png]]
-[[file:./.ob-jupyter/b798d125df2da37bd8ba78f0ac437677e4ef74e7.png]]
-[[file:./.ob-jupyter/bea48ac79b8a54a6ff6c38a0a8922d260b5fdad9.png]]
-[[file:./.ob-jupyter/815bf18d8518736ef3b7eb52c58dbca18854107f.png]]
-:END:
+
 
 
 
@@ -7912,28 +7683,6 @@ fig.savefig('QCfigs/SRout_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 26.250683967794885
-: zac_u is 14.664375358016976
-: zac_a is 19.590042984538396
-[[file:./.ob-jupyter/1890e0b63792d2546acd7acb996e3af1a499c73e.png]]
-:END:
-
-
-:results:
-# Out [17]: 
-
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c6ed94dcc81c7bb7979b6e5c67e9916ff6590894.png]]
-:end:
-
-
 ***** LWin
 
 ****** Final
@@ -7975,7 +7724,7 @@ zac_u[variable1].plot(ax = ax[1], label = '$ZAC\_U$: $LR_{in}$', color = 'tab:or
 zac_a[variable1].plot(ax = ax[2], label = '$ZAC\_A$: $LR_{in}$', color = 'tab:green')
 
 zac_l[variable2].plot(ax = ax[0], label = '$ZAC\_L$: $LR_{out}$', color = 'deepskyblue')
-zac_u[variable2].plot(ax = ax[1], label = '$ZAC\_U$: $LR_{out}$', color = 'darkgoldenrod')
+zac_u[variable2].plot(ax = ax[1], label = '$ZAC\_U$: $LR_{out}$', color = 'gold')
 zac_a[variable2].plot(ax = ax[2], label = '$ZAC\_A$: $LR_{out}$', color = 'limegreen')
 
 
@@ -8010,8 +7759,8 @@ ax[1].legend(loc = 3)
 ax[2].legend()
 
 for i, ax in enumerate(ax, start=1):
-    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
-            fontsize=16, fontweight='bold', va='top')
+    ax.text(0.01, 0.95, '('+chr(96 + i)+')', transform=ax.transAxes, 
+            fontsize=12, fontweight='normal', va='top')
 
 fig.tight_layout()
 #fig.savefig('QCfigs/LRin_compare.png')
@@ -8019,7 +7768,7 @@ fig.savefig('../glaciobasis/essd/manuscript/figures/fig10.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/c1c6cd26ceaaa9a2877a718ca02327308d2e6127.png]]
+: None
 
 
 
@@ -8065,27 +7814,6 @@ fig.savefig('QCfigs/LRin_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 0.0828868551701744
-: zac_u is 14.527123715363603
-: zac_a is 4.292407677968663
-[[file:./.ob-jupyter/1a59c7407de1347ae304ce72b70ad75d618e66a9.png]]
-:END:
-
-
-:results:
-# Out [17]: 
-
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c6ed94dcc81c7bb7979b6e5c67e9916ff6590894.png]]
-:end:
-
 
 ***** LWout
 
@@ -8130,27 +7858,6 @@ fig.savefig('QCfigs/LRout_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 0.0
-: zac_u is 14.479485012029391
-: zac_a is 3.6891027255781146
-[[file:./.ob-jupyter/2b6a23b5c87e474ac66979fe924681b8a29e9297.png]]
-:END:
-
-
-:results:
-# Out [17]: 
-
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c6ed94dcc81c7bb7979b6e5c67e9916ff6590894.png]]
-:end:
-
 
 
 
@@ -8180,12 +7887,6 @@ lr_net.loc['2012'].plot(ax=ax[1])
 ax[0].legend()
 
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f52d705eb50>
-[[file:./.ob-jupyter/90072033330df50d82d64e61383a70327d7d9310.png]]
-:END:
 
 
 
@@ -8270,27 +7971,7 @@ fig.tight_layout()
 fig.savefig('../glaciobasis/essd/manuscript/figures/fig09.png', dpi = 300)
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-#+begin_example
-                albedo
-  Date                
-  2008-03-29       NaN
-  2008-03-30  0.644618
-  2008-03-31  0.645293
-  2008-04-01  0.644978
-  2008-04-02  0.621005
-  ...              ...
-  2022-04-15       NaN
-  2022-04-16       NaN
-  2022-04-17       NaN
-  2022-04-18       NaN
-  2022-04-19       NaN
 
-  [5135 rows x 1 columns]
-#+end_example
-[[file:./.ob-jupyter/b5ca8d9df2baa68bae324deca2f7b815e064755f.png]]
-:END:
 
 #+BEGIN_SRC python
 
@@ -8301,24 +7982,6 @@ for year in range(2008,2022):
     ax.set_xlim(120,255) 
     fig.savefig('QCfigs/zac_l_albedo_deep_purple_'+str(year)+'.png', dpi = 300)
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-[[file:./.ob-jupyter/fe844c2d2e777ce1afe2e83e38ed0a2a6e4319e1.png]]
-[[file:./.ob-jupyter/84d2d51615f5ed9c538188f42b57c5065c2d959d.png]]
-[[file:./.ob-jupyter/8499eabc1f95aad8fe34a192dad9421abe8863b7.png]]
-[[file:./.ob-jupyter/645f8461d27b7efaf8673347ca254b5a4cf8ee7e.png]]
-[[file:./.ob-jupyter/c67bfa8379f943cef2f7094603be64fc85f7f37e.png]]
-[[file:./.ob-jupyter/5400ac3a2bf92f4f71ac264b92984a647c51df34.png]]
-[[file:./.ob-jupyter/aa48d15cf5a1eb3e7e275f792f51f81f76809515.png]]
-[[file:./.ob-jupyter/5c9cde55fe08d91362977ef9dce547edf1809cba.png]]
-[[file:./.ob-jupyter/e519318f65d01348984eea02274253a3805445a9.png]]
-[[file:./.ob-jupyter/8e0d46694b9ff346ba1f139cce33f3af1c4f7b96.png]]
-[[file:./.ob-jupyter/48d3d7bb1fc5ee081937c6505d4f117c8445f0c2.png]]
-[[file:./.ob-jupyter/9089200ae0fd97d254b6e3d5bce7efcb2033ce9d.png]]
-[[file:./.ob-jupyter/7e9d4bd89b75c734b4848d6ae4051d5c67c30bd6.png]]
-[[file:./.ob-jupyter/d7b49e9252528522e44319bc09b83c692c631470.png]]
-:END:
 
 
 
@@ -8335,12 +7998,6 @@ for year in range(2008,2022):
 ax.set_xlim(200,220)    
 ax.legend(legend)
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-: <matplotlib.legend.Legend at 0x7f7754909460>
-[[file:./.ob-jupyter/b07335654080efbfddb0e4f0eedbff5e0d0ca1d6.png]]
-:END:
 
 
 **** QC
@@ -8382,7 +8039,7 @@ station['dsr_corr'].loc[str(year)].resample('D').min().plot(ax = ax, color = 'go
 
     
 ax.set_ylim(0,1200)
-ax.legend(loc = 2, ncols = 2)
+ax.legend(loc = 1, ncols = 2)
 ax.set_ylabel('$Wm^{⁻2}$')
 
 year = 2016
@@ -8399,13 +8056,18 @@ ax.set_ylim(0,1200)
 ax.set_ylabel('$Wm^{⁻2}$')
 
 fig.tight_layout()
+for i, ax in enumerate(axs, start=1):
+    ax.text(0.01, 0.95, '('+chr(96 + i)+')', transform=ax.transAxes, 
+            fontsize=12, fontweight='normal', va='top')
+    
 fig.savefig('../glaciobasis/essd/manuscript/figures/fig08.png',dpi = 300)
 #fig2.savefig('QCfigs/'+station_name+'_SRin_corr_max_all_years.png')
 
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/db402c2e042a62d4a5885e3c8ec937e9b7a39a2d.png]]
+: None
+
 
 ***** Comparing potential global radiation to observations at zac_l
 
@@ -8444,54 +8106,6 @@ station_name = 'zac_a'
 <<Plot_all_SR_in_max_min_along_with_I>>
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: /tmp/ipykernel_11697/2865738812.py:64: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`). Consider using `matplotlib.pyplot.close()`.
-:   fig, ax = plt.subplots(1,1, figsize = (3,2))
-[[file:./.ob-jupyter/13d51ab52ca9a42346c188ae40a768714b6c3bc5.png]]
-[[file:./.ob-jupyter/4dc674a13aeb25f88bc2027c09f81f9c7a9b6c94.png]]
-[[file:./.ob-jupyter/f32393af606fa7ca8f45cdd3065ae82bcccff34d.png]]
-[[file:./.ob-jupyter/de98c50c10f99bcabe3c7c3ef0d15b6cd7def0a1.png]]
-[[file:./.ob-jupyter/e44f6b29b113dd0fefef2a08a7417035ff40aa93.png]]
-[[file:./.ob-jupyter/640db9ff567b86ded39a6f1571f2d7de35807118.png]]
-[[file:./.ob-jupyter/a01a9fc57fb125da6a4a58a32007d42a8ca1fe1f.png]]
-[[file:./.ob-jupyter/77b69c9cba39b6c6e397581a3637e64d2e9d587a.png]]
-[[file:./.ob-jupyter/c4c83fdf709ba2d0e9c9238646b82206934e325d.png]]
-[[file:./.ob-jupyter/0b5f49d0c1cfc946efe6e8d99ebfb5d04499edf0.png]]
-[[file:./.ob-jupyter/a67d4e24bc270d8f5b9db1b9d9b048cc8675527e.png]]
-[[file:./.ob-jupyter/1f1db16b4add2e3e68b2e3bde7065fc12de57dd7.png]]
-[[file:./.ob-jupyter/cf0cf8de45857f0a38189ed5413949571cfaa883.png]]
-[[file:./.ob-jupyter/61caf959345739b368e89938b19c7186da3a728c.png]]
-[[file:./.ob-jupyter/321d7f86aa1d3353af22036770e9214aa9f04def.png]]
-[[file:./.ob-jupyter/73fc3b6b8f1f5503addfd7ead6d1464eeef22f56.png]]
-[[file:./.ob-jupyter/3b67c8280f4709a61f6c50b23400b2897d2d5d0e.png]]
-[[file:./.ob-jupyter/73a1f77f3c0de8d349b859a3ae8788a6a8be1233.png]]
-[[file:./.ob-jupyter/5ac943156e32619cd2cce33841c781e81ab49e6e.png]]
-[[file:./.ob-jupyter/9cce4b8b8d82382ba72227a669ec34523314c589.png]]
-[[file:./.ob-jupyter/229c221c0184597fe9094a4f8bac6595a0698def.png]]
-[[file:./.ob-jupyter/9cd381700942249adb1bbdef4b8d2dba7bf401fc.png]]
-[[file:./.ob-jupyter/80e939c10ac9c94fa7c9f0a530954434995186f5.png]]
-[[file:./.ob-jupyter/8dab44f74a6d9765c56347a16a5ff3f43531517f.png]]
-[[file:./.ob-jupyter/7ff65c6f1ce583922294aac3304350ba22f99a48.png]]
-[[file:./.ob-jupyter/cd2be54f7270212fd9cfa9b8d421288c27dc82cc.png]]
-[[file:./.ob-jupyter/6db99383354684a347340e2313f6ff35e0c4751e.png]]
-[[file:./.ob-jupyter/f658125ca66465036dddcefc0535382089fdb547.png]]
-[[file:./.ob-jupyter/c9058304c1297984b33fc79b17a6620f35d19b43.png]]
-[[file:./.ob-jupyter/f2af2774f4088922fc503bcb25335c0375c96635.png]]
-[[file:./.ob-jupyter/aff957fc043eba1dc0471e09c2228dbc9d4de9f2.png]]
-[[file:./.ob-jupyter/f4de197f31de79c140b193012da5065e47344ada.png]]
-[[file:./.ob-jupyter/741071845854dbfdfce210a57957287dd951e5ae.png]]
-[[file:./.ob-jupyter/d3e43e800c854ccaf969c105dd965330daf7c0f7.png]]
-[[file:./.ob-jupyter/d449d14f6303ff0cdd57bbedfc445a31a9c265a7.png]]
-[[file:./.ob-jupyter/8dd502fa0f69407a22c4b05b04b33afebe77169f.png]]
-[[file:./.ob-jupyter/28b3cdc7e4c692846a3169015fd7133c2327a6b6.png]]
-[[file:./.ob-jupyter/9447aa97421b75360122acbb6ff2506b25d742e9.png]]
-[[file:./.ob-jupyter/c53b0f0cd2697d0945748a7e853a237cd154fcff.png]]
-[[file:./.ob-jupyter/f5ff4778886f2bc56e18017c4b5381da2283783b.png]]
-[[file:./.ob-jupyter/6a984ef11b234690328663be9021de91a37d7087.png]]
-[[file:./.ob-jupyter/d0dfec227c14738e8186eba4e65569a9ce3c44e9.png]]
-[[file:./.ob-jupyter/bf0cd5b3f3fa037ade376c9d316054452b0838a5.png]]
-:END:
 
 #+NAME: Plot_all_SR_in_max_min_along_with_I
 #+BEGIN_SRC python
@@ -8547,13 +8161,6 @@ rad_a[['dlr','ulr']].plot(ax = ax[1])
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: <AxesSubplot: xlabel='time'>
-[[file:./.ob-jupyter/c34a9d71378fe23ef60e293e82761a37a015c702.png]]
-[[file:./.ob-jupyter/71f1cc8aa784fda4ad04f83d9fa7b62dbece93d9.png]]
-[[file:./.ob-jupyter/7dfb7e60e27e3723e6348715a40c0cf08eeccf96.png]]
-:END:
 
 
 ***** Annual mean
@@ -8584,60 +8191,6 @@ mast_dsr.resample('Y').mean().plot(ax=ax)
 #rad_l[variable].resample('Y').count().plot(ax=ax1, linestyle = '--')
 
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-  [0;31m---------------------------------------------------------------------------[0m
-  [0;31mKeyError[0m                                  Traceback (most recent call last)
-  File [0;32m~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/core/indexes/base.py:3629[0m, in [0;36mIndex.get_loc[0;34m(self, key, method, tolerance)[0m
-  [1;32m   3628[0m [38;5;28;01mtry[39;00m:
-  [0;32m-> 3629[0m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_engine[49m[38;5;241;43m.[39;49m[43mget_loc[49m[43m([49m[43mcasted_key[49m[43m)[49m
-  [1;32m   3630[0m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyError[39;00m [38;5;28;01mas[39;00m err:
-
-  File [0;32m~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/_libs/index.pyx:136[0m, in [0;36mpandas._libs.index.IndexEngine.get_loc[0;34m()[0m
-
-  File [0;32m~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/_libs/index.pyx:163[0m, in [0;36mpandas._libs.index.IndexEngine.get_loc[0;34m()[0m
-
-  File [0;32mpandas/_libs/hashtable_class_helper.pxi:5198[0m, in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[0;34m()[0m
-
-  File [0;32mpandas/_libs/hashtable_class_helper.pxi:5206[0m, in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[0;34m()[0m
-
-  [0;31mKeyError[0m: 'dsr'
-
-  The above exception was the direct cause of the following exception:
-
-  [0;31mKeyError[0m                                  Traceback (most recent call last)
-  Cell [0;32mIn[3], line 14[0m
-  [1;32m     12[0m variable [38;5;241m=[39m [38;5;124m'[39m[38;5;124mdsr[39m[38;5;124m'[39m
-  [1;32m     13[0m fig, ax [38;5;241m=[39m plt[38;5;241m.[39msubplots([38;5;241m1[39m,[38;5;241m1[39m, figsize [38;5;241m=[39m ([38;5;241m7[39m,[38;5;241m7[39m))
-  [0;32m---> 14[0m [43mrad_l[49m[43m[[49m[43mvariable[49m[43m][49m[38;5;241m.[39mresample([38;5;124m'[39m[38;5;124mY[39m[38;5;124m'[39m)[38;5;241m.[39mmean()[38;5;241m.[39mplot(ax [38;5;241m=[39m ax)
-  [1;32m     15[0m rad_a[variable][38;5;241m.[39mresample([38;5;124m'[39m[38;5;124mY[39m[38;5;124m'[39m)[38;5;241m.[39mmean()[38;5;241m.[39mplot(ax [38;5;241m=[39m ax)
-  [1;32m     16[0m rad_u[variable][38;5;241m.[39mresample([38;5;124m'[39m[38;5;124mY[39m[38;5;124m'[39m)[38;5;241m.[39mmean()[38;5;241m.[39mplot(ax [38;5;241m=[39m ax)
-
-  File [0;32m~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/core/frame.py:3505[0m, in [0;36mDataFrame.__getitem__[0;34m(self, key)[0m
-  [1;32m   3503[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39mcolumns[38;5;241m.[39mnlevels [38;5;241m>[39m [38;5;241m1[39m:
-  [1;32m   3504[0m     [38;5;28;01mreturn[39;00m [38;5;28mself[39m[38;5;241m.[39m_getitem_multilevel(key)
-  [0;32m-> 3505[0m indexer [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mcolumns[49m[38;5;241;43m.[39;49m[43mget_loc[49m[43m([49m[43mkey[49m[43m)[49m
-  [1;32m   3506[0m [38;5;28;01mif[39;00m is_integer(indexer):
-  [1;32m   3507[0m     indexer [38;5;241m=[39m [indexer]
-
-  File [0;32m~/miniconda3/envs/py38/lib/python3.8/site-packages/pandas/core/indexes/base.py:3631[0m, in [0;36mIndex.get_loc[0;34m(self, key, method, tolerance)[0m
-  [1;32m   3629[0m     [38;5;28;01mreturn[39;00m [38;5;28mself[39m[38;5;241m.[39m_engine[38;5;241m.[39mget_loc(casted_key)
-  [1;32m   3630[0m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyError[39;00m [38;5;28;01mas[39;00m err:
-  [0;32m-> 3631[0m     [38;5;28;01mraise[39;00m [38;5;167;01mKeyError[39;00m(key) [38;5;28;01mfrom[39;00m [38;5;21;01merr[39;00m
-  [1;32m   3632[0m [38;5;28;01mexcept[39;00m [38;5;167;01mTypeError[39;00m:
-  [1;32m   3633[0m     [38;5;66;03m# If we have a listlike key, _check_indexing_error will raise[39;00m
-  [1;32m   3634[0m     [38;5;66;03m#  InvalidIndexError. Otherwise we fall through and re-raise[39;00m
-  [1;32m   3635[0m     [38;5;66;03m#  the TypeError.[39;00m
-  [1;32m   3636[0m     [38;5;28mself[39m[38;5;241m.[39m_check_indexing_error(key)
-
-  [0;31mKeyError[0m: 'dsr'
-#+end_example
-[[file:./.ob-jupyter/8c4e1acd4e4684aa02f58661ad2e055d4fb23321.png]]
-:END:
-
 
 
 ***** Drift
@@ -8676,10 +8229,6 @@ ax[2].legend()
 fig.savefig('QCfigs/SRin_drift.png')
 
 #+END_SRC
-
-#+RESULTS:
-[[file:./.ob-jupyter/e037a71eedcd51482c7acf51d0b9022011fff232.png]]
-
 
 
 ***** Gradients
@@ -8733,30 +8282,6 @@ for year in range(2008, 2022+1):
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-[[file:./.ob-jupyter/8a0dec176edcd546de649fea449222a00333cabb.png]]
-[[file:./.ob-jupyter/e32d13d6449ca38130caada8145bef89cb573cb5.png]]
-[[file:./.ob-jupyter/ef61f90b79a0b5457df792dcad15f21a4703acfa.png]]
-[[file:./.ob-jupyter/b203716bf4f8296126060eaed2cb58a2eae2f67d.png]]
-[[file:./.ob-jupyter/9741524bc634e9b4b2ed478073a47673867157a8.png]]
-[[file:./.ob-jupyter/5756d1cca961bbf6af35661c2660879b5db8bd4d.png]]
-[[file:./.ob-jupyter/3033d8b4b08ddb5271d6c129849360e5de536f11.png]]
-[[file:./.ob-jupyter/51c68102532c119b1e355f3acd726aa21d9e7b32.png]]
-[[file:./.ob-jupyter/0f7a47c57500d83aaa03c7d758de81d8e2d4e2f6.png]]
-[[file:./.ob-jupyter/4c073005a65ae4aa10832dcadff6a7788b49871b.png]]
-[[file:./.ob-jupyter/13396659ffecebd7299a06846e119e3ee9387084.png]]
-[[file:./.ob-jupyter/e3b0b1c7d69d709813518d250a763cad05b778df.png]]
-[[file:./.ob-jupyter/c5669617ce88158893b1de445f17310f146d46db.png]]
-[[file:./.ob-jupyter/ff46d2c8de0940431e042003d8a4298bf33dcd4f.png]]
-[[file:./.ob-jupyter/77f22f219dd30ab660403c041b344967dac6efc1.png]]
-:END:
-
-
 
 **** The issue from setting up zac_a
 
@@ -8768,19 +8293,6 @@ enddate= datetime.datetime(2009,8,6)
 <<plot_rad_gradients_selected_period>>
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [102]: 
-# text/plain
-: (347064.0, 347088.0)
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b890a52128f9867bd50d60a9eaa93448c2c3da7c.png]]
-:end:
-
 
 
 **** The visit in 2010
@@ -8790,19 +8302,6 @@ startdate=datetime.datetime(2010,5,10)
 enddate= datetime.datetime(2010,5,17)
 <<plot_rad_gradients_selected_period>>
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [155]: 
-# text/plain
-: (353736.0, 353904.0)
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/9c1de3d847d37cc37f9ac270a1f1f025cd5dee96.png]]
-:end:
 
 
 **** The several issues at zac_a in early 2011
@@ -8814,18 +8313,6 @@ enddate= datetime.datetime(2011,3,17)
 <<plot_rad_gradients_selected_period>>
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [118]: 
-# text/plain
-: (361128.0, 361200.0)
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/0f573b6bb5939ca316b05244438a76481c0b79cb.png]]
-:end:
 
 #+BEGIN_SRC python
 <<read_in_hourly_radiation>>
@@ -8836,19 +8323,6 @@ enddate= datetime.datetime(2011,5,6)
 <<plot_rad_gradients_selected_period>>
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [130]: 
-# text/plain
-: (362352.0, 362400.0)
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/8e563233c1094ed78915f3288c4dd30548c86d6b.png]]
-:end:
-
 #+BEGIN_SRC python
 <<read_in_hourly_radiation>>
 #<<read_in_hourly_radiation_postQC>>
@@ -8858,18 +8332,6 @@ enddate= datetime.datetime(2011,11,1)
 <<plot_rad_gradients_selected_period>>
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [134]: 
-# text/plain
-: (359400.0, 366696.0)
-
-# text/plain
-: <Figure size 720x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/1e6c9133963dd7d9acd5dc10bc6b43a394f544d6.png]]
-:end:
 
 
 **** The missing values in 2015
@@ -8907,30 +8369,6 @@ ax[1].legend()
 #fig.savefig('QCfigs/LR.png', dpi = 100)
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-#+begin_example
-                           t_1
-  time                        
-  2008-03-29 15:00:00      NaN
-  2008-03-29 16:00:00 -16.4576
-  2008-03-29 17:00:00 -15.3733
-  2008-03-29 18:00:00 -15.9197
-  2008-03-29 19:00:00 -15.2297
-  ...                      ...
-  2022-04-19 08:00:00 -13.3936
-  2022-04-19 09:00:00 -12.7611
-  2022-04-19 10:00:00 -13.5455
-  2022-04-19 11:00:00 -11.5440
-  2022-04-19 12:00:00      NaN
-
-  [123214 rows x 1 columns]
-#+end_example
-: <matplotlib.legend.Legend at 0x7fdf94e2cca0>
-[[file:./.ob-jupyter/0366bfcceb8de5dac96795634113caed1d571e3b.png]]
-:END:
-
-
 
 **** Zac l in 2021 before the visit
 
@@ -8965,13 +8403,6 @@ ax[1].set_xlim(startdate,enddate)
 fig.savefig('QCfigs/LR.png', dpi = 100)
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: 367.830855
-[[file:./.ob-jupyter/63d34f1cff1b8190471914e26f9d37c8f0d41c0f.png]]
-:END:
-
-
 
 
 *** Relative humidity
@@ -8988,10 +8419,6 @@ rh_a = pd.read_csv(datapath+'zac_a_hour_relative_humidity.csv', parse_dates = Tr
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [58]: 
-:end:
 
 **** Post QC check
 
@@ -9063,15 +8490,16 @@ ax[2].legend(loc = 3)
 
 # Label each subplot
 for i, ax in enumerate(ax, start=1):
-    ax.text(0.01, 0.95, chr(96 + i), transform=ax.transAxes, 
-            fontsize=16, fontweight='bold', va='top')
+    ax.text(0.01, 0.95, '('+chr(96 + i)+')', transform=ax.transAxes, 
+            fontsize=12, fontweight='normal', va='top')
 fig.tight_layout()
 #fig.savefig('QCfigs/RH_compare.png')
 fig.savefig('../glaciobasis/essd/manuscript/figures/fig05.png', dpi = 300)
 #+END_SRC
 
 #+RESULTS:
-[[file:./.ob-jupyter/72db4d0315dab3adbc7fe5b7618fcccdc2ce40e3.png]]
+: None
+
 
 #+BEGIN_SRC python
 <<load_libs>>
@@ -9115,14 +8543,6 @@ fig.savefig('QCfigs/RH_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 0.1724977156861908
-: zac_u is 7.535239450397972
-: zac_a is 4.605735444137983
-[[file:./.ob-jupyter/d7f4edd6005b84ab452f1d5206b99c112681c0cd.png]]
-:END:
 
 Just checking that the RH errors at ZAC_A is not related to the correction - it is not.
 
@@ -9143,9 +8563,7 @@ for infile in filelist:
 
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/4af3ee3a194c35cb3303255408aba9a561705f12.png]]
-:END:
+
 
 **** Checking for outliers
 #+BEGIN_SRC python
@@ -9157,18 +8575,6 @@ rh_a.plot(ax= ax[2])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [24]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 720x720 with 3 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/aac3e258e7140322be07d180636f64957abc7531.png]]
-:end:
 
 **** Gradients
 #+BEGIN_SRC python
@@ -9189,18 +8595,7 @@ d_l_a.plot(ax = ax[3])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [45]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
 
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d00952effe542dc8ef228fc974256a0725e632b9.png]]
-:end:
 
 ***** The issue at zac_u in 2020-2021
 
@@ -9227,18 +8622,6 @@ ax[0].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 ymin,ymax = ax[1].get_ylim()
 ax[1].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [42]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/41832a329cabf6a88232d57333b9d28a69a9566b.png]]
-:end:
 
 
 ***** zac_a data appears to be a bit more unstable - but maybe its real
@@ -9267,18 +8650,6 @@ ax[0].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 ymin,ymax = ax[1].get_ylim()
 ax[1].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [47]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7321fb67ebcbb97aa41988457b4399c6c263b516.png]]
-:end:
 
 
 *** Windspeed
@@ -9341,8 +8712,6 @@ fig.savefig('QCfigs/WindSpeed_compare.png')
 
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/1a1111da4821d2ce8e9c922574ec5db4bdcd3757.png]]
 
 ***** Drift 
 #+BEGIN_SRC python
@@ -9381,10 +8750,6 @@ fig.savefig('QCfigs/wind_speed_drift.png')
 
 #+END_SRC
 
-#+RESULTS:
-[[file:./.ob-jupyter/f153c22669cc894e7cacb226c3826cbdc4096469.png]]
-
-
 
 
 ***** Gradients
@@ -9422,14 +8787,6 @@ fig.savefig('QCfigs/Wind_Speed_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 0.0
-: zac_u is 13.074214373366056
-: zac_a is 4.589189461488086
-[[file:./.ob-jupyter/e766aba7fe1aa237375e89d2dce725e874df5aa2.png]]
-:END:
 
 
 #+BEGIN_SRC python
@@ -9440,11 +8797,6 @@ wspd_u = pd.read_csv(datapath+'zac_u_hour_wind_speed.csv', parse_dates = True, i
 wspd_a = pd.read_csv(datapath+'zac_a_hour_wind_speed.csv', parse_dates = True, index_col=0)
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [79]: 
-:end:
 
 
 **** Checking for outliers
@@ -9458,20 +8810,6 @@ wspd_a.plot(ax= ax[2])
 
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [80]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 720x720 with 3 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e75519e218cd7236a01cda12921e29f0908219ff.png]]
-:end:
-
 
 
 ***** Drift
@@ -9510,9 +8848,6 @@ ax[2].legend()
 fig.savefig('QCfigs/wind_speed_drift.png')
 
 #+END_SRC
-
-#+RESULTS:
-[[file:./.ob-jupyter/5fa38754d3522ba1d20a876287bd673193da0127.png]]
 
 
 
@@ -9567,29 +8902,6 @@ for year in range(2008, 2022+1):
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-[[file:./.ob-jupyter/8a0dec176edcd546de649fea449222a00333cabb.png]]
-[[file:./.ob-jupyter/e32d13d6449ca38130caada8145bef89cb573cb5.png]]
-[[file:./.ob-jupyter/ef61f90b79a0b5457df792dcad15f21a4703acfa.png]]
-[[file:./.ob-jupyter/b203716bf4f8296126060eaed2cb58a2eae2f67d.png]]
-[[file:./.ob-jupyter/9741524bc634e9b4b2ed478073a47673867157a8.png]]
-[[file:./.ob-jupyter/5756d1cca961bbf6af35661c2660879b5db8bd4d.png]]
-[[file:./.ob-jupyter/3033d8b4b08ddb5271d6c129849360e5de536f11.png]]
-[[file:./.ob-jupyter/51c68102532c119b1e355f3acd726aa21d9e7b32.png]]
-[[file:./.ob-jupyter/0f7a47c57500d83aaa03c7d758de81d8e2d4e2f6.png]]
-[[file:./.ob-jupyter/4c073005a65ae4aa10832dcadff6a7788b49871b.png]]
-[[file:./.ob-jupyter/13396659ffecebd7299a06846e119e3ee9387084.png]]
-[[file:./.ob-jupyter/e3b0b1c7d69d709813518d250a763cad05b778df.png]]
-[[file:./.ob-jupyter/c5669617ce88158893b1de445f17310f146d46db.png]]
-[[file:./.ob-jupyter/ff46d2c8de0940431e042003d8a4298bf33dcd4f.png]]
-[[file:./.ob-jupyter/77f22f219dd30ab660403c041b344967dac6efc1.png]]
-:END:
-
 
 
 **** Gradients old
@@ -9611,18 +8923,6 @@ d_l_a.plot(ax = ax[3])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [81]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/974a9d31e0f76cd890c2907d729c3e1707ed39ee.png]]
-:end:
 
 ***** The issue at zac_u in 2020 (station tilting)
 
@@ -9650,19 +8950,6 @@ ymin,ymax = ax[1].get_ylim()
 ax[1].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [68]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/a39c5117508c93e4bf5c2165c10d9c9dcff8def8.png]]
-:end:
-
-
 
 *** Pressure
 
@@ -9675,10 +8962,7 @@ p_a = pd.read_csv(datapath+'zac_a_hour_pressure.csv', parse_dates = True, index_
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [154]: 
-:end:
+
 
 **** Post QC check
 
@@ -9718,9 +9002,6 @@ ax[2].legend()
 fig.savefig('QCfigs/Pressure_drift.png')
 
 #+END_SRC
-
-#+RESULTS:
-[[file:./.ob-jupyter/006f14a19cd72ffa63ccdc1826d2c9ca9afe3179.png]]
 
 
 ***** Gradient
@@ -9769,15 +9050,6 @@ fig.savefig('QCfigs/pressure_final.png')
 
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: The total percentage of discarded data at: 
-: zac_l is 0.0
-: zac_u is 0.0
-: zac_a is 0.0
-[[file:./.ob-jupyter/b2d4ea35bbfb57b16065951c434c621c62449cf0.png]]
-:END:
-
 
 
 **** Checking for outliers
@@ -9792,18 +9064,6 @@ p_a.plot(ax= ax[2])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [100]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 720x720 with 3 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/10c09556fcc02dcbb9723a5fbc90d4f86f5fffec.png]]
-:end:
 
 **** Gradients
 #+BEGIN_SRC python
@@ -9824,18 +9084,6 @@ d_l_a.plot(ax = ax[3])
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [155]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/4b8aea1ce833ce11c0350d163ab28386dd6d5d75.png]]
-:end:
 
 ***** The issue in 2016 at zac_l
 #+BEGIN_SRC python
@@ -9865,20 +9113,6 @@ ax[2].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 ymin,ymax = ax[3].get_ylim()
 ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [109]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7c0aa8ea276757a4ca76744be0a8311a47019db2.png]]
-:end:
-
-
 
 
 
@@ -9910,18 +9144,6 @@ ax[2].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 ymin,ymax = ax[3].get_ylim()
 ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [118]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/d3937292b5aea274f7b8ca43e4737dda4266deff.png]]
-:end:
 
 
 
@@ -9957,17 +9179,6 @@ ymin,ymax = ax[3].get_ylim()
 ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [127]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/49166008e08a68fc1c133f8022711194d5d87bea.png]]
-:end:
 
 ***** The issue at zac_u in 2016-2017
 #+BEGIN_SRC python
@@ -9998,17 +9209,6 @@ ymin,ymax = ax[3].get_ylim()
 ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [142]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/46e76368edde8796fa2cc114dee3e7daec7b4c86.png]]
-:end:
 
 
 ***** The issue at zac_l in 2018
@@ -10040,18 +9240,6 @@ ymin,ymax = ax[3].get_ylim()
 ax[3].vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [152]: 
-
-
-# text/plain
-: <Figure size 1080x720 with 4 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ffbfb9760db97528ddbf21a1f29c810d4cd4c0ed.png]]
-:end:
-
 
 
 *** Instrument height
@@ -10077,11 +9265,6 @@ boom_a.rolling(24,center=True).median().plot(ax = ax[2])
 ax[2].set_xlim(datetime.datetime(2008,1,1),datetime.datetime(2022,12,31))
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-| 333096.0 | 464568.0 |
-[[file:./.ob-jupyter/bcd36ee3d30f9763450e8db3ba8b636d6984d84f.png]]
-:END:
 
 #+BEGIN_SRC python
 <<load_libs>>
@@ -10101,12 +9284,6 @@ boom_a.plot(ax=ax[2])
 boom_a.rolling(3,center=True).median().plot(ax = ax[2])
 ax[2].set_xlim(datetime.datetime(2008,1,1),datetime.datetime(2022,12,31))
 #+END_SRC
-
-#+RESULTS:
-:RESULTS:
-| 13879.0 | 19357.0 |
-[[file:./.ob-jupyter/81fb4d89fdc56b4e19e0c8e887899f079463af9c.png]]
-:END:
 
 
 **** QC
@@ -10133,18 +9310,6 @@ boom_l.plot()
 #.rolling(144,center=True).mean()
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [130]: 
-# text/plain
-: <AxesSubplot:xlabel='time'>
-
-# text/plain
-: <Figure size 432x288 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/ab5f59d73878b54be22848d9c33b27f0ab159ea1.png]]
-:end:
 
 **** The issue at zac_l from 2010 to 2011
 #+BEGIN_SRC python
@@ -10160,18 +9325,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [139]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/7b682b734ebf11b6257603780f0f850c373ba9a9.png]]
-:end:
 
 
 **** The issue at zac_u from 2019 to 2021
@@ -10189,17 +9342,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [121]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/207a96db64917e79532b8fc984c64a12629574d3.png]]
-:end:
 
 **** The issue at zac_u from 2012 to 2016
 #+BEGIN_SRC python
@@ -10216,17 +9358,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [97]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/c0a57fd815ac60a427f3f133d5e4c3abdaca6c95.png]]
-:end:
 
 **** The issue at zac_a in 2012 and 2013
 
@@ -10244,18 +9375,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [25]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/578d4a062859b4162dc690910adf1f7c23c41d07.png]]
-:end:
-
 
 **** The issue at zac_a in dec 2013 to April 2014
 #+BEGIN_SRC python
@@ -10272,17 +9391,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [49]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/e4e83da8e1338559b3d7be496e974d6786ef3ff1.png]]
-:end:
 
 
 **** The issue at zac_a in Jan 2015 to April 2016
@@ -10300,18 +9408,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out [56]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/04b3a8f41ca3a7d8f60d4b1e7b26959ead03262e.png]]
-:end:
-
 **** The issue at zac_a in April 2018 
 #+BEGIN_SRC python
 fig, ax = plt.subplots(1,1,figsize=(10,5))
@@ -10326,18 +9422,6 @@ ax.vlines([startday,endday], ymin,ymax, linestyle = '--', color = 'gray')
 
 
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out [78]: 
-
-
-# text/plain
-: <Figure size 720x360 with 1 Axes>
-
-# image/png
-[[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/b757155742396f8ff1a51feb4866c8b5f8a6c636.png]]
-:end:
 
 
 
@@ -10401,126 +9485,6 @@ transmitted_day = transmitted[0:-1][(timestep_day==1).values]
 
 #+END_SRC
 
-#+RESULTS: load_transmitted_trusted
-:results:
-# Out [29]: 
-# output
-                     seconds_since_1990  airpressure  temperature  \
- timestamp                                                          
-2019-05-29 17:00:00         927997200.0        849.0       -4.244   
-2019-05-29 18:00:00         928000800.0        849.0       -4.488   
-2019-05-29 19:00:00         928004400.0        849.0       -4.897   
-2019-05-29 20:00:00         928008000.0        849.0       -4.805   
-2019-05-29 21:00:00         928011600.0        849.0       -5.417   
-...                                 ...          ...          ...   
-2019-08-30 19:00:00         936039600.0        838.0       -4.746   
-2019-08-30 20:00:00         936043200.0        838.0       -4.402   
-2019-08-30 21:00:00         936046800.0        838.0       -4.266   
-2019-08-30 22:00:00         936050400.0        839.0       -4.162   
-2019-08-30 23:00:00         936054000.0        839.0       -4.151   
-
-                     temperature2  relativehumidity  windspeed_1  windspeed_2  \
- timestamp                                                                      
-2019-05-29 17:00:00        -4.209              87.3        5.432        204.7   
-2019-05-29 18:00:00        -4.436              90.0        4.688        200.3   
-2019-05-29 19:00:00        -4.853              94.6        3.992        211.9   
-2019-05-29 20:00:00        -4.852              91.1        5.808        193.0   
-2019-05-29 21:00:00        -5.425              95.8        5.895        192.9   
-...                           ...               ...          ...          ...   
-2019-08-30 19:00:00        -4.967              99.8        6.051        193.7   
-2019-08-30 20:00:00        -4.688              99.8        6.582        202.7   
-2019-08-30 21:00:00        -4.525              99.8        7.606        205.9   
-2019-08-30 22:00:00        -4.409              99.8        7.408        204.1   
-2019-08-30 23:00:00        -4.382              99.8        6.989        202.0   
-
-                     shortwaveradiationin  shortwaveradiationout  \
- timestamp                                                         
-2019-05-29 17:00:00               445.300                426.300   
-2019-05-29 18:00:00               358.600                345.600   
-2019-05-29 19:00:00               287.100                273.000   
-2019-05-29 20:00:00               408.900                361.500   
-2019-05-29 21:00:00               280.700                254.900   
-...                                   ...                    ...   
-2019-08-30 19:00:00                16.610                 15.440   
-2019-08-30 20:00:00                12.710                 12.430   
-2019-08-30 21:00:00                 6.910                  5.350   
-2019-08-30 22:00:00                 3.009                  1.059   
-2019-08-30 23:00:00                 2.173                  0.111   
-
-                     longwaveradiationin  ...  temperature.4  temperature2.3  \
- timestamp                                ...                                  
-2019-05-29 17:00:00              -15.400  ...            NaN             NaN   
-2019-05-29 18:00:00              -14.520  ...            NaN             NaN   
-2019-05-29 19:00:00              -17.320  ...            NaN             NaN   
-2019-05-29 20:00:00              -29.970  ...            NaN             NaN   
-2019-05-29 21:00:00              -45.900  ...            NaN             NaN   
-...                                  ...  ...            ...             ...   
-2019-08-30 19:00:00               -1.444  ...            NaN             NaN   
-2019-08-30 20:00:00               -2.300  ...            NaN             NaN   
-2019-08-30 21:00:00               -1.259  ...            NaN             NaN   
-2019-08-30 22:00:00               -0.890  ...            NaN             NaN   
-2019-08-30 23:00:00               -0.923  ...            NaN             NaN   
-
-                     relativehumidity.4  windspeed_1.2  windspeed_2.1  \
- timestamp                                                              
-2019-05-29 17:00:00                 NaN            NaN            NaN   
-2019-05-29 18:00:00                 NaN            NaN            NaN   
-2019-05-29 19:00:00                 NaN            NaN            NaN   
-2019-05-29 20:00:00                 NaN            NaN            NaN   
-2019-05-29 21:00:00                 NaN            NaN            NaN   
-...                                 ...            ...            ...   
-2019-08-30 19:00:00                 NaN            NaN            NaN   
-2019-08-30 20:00:00                 NaN            NaN            NaN   
-2019-08-30 21:00:00                 NaN            NaN            NaN   
-2019-08-30 22:00:00                 NaN            NaN            NaN   
-2019-08-30 23:00:00                 NaN            NaN            NaN   
-
-                     shortwaveradiationin.3  shortwaveradiationout.3  \
- timestamp                                                             
-2019-05-29 17:00:00                     NaN                      NaN   
-2019-05-29 18:00:00                     NaN                      NaN   
-2019-05-29 19:00:00                     NaN                      NaN   
-2019-05-29 20:00:00                     NaN                      NaN   
-2019-05-29 21:00:00                     NaN                      NaN   
-...                                     ...                      ...   
-2019-08-30 19:00:00                     NaN                      NaN   
-2019-08-30 20:00:00                     NaN                      NaN   
-2019-08-30 21:00:00                     NaN                      NaN   
-2019-08-30 22:00:00                     NaN                      NaN   
-2019-08-30 23:00:00                     NaN                      NaN   
-
-                     longwaveradiationin.3  longwaveradiationout.3  \
- timestamp                                                           
-2019-05-29 17:00:00                    NaN                     NaN   
-2019-05-29 18:00:00                    NaN                     NaN   
-2019-05-29 19:00:00                    NaN                     NaN   
-2019-05-29 20:00:00                    NaN                     NaN   
-2019-05-29 21:00:00                    NaN                     NaN   
-...                                    ...                     ...   
-2019-08-30 19:00:00                    NaN                     NaN   
-2019-08-30 20:00:00                    NaN                     NaN   
-2019-08-30 21:00:00                    NaN                     NaN   
-2019-08-30 22:00:00                    NaN                     NaN   
-2019-08-30 23:00:00                    NaN                     NaN   
-
-                     temperatureradsensor.2  
- timestamp                                   
-2019-05-29 17:00:00                     NaN  
-2019-05-29 18:00:00                     NaN  
-2019-05-29 19:00:00                     NaN  
-2019-05-29 20:00:00                     NaN  
-2019-05-29 21:00:00                     NaN  
-...                                     ...  
-2019-08-30 19:00:00                     NaN  
-2019-08-30 20:00:00                     NaN  
-2019-08-30 21:00:00                     NaN  
-2019-08-30 22:00:00                     NaN  
-2019-08-30 23:00:00                     NaN  
-
-[2239 rows x 135 columns]
-
-:end:
-
 
 #+BEGIN_SRC python
 fig, ax = plt.subplots(2,1,figsize=(10,5))
@@ -10532,26 +9496,6 @@ ax[1].plot(transmitted_day['temperature'])
 
    #+END_SRC
 
-   #+RESULTS:
-   :results:
-   # Out [4]: 
-   # text/plain
-   : [<matplotlib.lines.Line2D at 0x7f3b78b61550>]
-
-   # text/plain
-   : <Figure size 720x360 with 2 Axes>
-
-   # image/png
-   [[file:obipy-resources/9e526126f6e919503e0f2bfb2c43391732b7318e/4479d71f944b6501c2709a338cb7265a0ea16930.png]]
-   :end:
-
-
-#+END_SRC
-
-#+RESULTS: Load_transmitted_data
-:results:
-# Out [27]: 
-:end:
 
 ** Pre 2022 database delivery
 
@@ -10578,12 +9522,7 @@ ax[1].plot(transmitted_day['temperature'])
  data_to_file.to_csv(destdir+destname+'.txt',sep = '\t', index = False, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [2]: 
- :end:
-
-
+ 
 
  #+NAME: extract_the_near_surface_climate_columns
  #+BEGIN_SRC python
@@ -10652,10 +9591,6 @@ ax[1].plot(transmitted_day['temperature'])
  data_to_file.to_csv(destdir+destname+'.txt',sep = '\t', index = False, float_format = '%g')
  #+END_SRC
 
- #+RESULTS:
- :results:
- # Out [17]: 
- :end:
 
 
 
@@ -10746,7 +9681,7 @@ ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 #plt.tight_layout()
 plt.savefig('ZAC_L_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_preQC.csv', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_L_preQC.csv', index = True)
 #+END_SRC
 
 #+RESULTS:
@@ -10824,7 +9759,7 @@ ax[9].legend(loc='upper left', bbox_to_anchor=(1, 1))
 plt.savefig('ZAC_U_Measurement_success_rate.png', dpi = 300, bbox_inches='tight')
 
 #merged.plot(subplots = True, figsize = (12,12))
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_preQC.csv', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U_preQC.csv', index = True)
 #+END_SRC
 
 #+RESULTS:
@@ -10892,7 +9827,7 @@ plt.savefig('ZAC_A_Measurement_success_rate.png', dpi = 300, bbox_inches='tight'
 
 
 #merged.plot(subplots = True, figsize = (12,12))
-merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/'+site+'_2008_2022_preQC.csv', index = True)
+merged_slim.to_csv('/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_A_preQC.csv', index = True)
 
 
 #+END_SRC
@@ -11207,10 +10142,8 @@ Example for dataverse - using nead
 #+BEGIN_SRC python 
 import nead
 import matplotlib.pyplot as plt
-from datetime import datetime
 
 filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U_nead.csv'
-
 ds = nead.read(filename, index_col=0)
 # Ignoring all metadata and plotting
 df = ds.to_pandas()
@@ -11232,7 +10165,12 @@ filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/ge
 df = pd.read_csv(filename, index_col = 0, parse_dates = True)
 df.plot(subplots=True)
 plt.show()
+#+END_SRC
 
+#+RESULTS:
+: None
+
+#+BEGIN_SRC python
 
 filename = '/home/shl@geus.dk/OneDrive/projects/aws_processing_v1.0/data_v1.0/gem_database/2022/ZAC_U.csv'
 df = pd.read_csv(filename, index_col = 0, parse_dates = True)
